@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- REGLAS GENERALES (USUARIOS, AGENTES, CUADRANTES) ---
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth.token.role == 'admin';
+    }
+    match /agents/{agentId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth.token.role == 'admin';
+    }
+    match /schedules/{scheduleId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth.token.role == 'admin';
+    }
+    match /permissionTypes/{typeId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if request.auth.token.role == 'admin';
+    }
+
+    // --- REGLAS PARA PERMISOS Y LICENCIAS ('solicitudes') ---
+    match /solicitudes/{solicitudId} {
+      allow get: if request.auth != null && (request.auth.token.role == 'admin' || request.auth.token.agentId == resource.data.agentId);
+      allow list: if request.auth.token.role == 'admin' ||
+                  (request.auth.token.role == 'guard' && request.query.where.agentId == request.auth.token.agentId);
+      allow create: if request.auth != null;
+      allow update, delete: if false; // Gestionado por Cloud Functions
+    }
+
+    // --- REGLAS PARA CAMBIOS DE TURNO ('solicitudes_cambio_turno') ---
+    match /solicitudes_cambio_turno/{changeId} {
+      allow get: if request.auth != null && (
+        request.auth.token.role == 'admin' ||
+        request.auth.token.agentId == resource.data.requesterAgentId ||
+        request.auth.token.agentId == resource.data.targetAgentId
+      );
+
+      // ¡IMPORTANTE! Solo permitir 'list' a administradores.
+      // Los guardias ahora obtendrán estos datos a través de la Cloud Function 'getShiftChangeRequestsCallable'.
+      allow list: if request.auth.token.role == 'admin';
+
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        request.auth.token.role == 'admin' ||
+        (request.auth.token.agentId == resource.data.targetAgentId && resource.data.status == 'Pendiente_Target')
+      );
+      allow delete: if false;
+    }
+  }
+}

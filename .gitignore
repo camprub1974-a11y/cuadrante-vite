@@ -1,0 +1,21 @@
+# Dependencias
+node_modules/
+
+# Archivos de compilación (si usas 'npm run build')
+dist/
+.vite/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Archivos de entorno - ¡MUY IMPORTANTE!
+.env
+.env.local
+.env.*.local
+
+# Archivos de sistema operativo
+.DS_Store
+Thumbs.db
