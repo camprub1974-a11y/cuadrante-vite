@@ -1,233 +1,183 @@
-// cuadrante-vite/js/ui/agentManagerModal.js
+// js/ui/agentManagerModal.js
 
-import { showLoading, hideLoading, displayMessage } from './viewManager.js';
-import { availableAgents, currentUser, setAvailableAgents } from '../state.js'; // Añadido setAvailableAgents
-import { addAgent, updateAgent, deleteAgent, loadInitialAgents } from '../dataController.js';
-// Importamos directamente FieldPath de firestore, no del objeto global firebase
-import { FieldPath } from 'firebase/firestore'; // <--- CORREGIDO
+import { displayMessage, hideLoading, showLoading } from './viewManager.js';
+import { addAgent, deleteAgent, loadInitialAgents, updateAgent } from '../dataController.js';
+import { availableAgents } from '../state.js';
 
-// Variables globales para elementos DOM, inicializadas a null
-let agentManagerModal = null;
-let agentListContainer = null;
-let agentForm = null;
-let agentIdInput = null;
-let agentNameInput = null;
-let agentActiveCheckbox = null;
-let saveAgentButton = null;
-let cancelAgentEditButton = null;
-let addAgentButton = null;
-let formTitleSpan = null;
+let agentManagerModal;
+let agentListContainer;
+let agentForm;
+let agentIdInput;
+let agentNameInput;
+let agentActiveCheckbox;
+let saveAgentButton;
+let cancelAgentEditButton;
+let addAgentButton;
+let formTitleSpan;
 
 let isEditMode = false;
+let areListenersAttached = false;
 
-// Esta función solo inicializa el modal principal y su botón de cierre
-export function initializeAgentManagerModal() {
-    console.log("[DEBUG - AgentManagerModal] initializeAgentManagerModal llamado.");
+function _initializeDOMElements() {
+    if (agentManagerModal) return true;
+
     agentManagerModal = document.getElementById('agent-manager-modal');
     if (!agentManagerModal) {
-        console.error("ERROR - AgentManagerModal: Modal #agent-manager-modal no encontrado. ABORTANDO INICIALIZACIÓN.");
-        return;
+        console.error("Error Crítico: El modal #agent-manager-modal no existe en el DOM.");
+        return false;
     }
-    const closeButton = agentManagerModal.querySelector('.close-button'); 
-    if (closeButton) {
-        closeButton.addEventListener('click', hideAgentManagerModal);
-    } else {
-        console.warn("WARN - AgentManagerModal: Botón de cierre (.close-button) no encontrado en el modal principal.");
+
+    agentListContainer = agentManagerModal.querySelector('#agentListContainer'); // Se usa querySelector para más flexibilidad
+    agentForm = document.getElementById('agent-form');
+    agentIdInput = document.getElementById('agent-id-input');
+    agentNameInput = document.getElementById('agent-name-input');
+    agentActiveCheckbox = document.getElementById('agent-active-checkbox');
+    saveAgentButton = agentForm.querySelector('button[type="submit"]');
+    cancelAgentEditButton = document.getElementById('cancel-agent-edit-button');
+    addAgentButton = document.getElementById('add-agent-button');
+    formTitleSpan = document.getElementById('form-title');
+    const closeButton = agentManagerModal.querySelector('.close-button');
+
+    const elements = { agentListContainer, agentForm, agentIdInput, agentNameInput, agentActiveCheckbox, saveAgentButton, cancelAgentEditButton, addAgentButton, formTitleSpan, closeButton };
+    for (const key in elements) {
+        if (!elements[key]) {
+            console.error(`Error Crítico: El elemento del modal con id/clase '${key}' no fue encontrado.`);
+            displayMessage("Error al cargar el formulario de agentes. Faltan componentes.", "error");
+            return false;
+        }
     }
+    return true;
+}
+
+function _attachEventListeners() {
+    if (areListenersAttached) return;
+
+    const closeButton = agentManagerModal.querySelector('.close-button');
+    closeButton.addEventListener('click', hideAgentManagerModal);
     agentManagerModal.addEventListener('click', (event) => {
         if (event.target === agentManagerModal) hideAgentManagerModal();
     });
 
-    console.log("[DEBUG - AgentManagerModal] Modal principal de gestión de agentes inicializado.");
+    addAgentButton.addEventListener('click', () => {
+        isEditMode = false;
+        agentForm.reset();
+        agentIdInput.value = '';
+        agentIdInput.readOnly = false;
+        agentActiveCheckbox.checked = true;
+        formTitleSpan.textContent = 'Añadir Nuevo Agente';
+        agentForm.classList.remove('hidden');
+    });
+
+    cancelAgentEditButton.addEventListener('click', () => {
+        agentForm.classList.add('hidden');
+    });
+
+    agentForm.addEventListener('submit', handleSaveAgent);
+
+    availableAgents.subscribe(displayAgentList);
+
+    areListenersAttached = true;
 }
 
-// Inicialización de elementos internos y listeners (se llama la primera vez que se abre el modal)
-async function _initializeInternalDOMElements() {
-    // Si agentListContainer ya tiene un valor, significa que ya se inicializaron
-    if (agentListContainer) {
-        console.log("[DEBUG - AgentManagerModal] Elementos internos ya inicializados.");
-        return true;
-    }
 
-    console.log("[DEBUG - AgentManagerModal] Inicializando elementos internos del modal por primera vez...");
-    agentListContainer = agentManagerModal.querySelector('#agent-list-container');
-    agentForm = agentManagerModal.querySelector('#agent-form');
-    agentIdInput = agentManagerModal.querySelector('#agent-id-input');
-    agentNameInput = agentManagerModal.querySelector('#agent-name-input');
-    agentActiveCheckbox = agentManagerModal.querySelector('#agent-active-checkbox');
-    saveAgentButton = agentManagerModal.querySelector('#save-agent-button');
-    cancelAgentEditButton = agentManagerModal.querySelector('#cancel-agent-edit-button');
-    addAgentButton = agentManagerModal.querySelector('#add-agent-button');
-    formTitleSpan = agentManagerModal.querySelector('#form-title');
-
-    // === NUEVOS LOGS DE DEPURACIÓN ESPECÍFICOS ===
-    console.log("Elementos AgentManagerModal - Estado de obtención (después de querySelector):");
-    console.log("  agentListContainer:", !!agentListContainer, agentListContainer);
-    console.log("  agentForm:", !!agentForm, agentForm);
-    console.log("  agentIdInput:", !!agentIdInput, agentIdInput);
-    console.log("  agentNameInput:", !!agentNameInput, agentNameInput);
-    console.log("  agentActiveCheckbox:", !!agentActiveCheckbox, agentActiveCheckbox);
-    console.log("  saveAgentButton:", !!saveAgentButton, saveAgentButton);
-    console.log("  cancelAgentEditButton:", !!cancelAgentEditButton, cancelAgentEditButton);
-    console.log("  addAgentButton:", !!addAgentButton, addAgentButton);
-    console.log("  formTitleSpan:", !!formTitleSpan, formTitleSpan);
-    // === FIN NUEVOS LOGS ===
-
-    if (!agentListContainer || !agentForm || !agentIdInput || !agentNameInput || 
-        !agentActiveCheckbox || !saveAgentButton || !cancelAgentEditButton || !addAgentButton || !formTitleSpan) {
-        console.error("ERROR - AgentManagerModal: Fallo al encontrar elementos DOM internos cruciales. Verifique IDs en index.html.");
-        const missing = [];
-        if (!agentListContainer) missing.push('agentListContainer');
-        if (!agentForm) missing.push('agentForm');
-        if (!agentIdInput) missing.push('agentIdInput');
-        if (!agentNameInput) missing.push('agentNameInput');
-        if (!agentActiveCheckbox) missing.push('agentActiveCheckbox');
-        if (!saveAgentButton) missing.push('saveAgentButton');
-        if (!cancelAgentEditButton) missing.push('cancelAgentEditButton');
-        if (!addAgentButton) missing.push('addAgentButton');
-        if (!formTitleSpan) missing.push('formTitleSpan');
-        console.error("Elementos faltantes:", missing.join(', '));
-        displayMessage("Error: No se pudo cargar el formulario de agentes. Recargue.", "error");
-        return false;
+export function initializeAgentManagerModal() {
+    if (_initializeDOMElements()) {
+        _attachEventListeners();
     }
-
-    // Adjuntar listeners (solo una vez)
-    if (addAgentButton) {
-        addAgentButton.addEventListener('click', () => {
-            console.log("[DEBUG - AgentManagerModal] Clic en Añadir Nuevo Agente.");
-            isEditMode = false;
-            agentForm.reset();
-            agentIdInput.value = '';
-            agentIdInput.readOnly = false;
-            agentActiveCheckbox.checked = true;
-            agentForm.classList.remove('hidden');
-            saveAgentButton.textContent = 'Añadir Agente';
-            if (formTitleSpan) formTitleSpan.textContent = 'Añadir Nuevo Agente';
-            console.log("[DEBUG - AgentManagerModal] Formulario de añadir agente mostrado.");
-        });
-    }
-
-    if (cancelAgentEditButton) {
-        cancelAgentEditButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            console.log("[DEBUG - AgentManagerModal] Clic en Cancelar.");
-            agentForm.classList.add('hidden');
-        });
-    }
-    
-    if (agentForm) {
-        agentForm.addEventListener('submit', handleSaveAgent);
-    }
-    
-    // Suscribirse a los cambios en availableAgents para refrescar la lista
-    availableAgents.subscribe(() => {
-        if (agentManagerModal && !agentManagerModal.classList.contains('hidden')) {
-            console.log("[DEBUG - AgentManagerModal] availableAgents atom cambió y modal está visible. Refrescando lista.");
-            displayAgentList(); 
-        }
-    });
-    console.log("[DEBUG - AgentManagerModal] Elementos internos y listeners inicializados completamente.");
-    return true;
 }
 
 export function showAgentManagerModal() {
-    console.log("[DEBUG - AgentManagerModal] showAgentManagerModal llamado.");
-    if (!agentManagerModal) {
-        console.error("[ERROR - AgentManagerModal] Modal de gestión de agentes no inicializado. No se puede mostrar.");
+    if (!_initializeDOMElements()) {
         return;
     }
-    const initialized = _initializeInternalDOMElements();
-    if (!initialized) {
-        console.error("[ERROR - AgentManagerModal] Falló la inicialización de elementos internos. No se muestra el modal.");
-        return;
-    }
-
+    
     agentManagerModal.classList.remove('hidden');
-    agentManagerModal.style.display = 'flex';
     agentForm.classList.add('hidden');
-    displayAgentList(); // Mostrar la lista de agentes al abrir el modal
-    console.log("[DEBUG - AgentManagerModal] Modal de gestión de agentes visible. (display: flex)");
+    displayAgentList();
 }
 
 export function hideAgentManagerModal() {
-    console.log("[DEBUG - AgentManagerModal] hideAgentManagerModal llamado.");
     if (!agentManagerModal) return;
     agentManagerModal.classList.add('hidden');
-    agentManagerModal.style.display = 'none';
-    console.log("[DEBUG - AgentManagerModal] Modal de gestión de agentes oculto. (display: none)");
 }
 
-export async function displayAgentList() {
-    console.log("[DEBUG - AgentManagerModal] displayAgentList llamado.");
-    const agents = availableAgents.get(); // Obtener agentes del átomo
-    if (!agentListContainer) {
-        console.error("[ERROR - AgentManagerModal] agentListContainer no encontrado. No se puede renderizar la lista de agentes.");
-        return;
-    }
+function displayAgentList() {
+    if (!agentListContainer) return;
 
-    let html = '<ul class="agent-list">';
+    const agents = availableAgents.get();
+    
+    // ✅ NUEVA LÓGICA PARA CONSTRUIR LA TABLA
     if (agents && agents.length > 0) {
-        agents.forEach(agent => {
-            html += `
-                <li class="agent-list-item">
-                    <span>${agent.name} (${agent.id}) - ${agent.active ? 'Activo' : 'Inactivo'}</span>
-                    <div class="agent-actions">
-                        <button class="button button-secondary edit-agent-btn" data-agent-id="${agent.id}">Editar</button>
-                        <button class="button button-danger delete-agent-btn" data-agent-id="${agent.id}">Eliminar</button>
-                    </div>
-                </li>
-            `;
-        });
+        const sortedAgents = [...agents].sort((a, b) => a.name.localeCompare(b.name));
+        const tableHtml = `
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre del Agente</th>
+                        <th>Estado</th>
+                        <th class="actions-header">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${sortedAgents.map(agent => `
+                        <tr>
+                            <td>${agent.id}</td>
+                            <td class="agent-name-cell">${agent.name}</td>
+                            <td>
+                                <span class="status-badge ${agent.active ? 'status-active' : 'status-inactive'}">
+                                    ${agent.active ? 'Activo' : 'Inactivo'}
+                                </span>
+                            </td>
+                            <td class="actions-cell">
+                                <button class="button button-icon button-secondary edit-agent-btn" title="Editar Agente" data-agent-id="${String(agent.id)}">
+                                    <span class="material-icons">edit</span>
+                                </button>
+                                <button class="button button-icon button-danger delete-agent-btn" title="Eliminar Agente" data-agent-id="${String(agent.id)}">
+                                    <span class="material-icons">delete</span>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+        agentListContainer.innerHTML = tableHtml;
     } else {
-        html += '<p>No hay agentes disponibles.</p>';
+        agentListContainer.innerHTML = '<p class="info-message">No hay agentes para mostrar.</p>';
     }
-    html += '</ul>';
-    agentListContainer.innerHTML = html;
 
+    // Re-asignar listeners a los botones de la lista
     agentListContainer.querySelectorAll('.edit-agent-btn').forEach(button => {
-        button.addEventListener('click', (e) => handleEditAgent(e.target.dataset.agentId));
+        button.addEventListener('click', (e) => handleEditAgent(e.currentTarget.dataset.agentId));
     });
     agentListContainer.querySelectorAll('.delete-agent-btn').forEach(button => {
-        button.addEventListener('click', (e) => handleDeleteAgent(e.target.dataset.agentId));
+        button.addEventListener('click', (e) => handleDeleteAgent(e.currentTarget.dataset.agentId));
     });
-    console.log("[DEBUG - AgentManagerModal] Lista de agentes renderizada en modal.");
 }
 
-async function handleEditAgent(agentId) {
-    console.log(`[DEBUG - AgentManagerModal] handleEditAgent llamado para ID: ${agentId}`);
-    const agents = availableAgents.get(); // Obtener agentes del átomo
-    const agent = agents.find(a => String(a.id) === String(agentId));
-    
+function handleEditAgent(agentId) {
+    const agent = availableAgents.get().find(a => String(a.id) === String(agentId));
     if (agent) {
         isEditMode = true;
+        formTitleSpan.textContent = 'Editar Agente';
         agentIdInput.value = agent.id;
+        agentIdInput.readOnly = true;
         agentNameInput.value = agent.name;
         agentActiveCheckbox.checked = agent.active;
-        agentIdInput.readOnly = true; // No permitir cambiar el ID al editar
-        
         agentForm.classList.remove('hidden');
-        saveAgentButton.textContent = 'Guardar Cambios';
-        if (formTitleSpan) formTitleSpan.textContent = 'Editar Agente';
-        console.log("[DEBUG - AgentManagerModal] Formulario de edición de agente mostrado.");
-    } else {
-        displayMessage('Agente no encontrado para editar.', 'error');
-        console.error(`[ERROR - AgentManagerModal] Agente ${agentId} no encontrado para editar.`);
     }
 }
 
 async function handleDeleteAgent(agentId) {
-    console.log(`[DEBUG - AgentManagerModal] handleDeleteAgent llamado para ID: ${agentId}`);
-    if (!confirm(`¿Estás seguro de que quieres eliminar al agente ${agentId}? Esta acción es irreversible.`)) return;
-
+    if (!confirm(`¿Seguro que quieres eliminar al agente ${agentId}?`)) return;
     showLoading();
     try {
-        await deleteAgent(String(agentId)); // Usa la función del dataController
-        await loadInitialAgents(); // Recarga los agentes en el estado de Nanostores
+        await deleteAgent(String(agentId));
+        await loadInitialAgents();
         displayMessage('Agente eliminado con éxito.', 'success');
-        console.log(`[DEBUG - AgentManagerModal] Agente ${agentId} eliminado.`);
     } catch (error) {
-        displayMessage('Error al eliminar agente.', 'error');
-        console.error(`[ERROR - AgentManagerModal] Error al eliminar agente ${agentId}:`, error);
+        displayMessage(`Error al eliminar agente: ${error.message}`, 'error');
     } finally {
         hideLoading();
     }
@@ -235,18 +185,12 @@ async function handleDeleteAgent(agentId) {
 
 async function handleSaveAgent(event) {
     event.preventDefault();
-    console.log("[DEBUG - AgentManagerModal] handleSaveAgent llamado.");
     const name = agentNameInput.value.trim();
     const active = agentActiveCheckbox.checked;
-    const agentId = agentIdInput.value.trim(); 
+    const agentId = agentIdInput.value.trim();
 
     if (!name) {
-        displayMessage('El nombre del agente no puede estar vacío.', 'warning');
-        return;
-    }
-    // Si no es modo edición, el ID puede estar vacío para que la CF lo autogenere
-    if (!isEditMode && agentId && isNaN(parseInt(agentId))) {
-        displayMessage('El ID del agente debe ser un número o dejar vacío para autogenerar.', 'warning');
+        displayMessage('El nombre del agente es requerido.', 'warning');
         return;
     }
 
@@ -255,25 +199,17 @@ async function handleSaveAgent(event) {
         if (isEditMode) {
             await updateAgent(String(agentId), { name, active });
             displayMessage('Agente actualizado con éxito.', 'success');
-            console.log(`[DEBUG - AgentManagerModal] Agente ${agentId} actualizado.`);
         } else {
-            // Comprobar si el ID ya existe antes de añadir
-            const existingAgents = availableAgents.get();
-            if (agentId && existingAgents.some(a => String(a.id) === String(agentId))) {
-                 displayMessage(`El agente con ID ${agentId} ya existe.`, "error");
-                 hideLoading();
-                 return;
+            if (agentId && availableAgents.get().some(a => String(a.id) === String(agentId))) {
+                throw new Error(`El agente con ID ${agentId} ya existe.`);
             }
-            await addAgent({ id: agentId || null, name, active }); // Pasa null si el ID es vacío para autogenerar
-            displayMessage(`Agente añadido con éxito.`, 'success');
-            console.log(`[DEBUG - AgentManagerModal] Agente ${agentId || '(autogenerado)'} añadido.`);
+            await addAgent({ id: agentId || null, name, active });
+            displayMessage('Agente añadido con éxito.', 'success');
         }
-        await loadInitialAgents(); // Recarga los agentes en el estado de Nanostores
+        await loadInitialAgents();
         agentForm.classList.add('hidden');
-    }
-    catch (error) {
+    } catch (error) {
         displayMessage(`Error al guardar agente: ${error.message}`, 'error');
-        console.error("[ERROR - AgentManagerModal] Error al guardar agente:", error);
     } finally {
         hideLoading();
     }

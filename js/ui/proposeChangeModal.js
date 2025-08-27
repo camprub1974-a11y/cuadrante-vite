@@ -2,7 +2,7 @@
 
 import { currentUser, availableAgents, scheduleData } from '../state.js';
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
-import { addShiftChangeRequest, updateNotificationCount } from '../dataController.js'; // Añadido updateNotificationCount
+import { addShiftChangeRequest, updateNotificationCount } from '../dataController.js';
 import { getShiftDisplayText } from '../utils.js';
 
 let modal = null;
@@ -17,7 +17,14 @@ let commentsInput = null;
 
 let currentProposal = {};
 
-// Esta función solo inicializa el modal principal
+/**
+ * @fileoverview Lógica para el modal de propuesta de cambio de turno.
+ * Permite a un agente proponer un intercambio de turno con un compañero.
+ */
+
+/**
+ * Inicializa el modal principal, obteniendo su referencia y adjuntando el listener del botón de cierre.
+ */
 export function initializeProposeChangeModal() {
     console.log("[DEBUG - ProposeChangeModal] initializeProposeChangeModal llamado.");
     modal = document.getElementById('propose-change-modal');
@@ -34,7 +41,11 @@ export function initializeProposeChangeModal() {
     console.log("[DEBUG - ProposeChangeModal] Modal principal de propuesta inicializado.");
 }
 
-// Inicialización de elementos internos y listeners (se llama la primera vez que se abre el modal)
+/**
+ * Inicializa los elementos DOM internos del modal y sus listeners.
+ * Se llama la primera vez que se abre el modal para evitar la inicialización innecesaria.
+ * @returns {boolean} - true si la inicialización fue exitosa, false en caso contrario.
+ */
 function _initializeInternalDOMElements() {
     if (form) { // Si ya se inicializaron
         console.log("[DEBUG - ProposeChangeModal] Elementos internos ya inicializados.");
@@ -87,6 +98,12 @@ function _initializeInternalDOMElements() {
 }
 
 
+/**
+ * Abre el modal de propuesta de cambio con los datos del turno que se ofrece.
+ * @param {string} requesterAgentId - ID del agente que solicita el cambio.
+ * @param {string} requesterDate - Fecha del turno que se ofrece (YYYY-MM-DD).
+ * @param {string} requesterShiftType - Tipo de turno que se ofrece.
+ */
 export function openProposeChangeModal(requesterAgentId, requesterDate, requesterShiftType) {
     currentProposal = { requesterAgentId, requesterDate, requesterShiftType };
 
@@ -99,6 +116,13 @@ export function openProposeChangeModal(requesterAgentId, requesterDate, requeste
     const initialized = _initializeInternalDOMElements();
     if (!initialized) {
         console.error("ERROR - ProposeChangeModal: Falló la inicialización de elementos internos. No se muestra el modal.");
+        return;
+    }
+
+    // [VALIDACIÓN] No permitir proponer un cambio si el turno es 'Libre' o 'Sin Asignación'
+    if (requesterShiftType === 'Libre' || requesterShiftType === 'L' || requesterShiftType === '-') {
+        displayMessage("No se puede proponer un cambio para un día libre.", "warning");
+        hideProposeChangeModal();
         return;
     }
 
@@ -128,6 +152,9 @@ export function openProposeChangeModal(requesterAgentId, requesterDate, requeste
     console.log("[DEBUG - ProposeChangeModal] Modal de propuesta visible. (display: flex)");
 }
 
+/**
+ * Oculta el modal de propuesta de cambio.
+ */
 function hideProposeChangeModal() {
     console.log("[DEBUG - ProposeChangeModal] hideProposeChangeModal llamado.");
     if (modal) {
@@ -137,6 +164,9 @@ function hideProposeChangeModal() {
     }
 }
 
+/**
+ * Busca y muestra el turno del agente y la fecha objetivo seleccionados.
+ */
 async function fetchAndDisplayTargetShift() {
     const targetAgentId = targetAgentSelect.value;
     const targetDate = targetDateInput.value;
@@ -172,10 +202,19 @@ async function fetchAndDisplayTargetShift() {
         }
         if (foundShift !== null) break;
     }
+    
+    // [VALIDACIÓN] Asegurar que el turno objetivo no es un día libre
+    if (foundShift && (foundShift === 'Libre' || foundShift === 'L' || foundShift === '-')) {
+        targetShiftInfo.textContent = 'El compañero ya está libre ese día.';
+        targetShiftInfo.style.color = 'var(--danger-color)';
+        submitButton.disabled = true;
+        displayMessage("No se puede solicitar un cambio de turno por un día libre del compañero.", "warning");
+        return;
+    }
 
     if (foundShift) {
         targetShiftInfo.textContent = `${getShiftDisplayText(foundShift)}`;
-        targetShiftInfo.style.color = 'var(--success-color)'; // Usar la variable CSS correcta
+        targetShiftInfo.style.color = 'var(--success-color)';
         currentProposal.targetAgentId = targetAgentId;
         currentProposal.targetDate = targetDate;
         currentProposal.targetShiftType = foundShift;
@@ -183,11 +222,15 @@ async function fetchAndDisplayTargetShift() {
         console.log(`[DEBUG - ProposeChangeModal] Turno objetivo encontrado: ${foundShift} para agente ${targetAgentId} en ${targetDate}`);
     } else {
         targetShiftInfo.textContent = 'No se encontró turno para esa fecha.';
-        targetShiftInfo.style.color = 'var(--danger-color)'; // Usar la variable CSS correcta
+        targetShiftInfo.style.color = 'var(--danger-color)';
         console.warn(`[DEBUG - ProposeChangeModal] No se encontró turno para agente ${targetAgentId} en ${targetDate}`);
     }
 }
 
+/**
+ * Maneja el envío del formulario de propuesta de cambio de turno.
+ * @param {Event} event - El evento de envío del formulario.
+ */
 async function handleSubmitProposal(event) {
     event.preventDefault();
     submitButton.disabled = true;
@@ -210,7 +253,7 @@ async function handleSubmitProposal(event) {
         console.log("[DEBUG - ProposeChangeModal] Respuesta de addShiftChangeRequest (dataController):", result);
         displayMessage('Solicitud de cambio de turno enviada correctamente.', 'success');
         hideProposeChangeModal();
-        await updateNotificationCount(); // Actualizar notificaciones
+        await updateNotificationCount();
     } catch (error) {
         console.error("ERROR - ProposeChangeModal: Error al enviar la propuesta de cambio:", error);
         displayMessage(`Error al enviar la propuesta: ${error.message}`, 'error');

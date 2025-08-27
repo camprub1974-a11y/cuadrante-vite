@@ -1,0 +1,410 @@
+/* css/views/_service-report-view.css */
+
+/* --- Contenedor Principal de la Vista --- */
+#service-report-view {
+    padding-bottom: 100px; /* Espacio para la barra de acciones fija */
+}
+
+/* --- ✅ Encabezado Principal del Reporte (Parte de Servicio: [Título de la Orden]) --- */
+.report-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    background-color: var(--app-primary-blue); /* Color de cabecera distintivo, similar al main-header */
+    color: white;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+}
+
+#back-to-reports-list-btn {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0; /* Evita que el botón se encoja */
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco para el botón */
+    color: var(--app-primary-blue); /* Color del icono azul */
+    border-color: transparent;
+}
+
+#back-to-reports-list-btn:hover {
+    background-color: white;
+    transform: translateY(-2px);
+}
+
+.report-header .title-block {
+    flex-grow: 1;
+    text-align: center;
+}
+
+.report-header .title-block h2 {
+    margin: 0;
+    font-size: 1.5rem; /* Título más grande */
+    line-height: 1.2;
+    color: white; /* Asegura que el color del título sea blanco */
+}
+
+.report-header .title-block p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9); /* Texto secundario más claro */
+    font-size: 1rem; /* Texto de orden más grande */
+}
+
+/* --- Estilo general para las tarjetas de la vista --- */
+.card .card-header {
+    background-color: var(--app-primary-blue); /* Color de cabecera de tarjeta, similar al principal */
+    color: white; /* Texto blanco */
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Borde más claro */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top-left-radius: 8px; /* Bordes redondeados en la parte superior */
+    border-top-right-radius: 8px;
+}
+
+.card .card-header h4 {
+    margin: 0;
+    font-size: 1.1rem; /* Título de tarjeta ligeramente más grande */
+    font-weight: 600;
+    color: rgb(27 156 252);
+}
+
+/* Estilo para la meta-información dentro de la cabecera de la tarjeta */
+.card-header-meta {
+    font-size: 0.85rem;
+    font-weight: 400;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: rgba(255, 255, 255, 0.8); /* Meta-información más sutil */
+}
+
+.card-header-meta .reg-number {
+    font-weight: 500;
+    background-color: rgba(255, 255, 255, 0.2); /* Fondo sutil para el número de registro */
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+/* Badge de estado dentro de la cabecera de la tarjeta */
+.card-header-meta .status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: bold;
+    color: white;
+    text-transform: capitalize;
+    background-color: var(--success-color); /* Color por defecto, se sobrescribe por estados */
+}
+
+/* Colores para los badges de estado */
+.status-badge.status-open { background-color: #3b82f6; } /* Azul */
+.status-badge.status-pending_review { background-color: #f59e0b; } /* Naranja */
+.status-badge.status-validated { background-color: #16a34a; } /* Verde */
+.status-badge.status-returned { background-color: #dc2626; } /* Rojo */
+.status-badge.status-closed { background-color: #64748b; } /* Gris */
+
+
+.card .card-content {
+    padding: 1.25rem;
+}
+
+/* --- Estructura del Feed Cronológico (Novedades del Servicio) --- */
+.report-feed {
+    position: relative;
+    padding-left: 20px;
+}
+
+.report-feed::before {
+    content: '';
+    position: absolute;
+    left: 38px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background-color: var(--border-color-light);
+}
+
+.feed-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+}
+
+.feed-item:not(:last-child) {
+    margin-bottom: 1.5rem;
+}
+
+.feed-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--app-primary-blue); /* Color de icono del feed */
+    border: 2px solid rgba(255, 255, 255, 0.5); /* Borde más claro */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    flex-shrink: 0;
+    color: white; /* Color del icono */
+}
+
+.feed-item-icon .material-icons {
+    color: white; /* Asegura que el icono sea blanco */
+}
+
+.feed-item-content {
+    padding-top: 0.5rem;
+}
+
+.entry-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em; /* Texto de cabecera de entrada ligeramente más grande */
+    color: var(--app-text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.entry-agent {
+    font-weight: 600;
+    color: var(--app-text-primary);
+}
+
+.entry-description {
+    margin: 0;
+    white-space: pre-line;
+    line-height: 1.6;
+    font-size: 1.05em; /* Texto de la novedad más grande */
+}
+
+/* --- Checklist (Ahora "Tareas") --- */
+#checklist-items-wrapper .checklist-item {
+    display: flex;
+    flex-direction: column; /* Apilar elementos dentro del item */
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color-light);
+}
+#checklist-items-wrapper .checklist-item:last-child {
+    border-bottom: none;
+}
+
+.checklist-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.checklist-item-header label {
+    font-weight: 500;
+    color: var(--app-text-primary);
+    flex-grow: 1;
+    margin-right: 1rem;
+}
+
+.checklist-status-options {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.checklist-status-options .radio-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9em;
+    color: var(--app-text-secondary);
+}
+
+.checklist-status-options input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--app-primary-blue); /* Color del radio button */
+    cursor: pointer;
+}
+
+/* Estilo para el icono de completado */
+.checklist-item .completion-details {
+    display: inline-flex; /* Para que el icono y el texto estén en línea */
+    align-items: center;
+    gap: 5px;
+    font-size: 0.85em;
+    color: var(--success-color); /* Color verde para completado */
+    margin-left: 1rem; /* Espacio a la izquierda del icono */
+}
+
+.checklist-item .completion-details .material-icons {
+    font-size: 1.1em; /* Tamaño del icono */
+}
+
+.checklist-comment-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color-light);
+    border-radius: 4px;
+    font-family: var(--app-font-family);
+    font-size: 0.9em;
+    color: var(--app-text-primary);
+    background-color: var(--app-bg-color);
+    box-sizing: border-box;
+    margin-top: 0.5rem; /* Espacio superior para el comentario */
+}
+
+.checklist-comment-input:focus {
+    border-color: var(--app-primary-blue);
+    box-shadow: 0 0 0 2px rgba(60, 72, 219, 0.2);
+    outline: none;
+}
+
+/* ✅ MODIFICADO: ELIMINADA esta regla para que el texto NO se tache ni cambie de color */
+/*
+.checklist-item.is-realizado .checklist-item-header label {
+    text-decoration: line-through;
+    color: var(--app-text-secondary);
+}
+*/
+
+/* --- Requerimientos (Ahora "Requerimientos") --- */
+/* Los estilos de .requerimiento-item y .requerimientos-list ya están definidos en _service-report-view.css
+   y _admin-dashboard-view.css. Aseguraremos que se vean bien con el nuevo header. */
+.requerimientos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.requerimiento-item {
+    display: flex;
+    flex-direction: column; /* Apilar elementos dentro del item */
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color-light);
+}
+.requerimiento-item:last-child {
+    border-bottom: none;
+}
+
+.requerimiento-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.requerimiento-item-header label {
+    font-weight: 500;
+    color: var(--app-text-primary);
+    flex-grow: 1;
+    margin-right: 1rem;
+}
+
+.requerimiento-status-options {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.requerimiento-status-options .radio-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9em;
+    color: var(--app-text-secondary);
+}
+
+.requerimiento-status-options input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--app-primary-blue); /* Color del radio button */
+    cursor: pointer;
+}
+
+/* Estilo para el icono de completado en requerimientos */
+.requerimiento-item .completion-details {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.85em;
+    color: var(--success-color); /* Color verde para completado */
+    margin-left: 1rem;
+}
+
+.requerimiento-item .completion-details .material-icons {
+    font-size: 1.1em;
+}
+
+.requerimiento-comment-input {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color-light);
+    border-radius: 4px;
+    font-family: var(--app-font-family);
+    font-size: 0.9em;
+    color: var(--app-text-primary);
+    background-color: var(--app-bg-color);
+    box-sizing: border-box;
+    margin-top: 0.5rem;
+}
+
+.requerimiento-comment-input:focus {
+    border-color: var(--app-primary-blue);
+    box-shadow: 0 0 0 2px rgba(60, 72, 219, 0.2);
+    outline: none;
+}
+
+/* Eliminar también si hay una regla para tachar en requerimientos */
+/*
+.requerimiento-item.is-realizado label {
+    text-decoration: line-through;
+    color: var(--app-text-secondary);
+}
+*/
+
+
+/* --- Estilos para la Tarjeta de Resumen de Actuaciones --- */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1.5rem;
+}
+
+.summary-item {
+    text-align: center;
+    background-color: var(--app-bg-color); /* Fondo para los ítems de resumen */
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color-light);
+}
+
+.summary-item-value {
+    display: block;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--app-primary-blue); /* Color primario para los valores */
+}
+
+.summary-item-label {
+    font-size: 0.85rem;
+    color: var(--app-text-secondary);
+}
+
+/* --- Barra de Acciones Fija (Footer) --- */
+.report-actions-footer {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #ffffff;
+    padding: 1rem 2rem;
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    z-index: 100;
+    box-sizing: border-box;
+}

@@ -1,216 +1,190 @@
-// js/ui/scheduleRenderer.js
-
-import { currentView, scheduleData, selectedAgentId, currentUser, availableAgents } from '../state.js';
+import { renderContext, currentView, availableAgents, currentUser } from '../state.js';
 import { renderAvailabilityView } from './availabilityRenderer.js';
-import { openEditShiftModal } from './shiftModal.js';
-import { formatDate, getShiftDisplayText, getShiftFullName } from '../utils.js';
+import { openShiftModal } from './shiftModal.js';
+import { formatDate, getShiftDisplayText, getShiftFullName, parseISO } from '../utils.js';
 import { openProposeChangeModal } from './proposeChangeModal.js';
-import { openRespondToProposalModal } from './respondToProposalModal.js';
-import { getShiftChangeRequests } from '../dataController.js';
+import { EXTRA_SERVICE_TYPES } from '../constants.js';
 
-let pendingProposalsCache = [];
-
-// Esta función se está utilizando en varios lugares. Se recomienda moverla a utils.js o un nuevo helper.js
-// para una mejor centralización y reutilización.
+// ✅ CORRECCIÓN: Se añade la palabra 'export' para que la función esté disponible para otros archivos.
 export function getAgentName(agentId) {
     const agent = availableAgents.get().find(a => String(a.id) === String(agentId));
     return agent ? agent.name : `ID ${agentId}`;
 }
 
-function displayScheduleCardView({ data, agentId: selectedAgent, userProfile }) {
-    console.log("[DEBUG - scheduleRenderer] displayScheduleCardView llamado.");
-    console.log("[DEBUG - scheduleRenderer] Datos de cuadrante recibidos:", data);
-    console.log("[DEBUG - scheduleRenderer] Agente seleccionado para vista de tarjetas:", selectedAgent);
-    console.log("[DEBUG - scheduleRenderer] Perfil de usuario:", userProfile);
+function renderGraphicalScheduleView({ scheduleData: data, selectedAgentId: selectedAgent }) {
+    const desktopViewContainer = document.querySelector('.schedule-desktop-view');
+    if (!desktopViewContainer) return;
+    desktopViewContainer.innerHTML = ''; 
 
-    const scheduleContent = document.getElementById('schedule-content'); // Obtener referencia aquí
-    if (!scheduleContent || !data || !data.weeks || !data.people) {
-        console.warn("[DEBUG - scheduleRenderer] Datos de cuadrante incompletos o ausentes para renderizado de tarjetas.");
-        scheduleContent.innerHTML = '<p class="info-message">No hay datos de cuadrante para este mes.</p>';
+    if (!data || !data.weeks) {
+        desktopViewContainer.innerHTML = '<p class="info-message">No hay datos de cuadrante disponibles.</p>';
         return;
     }
 
-    let agentsToRender = Object.values(data.people);
-    console.log("[DEBUG - scheduleRenderer] Agentes en data.people:", agentsToRender);
-
+    let agentsToDisplay = availableAgents.get();
     if (selectedAgent && selectedAgent !== 'all') {
-        agentsToRender = agentsToRender.filter(agent => String(agent.id) === String(selectedAgent));
-        console.log("[DEBUG - scheduleRenderer] Agentes a renderizar (filtrados):", agentsToRender);
+        agentsToDisplay = agentsToDisplay.filter(agent => String(agent.id) === String(selectedAgent));
     }
     
-    if (agentsToRender.length === 0) {
-        console.warn("[DEBUG - scheduleRenderer] No se encontraron agentes para renderizar después del filtrado.");
-        scheduleContent.innerHTML = '<p class="info-message">No se encontró información para el agente seleccionado.</p>';
+    agentsToDisplay.sort((a,b) => (a.name || a.id).localeCompare(b.name || b.id));
+    const sortedWeeks = Object.entries(data.weeks).sort(([weekKeyA], [weekKeyB]) => parseInt(weekKeyA.replace('week', '')) - parseInt(weekKeyB.replace('week', '')));
+    
+    sortedWeeks.forEach(([weekKey, week]) => {
+        const hasDaysInCurrentMonth = Object.values(week.days).some(day => day.isCurrentMonth);
+        if (!hasDaysInCurrentMonth) return;
+
+        const weekCard = document.createElement('div');
+        weekCard.className = 'card week-card';
+        
+        const sortedDayKeys = Object.keys(week.days).sort((a, b) => parseInt(a) - parseInt(b));
+        const firstDayOfWeek = week.days[sortedDayKeys[0]];
+        const lastDayOfWeek = week.days[sortedDayKeys[sortedDayKeys.length - 1]];
+
+        const formattedStartDate = firstDayOfWeek ? formatDate(parseISO(firstDayOfWeek.date), 'dd/MM') : '';
+        const formattedEndDate = lastDayOfWeek ? formatDate(parseISO(lastDayOfWeek.date), 'dd/MM/yyyy') : '';
+
+        weekCard.innerHTML = `<h3>Semana del ${formattedStartDate} al ${formattedEndDate}</h3>`;
+        
+        const scheduleTable = document.createElement('table');
+        scheduleTable.className = 'schedule-table';
+        
+        let headerRowHtml = '<thead><tr><th class="agent-name-header">Agente</th>';
+        sortedDayKeys.forEach(dayKey => {
+            const day = week.days[dayKey];
+            headerRowHtml += `<th class="day-header">${day.name} ${day.number}</th>`;
+        });
+        headerRowHtml += '</tr></thead>';
+        scheduleTable.innerHTML = headerRowHtml;
+
+        const tbody = document.createElement('tbody');
+        agentsToDisplay.forEach(agent => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td class="agent-cell">${agent.name}</td>`;
+            sortedDayKeys.forEach(dayKey => {
+                const day = week.days[dayKey];
+                let currentShiftType = '-';
+                if (day?.shifts) {
+                    const shiftEntry = Object.entries(day.shifts).find(([,s]) => String(s.agentId) === String(agent.id));
+                    if (shiftEntry) currentShiftType = shiftEntry[1].shiftType;
+                }
+                const cell = document.createElement('td');
+                cell.className = 'shift-cell';
+                if (day && !day.isCurrentMonth) cell.classList.add('day-off-month');
+                
+                const displayTxt = getShiftDisplayText(currentShiftType);
+                const fullName = getShiftFullName(currentShiftType);
+                const shiftBadge = document.createElement('span');
+                shiftBadge.className = `turno-icon shift-${displayTxt}`;
+                shiftBadge.textContent = displayTxt;
+                shiftBadge.title = fullName;
+                cell.appendChild(shiftBadge);
+                
+                row.appendChild(cell);
+            });
+            tbody.appendChild(row);
+        });
+        scheduleTable.appendChild(tbody);
+        weekCard.appendChild(scheduleTable);
+        desktopViewContainer.appendChild(weekCard);
+    });
+}
+
+function renderMobileScheduleView({ scheduleData: data, selectedAgentId: selectedAgent, userProfile }) {
+    const mobileViewContainer = document.querySelector('.schedule-mobile-view');
+    if (!mobileViewContainer) return;
+    mobileViewContainer.innerHTML = '';
+    if (!data || !data.weeks || Object.keys(data.weeks).length === 0) {
+        mobileViewContainer.innerHTML = '<p class="info-message">No hay datos de cuadrante disponibles.</p>';
         return;
     }
-    
-    agentsToRender.sort((a,b) => (a.name || a.id).localeCompare(b.name || b.id));
-
-    const today = formatDate(new Date(), 'yyyy-MM-dd');
-
-    let finalHtml = Object.keys(data.weeks)
-        .sort((a,b) => parseInt(a.replace('week','')) - parseInt(b.replace('week','')))
-        .map(weekKey => {
-            const week = data.weeks[weekKey];
-            const dayKeys = Object.keys(week.days).sort((a,b) => parseInt(a)-parseInt(b));
-            const firstDay = week.days[dayKeys[0]];
-            const lastDay = week.days[dayKeys[dayKeys.length-1]];
-            const monthName = firstDay?.date ? formatDate(new Date(firstDay.date + 'T12:00:00'), 'MMMM', { locale: 'es' }) : '';
-            const weekTitleHtml = `<h3>Semana del ${firstDay?.number || ''} al ${lastDay?.number || ''} de ${monthName}</h3>`;
-            
-            let dayNamesRowHtml = '<div class="day-names-row"><div class="agent-label-header">Agente</div>';
-            for (let i = 0; i < 7; i++) {
-                const day = week.days[i.toString()];
-                dayNamesRowHtml += `<div class="day-header ${!day?.isCurrentMonth ? 'day-header-inactive' : ''}">${day?.name || ''} ${day?.number || ''}</div>`;
+    let agentsToDisplay = availableAgents.get();
+    if (selectedAgent && selectedAgent !== 'all') {
+        agentsToDisplay = agentsToDisplay.filter(agent => String(agent.id) === String(selectedAgent));
+    }
+    if (agentsToDisplay.length === 0) {
+        mobileViewContainer.innerHTML = '<p class="info-message">No hay agentes para mostrar.</p>';
+        return;
+    }
+    const allDays = Object.values(data.weeks).flatMap(week => Object.values(week.days)).sort((a,b) => new Date(a.date) - new Date(b.date));
+    allDays.forEach(day => {
+        if (!day.isCurrentMonth) return;
+        const dayCard = document.createElement('div');
+        dayCard.className = 'mobile-day-card';
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'mobile-day-header';
+        dayHeader.innerHTML = `<span class="day-name">${day.name}</span><span class="day-number">${day.number}</span><span class="material-icons expand-icon">expand_more</span>`;
+        const dayContent = document.createElement('div');
+        dayContent.className = 'mobile-day-content hidden';
+        agentsToDisplay.forEach(agent => {
+            let shiftType = '-';
+            if (day.shifts) {
+                const shiftEntry = Object.values(day.shifts).find(s => String(s.agentId) === String(agent.id));
+                if (shiftEntry) shiftType = shiftEntry.shiftType;
             }
-            dayNamesRowHtml += '</div>';
-
-            const agentRowsHtml = agentsToRender.map(agent => {
-                const agentId = String(agent.id);
-                const agentName = agent.name || `Agente ${agentId}`;
-                let agentRow = `<div class="agent-row"><div class="agent-label">${agentName}</div>`;
-
-                for (let i = 0; i < 7; i++) {
-                    const day = week.days[i.toString()];
-                    let cellHtml = '<span class="shift-badge shift--">-</span>';
-                    let currentShiftType = '-';
-                    let existingShiftKey = null;
-
-                    if (day?.shifts) {
-                        const shiftEntry = Object.entries(day.shifts).find(([,s]) => String(s.agentId) === agentId);
-                        if (shiftEntry) {
-                            existingShiftKey = shiftEntry[0];
-                            currentShiftType = shiftEntry[1].shiftType;
-
-                            console.log(`[DEBUG - scheduleRenderer] Turno encontrado para Agente ${agentId} en ${day.date}: shiftType=${currentShiftType}`);
-                            const displayTxt = getShiftDisplayText(currentShiftType);
-                            const fullName = getShiftFullName(currentShiftType);
-                            const className = `shift-${displayTxt}`;
-                            console.log(`[DEBUG - scheduleRenderer] getShiftDisplayText('${currentShiftType}') = '${displayTxt}'`);
-                            console.log(`[DEBUG - scheduleRenderer] Clase CSS esperada para el turno: '${className}'`);
-
-                            cellHtml = `<span class="shift-badge shift-${displayTxt}" title="${fullName}">${displayTxt}</span>`;
-                        }
-                    }
-                    
-                    const actualDayDate = day?.date || '';
-                    const isToday = actualDayDate === today;
-                    const isClickable = day?.isCurrentMonth;
-                    const isOwnShift = userProfile.role === 'guard' && String(userProfile.agentId) === String(agentId);
-                    
-                    const proposal = pendingProposalsCache.find(p => 
-                        String(p.targetAgentId) === String(agentId) && 
-                        formatDate(p.targetShiftDate, 'yyyy-MM-dd') === actualDayDate
-                    );
-                    const hasProposal = proposal && String(userProfile.agentId) === String(proposal.targetAgentId);
-                    const dayCellClasses = `day-cell ${isToday ? 'today' : ''} ${isClickable ? 'clickable' : ''} ${isOwnShift ? 'own-shift' : ''} ${hasProposal ? 'has-pending-proposal' : ''}`;
-                    const proposalIdAttr = hasProposal ? `data-proposal-id="${proposal.id}"` : '';
-
-                    agentRow += `<div class="${dayCellClasses}" ${proposalIdAttr}
-                                    data-week-key="${weekKey}" data-day-key="${i}" data-agent-id="${agentId}"
-                                    data-current-shift-type="${currentShiftType}" data-existing-shift-key="${existingShiftKey || ''}"
-                                    data-actual-day-date="${actualDayDate}" data-is-current-month="${day?.isCurrentMonth || false}">
-                                    ${cellHtml}
-                                </div>`;
-                }
-                return agentRow + '</div>';
-            }).join('');
-
-            return `<div class="week-card">${weekTitleHtml}<div class="week-days-container">${dayNamesRowHtml}${agentRowsHtml}</div></div>`;
-        }).join('');
-
-    scheduleContent.innerHTML = finalHtml;
-    
-    scheduleContent.querySelectorAll('.day-cell.clickable[data-is-current-month="true"]').forEach(cell => {
-        cell.addEventListener('click', handleShiftClick);
+            const shiftItem = document.createElement('div');
+            shiftItem.className = 'mobile-shift-item';
+            const displayTxt = getShiftDisplayText(shiftType);
+            shiftItem.innerHTML = `<span class="agent-name">${agent.name}</span><span class="shift-badge-mobile shift-${displayTxt}">${displayTxt}</span>`;
+            dayContent.appendChild(shiftItem);
+        });
+        dayCard.appendChild(dayHeader);
+        dayCard.appendChild(dayContent);
+        mobileViewContainer.appendChild(dayCard);
+        dayHeader.addEventListener('click', () => {
+            dayCard.classList.toggle('is-open');
+            dayContent.classList.toggle('hidden');
+        });
     });
-    console.log("[DEBUG - scheduleRenderer] Cuadrante de tarjetas renderizado.");
 }
 
 function handleShiftClick(event) {
-    console.log("[DEBUG - scheduleRenderer] Clic en celda detectado.");
-    const userProfile = currentUser.get(); // Obtener del átomo
+    const userProfile = currentUser.get();
     const cell = event.currentTarget;
-    const { agentId, actualDayDate, currentShiftType, proposalId, weekKey, dayKey, isCurrentMonth } = cell.dataset;
-
-    console.log(`[DEBUG - scheduleRenderer] Datos de la celda: Agente=${agentId}, Fecha=${actualDayDate}, Turno=${currentShiftType}, PropuestaID=${proposalId || 'none'}, WeekKey=${weekKey}, DayKey=${dayKey}, IsCurrentMonth=${isCurrentMonth}`);
-    console.log("[DEBUG - scheduleRenderer] Perfil de usuario en handleShiftClick:", userProfile);
-
-    if (!userProfile) {
-        console.warn("[DEBUG - scheduleRenderer] Clic en celda sin perfil de usuario. Ignorado.");
-        return;
-    }
-
-    if (userProfile.role === 'admin') {
-        console.log("[DEBUG - scheduleRenderer] Usuario es admin. Intentando abrir modal de edición de turno.");
-        openEditShiftModal(weekKey, dayKey, agentId, currentShiftType, actualDayDate, cell);
-        return;
-    }
-
-    if (userProfile.role === 'guard') {
-        if (proposalId && String(userProfile.agentId) === String(agentId)) {
-            console.log("[DEBUG - scheduleRenderer] Es turno del guardia con propuesta pendiente para él. Abriendo modal de respuesta.");
-            openRespondToProposalModal(proposalId);
-        } else if (String(userProfile.agentId) === String(agentId)) {
-            console.log("[DEBUG - scheduleRenderer] Es turno propio del guardia SIN propuesta. Abriendo modal de propuesta de cambio.");
-            openProposeChangeModal(agentId, actualDayDate, currentShiftType);
-        } else {
-            console.log("[DEBUG - scheduleRenderer] Es turno de otro sin propuesta para este guardia. No se realiza acción para guardias.");
+    const { monthId, weekKey, dayKey, agentId, agentName, dayDate, currentShiftType } = cell.dataset;
+    if (!userProfile || !agentId || !dayDate) return;
+    if (userProfile.role === 'admin' || userProfile.role === 'supervisor') {
+        const shiftData = { monthId, weekKey, dayKey, agentId, agentName, dayDate, shiftType: currentShiftType };
+        openShiftModal(shiftData);
+    } else if (userProfile.role === 'guard') {
+        const isOwnShift = String(userProfile.agentId) === String(agentId);
+        if (isOwnShift) {
+            openProposeChangeModal(agentId, dayDate, currentShiftType);
         }
     }
 }
 
-export async function render() {
-    console.log("[DEBUG - scheduleRenderer] Función 'render' llamada.");
-    const userProfile = currentUser.get(); // Obtener del átomo
-    if (!userProfile) {
-        console.warn("[DEBUG - scheduleRenderer] No hay perfil de usuario en 'render'. Mostrando mensaje de carga.");
-        document.getElementById('schedule-content').innerHTML = '<p class="info-message">Cargando usuario...</p>';
+export function render(context) {
+    const scheduleContent = document.getElementById('schedule-content');
+    if (!scheduleContent) return;
+    
+    const { userProfile, scheduleData: currentScheduleData, currentView: viewType } = context;
+
+    if (!userProfile || !currentScheduleData) {
+        if (!scheduleContent.innerHTML.trim()) {
+            scheduleContent.innerHTML = '<p class="info-message">Cargando...</p>';
+        }
         return;
     }
+    
+    scheduleContent.innerHTML = '<div class="schedule-desktop-view"></div><div class="schedule-mobile-view"></div>';
+    const isMobile = window.innerWidth <= 768;
 
-    if (userProfile.role === 'guard') {
-        console.log("[DEBUG - scheduleRenderer] Usuario es guardia. Cargando propuestas pendientes...");
-        try {
-            const allRequests = await getShiftChangeRequests({ status: 'Pendiente_Target' });
-            pendingProposalsCache = allRequests.filter(req => String(req.targetAgentId) === String(userProfile.agentId));
-            console.log("[DEBUG - scheduleRenderer] Propuestas pendientes cacheadas para guardia:", pendingProposalsCache);
-        } catch (e) {
-            console.error("ERROR - scheduleRenderer: Error al cargar propuestas pendientes:", e);
-            pendingProposalsCache = [];
-        }
+    if (viewType === 'calendario') {
+        renderAvailabilityView(context);
+    } else if (isMobile) {
+        renderMobileScheduleView(context);
     } else {
-        pendingProposalsCache = [];
-        console.log("[DEBUG - scheduleRenderer] Usuario no es guardia. Cache de propuestas vacía.");
-    }
-
-    const context = {
-        view: currentView.get(), // Obtener del átomo
-        data: scheduleData.get(), // Obtener del átomo
-        agentId: selectedAgentId.get(), // Obtener del átomo
-        userProfile: userProfile
-    };
-    
-    console.log("[DEBUG - scheduleRenderer] Contexto para renderizado:", context);
-
-    const scheduleContent = document.getElementById('schedule-content'); // Obtener referencia aquí
-    if (!context.data) {
-        console.warn("[DEBUG - scheduleRenderer] No hay datos de cuadrante en el contexto. Mostrando mensaje de no disponible.");
-        scheduleContent.innerHTML = '<p class="info-message">No hay cuadrante disponible para este mes.</p>';
-        return;
-    }
-    
-    if (context.view === 'tarjetas') {
-        console.log("[DEBUG - scheduleRenderer] Renderizando vista de tarjetas.");
-        displayScheduleCardView(context);
-    } else if (context.view === 'calendario') {
-        console.log("[DEBUG - scheduleRenderer] Renderizando vista de calendario.");
-        renderAvailabilityView(); // Esta función internamente ya accede a los átomos
+        renderGraphicalScheduleView(context);
     }
 }
 
-// Suscripciones a Nanostores para re-renderizar
-currentView.subscribe(render);
-scheduleData.subscribe(render);
-selectedAgentId.subscribe(render);
-currentUser.subscribe(render);
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        render(renderContext.get());
+    }, 250);
+});
+
+// ✅ ESTA LÍNEA ES LA CORRECTA: USA .subscribe EN LUGAR DE .listen
+renderContext.subscribe(render);

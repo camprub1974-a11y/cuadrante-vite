@@ -1,0 +1,63 @@
+/* css/base/_variables.css */
+:root {
+  /* =================================================================== */
+  /* ===         🎨 NUEVO SISTEMA DE DISEÑO (Propuesta 3)            === */
+  /* =================================================================== */
+
+  /* --- Esquema de Colores --- */
+  --color-bg: #F6F7F9;
+  --color-bg-card: #FFFFFF;
+  --color-bg-header: #1F2D3D;
+  --color-bg-table-header: #F0F2F5;
+  --color-bg-table-row-alt: #FBFCFD;
+
+  --color-primary: #1B9CFC;
+  --color-primary-hover: #127dcf;
+  --color-primary-active: #0e6cb4;
+  
+  --color-success: #3DD598;
+  --color-warning: #FF6B6B;
+
+  --color-text: #2E3A46;
+  --color-text-secondary: #6B7280;
+  --color-text-light: #FFFFFF;
+  
+  --color-border: #E2E5E9;
+  --color-border-form: #CED4DA;
+
+  /* --- Tipografía --- */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 24px;
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+
+  /* --- Sistema de Espaciado (8pt Grid) --- */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-8: 64px;
+
+  /* --- Componentes Específicos --- */
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --shadow-card: 0 2px 8px rgba(0,0,0,0.05);
+  --transition-fast: 0.2s ease-in-out;
+
+  /* =================================================================== */
+  /* ===      ✅ SECCIÓN DE COLORES DE TURNOS (AÑADIDA)               === */
+  /* =================================================================== */
+  --shift-M-bg: #3b82f6;
+  --shift-T-bg: #f59e0b;
+  --shift-N-bg: #1f2937;
+  --shift-L-bg: #10b981;
+  --shift-V-bg: #8b5cf6;
+  --shift-P-bg: #ec4899;
+  --shift-B-bg: #ef4444;
+  --shift-AP-bg: #008080;
+}

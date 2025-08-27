@@ -1,4 +1,4 @@
-// js/ui/viewManager.js
+// js/ui/viewManager.js (VERSIÓN FINAL CON GESTIÓN DE CLASES)
 
 import { currentView, setView } from '../state.js';
 
@@ -8,38 +8,30 @@ let messageTimeout;
 export function showAppContent(userEmail) {
     const authContainer = document.getElementById('auth-container');
     const appContent = document.getElementById('app-content');
-    const logoutButton = document.getElementById('logout-button');
-    const authStatus = document.getElementById('authStatus');
 
-    console.log('[DEBUG] showAppContent ejecutada. Intentando mostrar logoutButton.');
-    console.log('[DEBUG] logoutButton element (should not be null):', logoutButton);
-
-    if (authContainer) authContainer.style.display = 'none';
-    if (appContent) appContent.style.display = 'block';
-    if (logoutButton) logoutButton.style.display = 'block';
-    if (authStatus && userEmail) authStatus.textContent = `Conectado: ${userEmail}`;
-    if (messagesContainer) messagesContainer.innerHTML = ''; 
+    // ✅ LÓGICA CORREGIDA: Gestionamos la visibilidad con clases.
+    if (authContainer) authContainer.classList.add('hidden');
+    if (appContent) appContent.classList.remove('hidden');
 }
 
 export function showLoginScreen() {
     const authContainer = document.getElementById('auth-container');
     const appContent = document.getElementById('app-content');
-    const logoutButton = document.getElementById('logout-button');
-    const authStatus = document.getElementById('authStatus');
-    if (appContent) appContent.style.display = 'none';
-    if (authContainer) authContainer.style.display = 'block';
-    if (logoutButton) logoutButton.style.display = 'none';
-    if (authStatus) authStatus.textContent = 'Por favor, inicia sesión.';
+
+    // ✅ LÓGICA CORREGIDA: Gestionamos la visibilidad con clases.
+    if (appContent) appContent.classList.add('hidden');
+    if (authContainer) authContainer.classList.remove('hidden');
+    
     if (messagesContainer) messagesContainer.innerHTML = ''; 
 }
 
+// El resto del archivo permanece intacto
 export function initializeViewButtons() {
     const viewCardButton = document.getElementById('viewCardButton');
     const viewCalendarButton = document.getElementById('viewCalendarButton');
     if (!viewCardButton || !viewCalendarButton) return;
 
     const setActiveView = (viewType) => {
-        console.log(`[DEBUG viewManager] setActiveView llamado con viewType: ${viewType}`); // <-- LOG DE DEPURACIÓN
         setView(viewType);
         if (viewType === 'tarjetas') {
             viewCardButton.classList.add('active');
@@ -52,8 +44,6 @@ export function initializeViewButtons() {
 
     viewCardButton.addEventListener('click', () => setActiveView('tarjetas'));
     viewCalendarButton.addEventListener('click', () => setActiveView('calendario'));
-
-    // Asegurarse de que el estado inicial del botón "activo" coincide con el átomo
     setActiveView(currentView.get() || 'tarjetas');
 }
 

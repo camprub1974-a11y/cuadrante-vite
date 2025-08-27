@@ -1,185 +1,109 @@
 // js/logic.js
 
-// Importar los átomos de Nanostores para el estado
-import { selectedMonthId, scheduleData, availableAgents, currentUser, selectedAgentId, setScheduleData } from './state.js'; 
-import { generateMonthsForYear, getMonthNumberFromName, formatDate } from './utils.js'; 
-import { showLoading, hideLoading, displayMessage } from './ui/viewManager.js'; 
-import { db, auth, app } from './firebase-config.js'; 
-import { getFunctions, httpsCallable } from 'firebase/functions'; 
-import { render as renderSchedule } from './ui/scheduleRenderer.js'; 
-import { collection, doc, getDoc as firestoreGetDoc } from 'firebase/firestore'; 
+import { selectedMonthId, scheduleData, currentUser, selectedAgentId, setScheduleData, currentView } from './state.js';
+import { formatDate } from './utils.js';
+import { showLoading, hideLoading, displayMessage } from './ui/viewManager.js';
+import { getScheduleForMonth } from './dataController.js';
+// La importación de 'renderSchedule' ya no es necesaria aquí.
 
-const functions = getFunctions(app); 
-
-async function initializeNewMonthData(monthId) {
-    console.log(`[DEBUG - logic] Creando/Reinicializando cuadrante para: ${monthId}`); 
-    const initialWeeksData = {}; 
-    const parts = monthId.split('_'); 
-    const year = parseInt(parts[2]); 
-    const monthNameFromId = parts[1]; 
-
-    const monthIndexJS = getMonthNumberFromName(monthNameFromId); 
-
-    const startDate = new Date(year, monthIndexJS, 1); 
-    const startDateISOString = startDate.toISOString(); 
-
-    for (let i = 0; i < 6; i++) { 
-        const weekDays = {}; 
-        for (let j = 0; j < 7; j++) { 
-            const d = new Date(startDate); 
-            d.setDate(startDate.getDate() + (i * 7) + j); 
-            weekDays[String(j)] = { date: d.toISOString().split('T')[0], shifts: {} }; 
-        }
-        initialWeeksData[String(i)] = { days: weekDays }; 
+export async function loadAndDisplaySchedule(monthId, agentId) {
+    if (!monthId) {
+        console.warn("[DEBUG] Se llamó a loadAndDisplaySchedule sin un monthId válido.");
+        hideLoading();
+        return;
     }
-
-    try {
-        const currentAvailableAgents = availableAgents.get(); 
-        const peopleToInitialize = currentAvailableAgents.map(agent => agent.id); 
-
-        const user = auth.currentUser; 
-        if (!user) { 
-            displayMessage("Error: Inicia sesión para inicializar el cuadrante.", "error"); 
-            throw new Error("Usuario no autenticado."); 
-        }
-        const idToken = await user.getIdToken(); 
-        const initializeMonthCallable = httpsCallable(functions, 'initializeMonth'); 
-
-        const payload = {
-            monthId,
-            year, 
-            monthIndex: monthIndexJS, 
-            peopleToInitialize,
-        };
-
-        const result = await initializeMonthCallable(payload); 
-        const data = result.data; 
-
-        if (data.status === 'success' || data.status === 'already_exists') { 
-            displayMessage(data.message || "Cuadrante inicializado correctamente.", "success"); 
-        } else {
-            displayMessage(data.message || `Error: ${data.error?.message || "Error al inicializar el cuadrante."}`, "error"); 
-            throw new Error(data.message || "Error en la función de inicialización."); 
-        }
-    } catch (e) {
-        displayMessage(`Error inicializando ${monthId}: ${e.message}`, "error"); 
-        console.error("Excepción al inicializar el mes:", e); 
-        throw e; 
+    const user = currentUser.get();
+    let effectivePersonIdToDisplay = agentId;
+    if (user?.role !== 'admin' && user?.role !== 'supervisor') {
+        effectivePersonIdToDisplay = user.agentId;
     }
-}
-
-export async function loadAndDisplaySchedule(monthId, personIdToDisplay, scheduleContent, currentMonthTitle, printButton, agentSelect, seasonalShiftNote) {
-    if (typeof personIdToDisplay === 'undefined' || personIdToDisplay === null) {
-        const user = currentUser.get(); 
-        personIdToDisplay = (user?.role !== 'admin') ? user?.agentId : 'all'; 
-    }
-
-    console.log(`[DEBUG - logic] loadAndDisplaySchedule llamado con: monthId='${monthId}', personIdToDisplay='${personIdToDisplay}'`); 
-
-    if (!scheduleContent || !currentMonthTitle || !printButton || !agentSelect || !seasonalShiftNote) {
-        console.error("[ERROR - logic] Elementos del DOM esenciales no encontrados para loadAndDisplaySchedule. Algunos argumentos son null/undefined."); 
-        console.error("scheduleContent:", scheduleContent, "currentMonthTitle:", currentMonthTitle, "printButton:", printButton, "agentSelect:", agentSelect, "seasonalShiftNote:", seasonalShiftNote); 
-        hideLoading(); 
-        return; 
-    }
-
-    printButton.disabled = true; 
-    showLoading(); 
-
-    if (!monthId) { 
-        hideLoading(); 
-        currentMonthTitle.textContent = "Error: Mes no especificado"; 
-        scheduleContent.innerHTML = "<p>Error al cargar: Mes no especificado.</p>"; 
-        if (agentSelect) agentSelect.innerHTML = ""; 
-        console.warn("[DEBUG - logic] monthId no especificado. Abortando loadAndDisplaySchedule."); 
-        return; 
-    }
-
-    const yearOfSelectedMonth = parseInt(monthId.split('_')[2]); 
-    scheduleContent.innerHTML = '<p>Cargando cuadrante...</p>'; 
-    console.log(`[DEBUG - logic] Intentando obtener documento del cuadrante: schedules/${monthId}`); 
-
-    try {
-        const scheduleDocRef = doc(db, 'schedules', monthId); 
-        const docSnap = await firestoreGetDoc(scheduleDocRef); 
-
-        if (docSnap.exists()) { 
-            const data = docSnap.data(); 
-            console.log("[DEBUG - logic] Cuadrante encontrado. Datos:", data); 
-            
-            if (!data.people || Object.keys(data.people).length === 0) { 
-                console.warn("[DEBUG - logic] Cuadrante sin datos 'people' o vacío en Firestore. Usando availableAgents del estado."); 
-                const currentAvailableAgentsMap = {}; 
-                availableAgents.get().forEach(agent => { 
-                    currentAvailableAgentsMap[String(agent.id)] = { id: String(agent.id), name: agent.name, active: agent.active }; 
-                });
-                data.people = currentAvailableAgentsMap; 
-            } else {
-                console.log("[DEBUG - logic] Cuadrante con datos 'people' existentes."); 
-            }
-
-            setScheduleData(data); 
-            console.log("[DEBUG - logic] 'scheduleData' atom actualizado. Disparando renderizado."); 
-
-            const user = auth.currentUser; 
-            if (user) { 
-                updateSeasonalNote(monthId, seasonalShiftNote); 
-                printButton.disabled = false; 
-            }
-        } else {
-            console.warn("[DEBUG - logic] Cuadrante NO encontrado en Firestore al cargar (docSnap.exists es false)."); 
-            const user = currentUser.get(); 
-            if (user?.role === 'admin') { 
-                displayMessage("El cuadrante para este mes no existe. Se intentará inicializarlo.", "info"); 
-                try {
-                    await initializeNewMonthData(monthId); 
-                    await loadAndDisplaySchedule(monthId, personIdToDisplay, scheduleContent, currentMonthTitle, printButton, agentSelect, seasonalShiftNote); 
-                } catch (initError) {
-                    displayMessage(`Error al inicializar: ${initError.message}`, "error"); 
-                    console.error("ERROR - logic: Fallo en el reintento de inicialización:", initError); 
-                }
-            } else {
-                displayMessage("El cuadrante para este mes aún no ha sido inicializado por un administrador. No disponible.", "error"); 
-                scheduleContent.innerHTML = "<p class='clarification-note'>Cuadrante no disponible para este mes.</p>"; 
-                if (agentSelect) agentSelect.innerHTML = ""; 
-            }
-        }
-    } catch (e) {
-        console.error("ERROR - logic: Error al cargar el cuadrante:", e); 
-        scheduleContent.innerHTML = `<p class="clarification-note">Error al cargar el cuadrante o los agentes: ${e.message}</p>`; 
-        if (agentSelect) agentSelect.innerHTML = ""; 
-        scheduleData.set(null); 
-        displayMessage(`Error: ${e.message}`, "error"); 
-    } finally {
-        hideLoading(); 
-    }
-}
-
-// <--- FUNCIÓN EXPORTADA CORRECTAMENTE FUERA DE OTRA FUNCIÓN --->
-export function updateSeasonalNote(monthId, noteElement) { 
-    console.log("[DEBUG - logic] updateSeasonalNote llamado."); 
-    console.log("[DEBUG - logic] monthId para nota estacional:", monthId); 
-    console.log("[DEBUG - logic] Elemento de nota estacional (recibido como arg):", noteElement); 
-
-    if (!noteElement) { 
-        console.warn("[DEBUG - logic] Elemento 'seasonal-shift-note' no proporcionado a updateSeasonalNote o es nulo."); 
-        return; 
-    }
-
-    const summerMonths = ['junio', 'julio', 'agosto', 'septiembre']; 
-    const currentMonthName = monthId.split('_')[1].toLowerCase(); 
     
-    console.log("[DEBUG - logic] Nombre del mes para nota estacional:", currentMonthName); 
-    console.log("[DEBUG - logic] Es un mes de verano?", summerMonths.includes(currentMonthName)); 
+    const scheduleContent = document.getElementById('schedule-content');
+    if (!scheduleContent) return;
 
-    if (summerMonths.includes(currentMonthName)) { 
-        noteElement.innerHTML = '<b>Nota de Temporada:</b> Turno de Mañana: 07:00 a 15:00H. Turno de Tarde: 15:00 a 23:00H.'; 
-        noteElement.classList.remove('hidden'); 
-        noteElement.style.display = 'block'; 
-        console.log("[DEBUG - logic] Nota estacional: Mostrando para mes de verano."); 
+    showLoading();
+    // No borramos el contenido aquí para evitar parpadeos,
+    // el renderer se encargará de actualizarlo.
+
+    try {
+        const scheduleDataFromDB = await getScheduleForMonth(monthId);
+        
+        // ✅ SIMPLIFICACIÓN: Simplemente actualizamos los datos del estado.
+        // La suscripción en `scheduleRenderer.js` se encargará de redibujar la vista.
+        setScheduleData(scheduleDataFromDB);
+
+        // La lógica de estadísticas sigue dependiendo de los datos cargados.
+        if (scheduleDataFromDB) {
+            renderQuadrantStats(scheduleDataFromDB, effectivePersonIdToDisplay);
+        } else {
+            renderQuadrantStats(null, effectivePersonIdToDisplay);
+            const message = (user?.role === 'admin' || user?.role === 'supervisor') ? "Cuadrante no inicializado." : "Cuadrante para este mes no disponible.";
+            scheduleContent.innerHTML = `<p class="info-message">${message}</p>`;
+        }
+        
+        const seasonalShiftNote = document.getElementById('seasonal-shift-note');
+        if (seasonalShiftNote) updateSeasonalNote(monthId, seasonalShiftNote);
+        
+    } catch (e) {
+        console.error("ERROR - logic: Error al cargar el cuadrante:", e);
+        setScheduleData(null);
+        displayMessage(`Error: ${e.message}`, "error");
+    } finally {
+        hideLoading();
+    }
+}
+
+function renderQuadrantStats(scheduleData, agentId) {
+    const statsContainer = document.getElementById('stats-container');
+    if (!statsContainer) return;
+    const shiftCounts = { M: 0, T: 0, N: 0, Libre: 0, V: 0, P: 0, B: 0 };
+    let totalShifts = 0;
+    if (!scheduleData || !scheduleData.weeks) {
+        statsContainer.innerHTML = '<p class="info-message">No hay datos para calcular estadísticas.</p>';
+        return;
+    }
+    for (const weekKey in scheduleData.weeks) {
+        for (const dayKey in scheduleData.weeks[weekKey].days) {
+            const day = scheduleData.weeks[weekKey].days[dayKey];
+            if (!day.isCurrentMonth) continue;
+            for (const shiftKey in day.shifts) {
+                const shift = day.shifts[shiftKey];
+                if (agentId === 'all' || String(shift.agentId) === String(agentId)) {
+                    if (shiftCounts.hasOwnProperty(shift.shiftType)) {
+                        shiftCounts[shift.shiftType]++;
+                        totalShifts++;
+                    }
+                }
+            }
+        }
+    }
+    if (totalShifts === 0) {
+        statsContainer.innerHTML = '<p class="info-message">No hay turnos asignados en este periodo.</p>';
+        return;
+    }
+    statsContainer.innerHTML = `
+        <ul class="stats-list">
+            <li><strong>Mañanas:</strong> <span>${shiftCounts.M}</span></li>
+            <li><strong>Tardes:</strong> <span>${shiftCounts.T}</span></li>
+            <li><strong>Noches:</strong> <span>${shiftCounts.N}</span></li>
+            <li><strong>Libres:</strong> <span>${shiftCounts.Libre}</span></li>
+            <li><strong>Vacaciones:</strong> <span>${shiftCounts.V}</span></li>
+            <li><strong>Permisos:</strong> <span>${shiftCounts.P}</span></li>
+            <li><strong>Bajas:</strong> <span>${shiftCounts.B}</span></li>
+        </ul>
+        <hr class="subtle-divider">
+        <div class="stats-total">Total de Turnos: <strong>${totalShifts}</strong></div>
+    `;
+}
+
+export function updateSeasonalNote(monthId, noteElement) {
+    if (!noteElement || !monthId) return;
+    const summerMonths = ['junio', 'julio', 'agosto', 'septiembre'];
+    const currentMonthName = monthId.split('_')[1].toLowerCase();
+    if (summerMonths.includes(currentMonthName)) {
+        noteElement.innerHTML = '<b>Nota de Temporada:</b> Turno de Mañana: 08:00 a 14:00H. Turno de Tarde: 18:00 a 23:00H.';
+        noteElement.classList.remove('hidden');
     } else {
-        noteElement.classList.add('hidden'); 
-        noteElement.style.display = 'none'; 
-        console.log("[DEBUG - logic] Nota estacional: Ocultando para mes que no es de verano."); 
+        noteElement.classList.add('hidden');
     }
 }

@@ -1,46 +1,443 @@
-// js/dataController.js
+// js/dataController.js (VERSIÓN FINAL, CORREGIDA Y SIN DUPLICADOS)
 
-import { collection, query, where, orderBy, getDocs, doc, addDoc, getDoc, serverTimestamp, documentId, Timestamp } from 'firebase/firestore'; 
-import { db, app, storage } from './firebase-config.js'; 
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'; 
-import { getFunctions, httpsCallable } from 'firebase/functions'; 
-import { currentUser, availableAgents, setAvailableAgents, setPendingNotificationsCount, setScheduleData } from './state.js';
-import { parseISO } from 'date-fns'; // <--- LÍNEA CORREGIDA: Eliminado el '='
+import { collection, query, where, orderBy, getDocs, doc, addDoc, getDoc, serverTimestamp, documentId, Timestamp, setDoc, updateDoc, deleteDoc, limit } from 'firebase/firestore'; 
+import { db, app, storage, auth } from './firebase-config.js';
+import { ref, listAll, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage'; 
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { currentUser, setAvailableAgents, setPendingNotificationsCount } from './state.js';
+import { parseISO, endOfMonth, startOfMonth } from 'date-fns';
+import { getMonthNumberFromName, parseDateToISO } from './utils.js';
+import { toZonedTime } from 'date-fns-tz';
 
-const functions = getFunctions(app);
+// Inicialización de Firebase Functions, especificando la región para optimizar.
+const functions = getFunctions(app, 'us-central1');
+const MADRID_TIMEZONE = 'Europe/Madrid';
 
-/**
- * Carga la lista inicial de agentes desde Firestore y la almacena en el estado global.
- * @returns {Promise<Array<Object>>} Una promesa que se resuelve con la lista de agentes.
- */
-export async function loadInitialAgents() {
-    console.log("[DEBUG - dataController] Iniciando loadInitialAgents...");
+// --- ÓRDENES Y PARTES DE SERVICIO ---
+
+export async function createServiceOrder(orderData) {
+    const callable = httpsCallable(functions, 'createServiceOrder');
+    return callable(orderData).then(result => result.data);
+}
+
+export async function updateServiceOrder(orderId, updateData) {
+    const callable = httpsCallable(functions, 'updateServiceOrder');
+    return callable({ orderId, updateData }).then(result => result.data);
+}
+
+export async function getServiceOrders(filters = {}) {
+    const callable = httpsCallable(functions, 'getServiceOrders');
+    return callable(filters).then(result => result.data);
+}
+
+export async function assignResourcesToOrder(assignmentData) {
+    const callable = httpsCallable(functions, 'assignResourcesToOrder');
+    return callable(assignmentData).then(result => result.data);
+}
+
+export async function startServiceOrder(orderId) {
+    const callable = httpsCallable(functions, 'startServiceOrder');
+    return callable({ orderId }).then(result => result.data);
+}
+
+export async function addReportEntry(entryData) {
+    const callable = httpsCallable(functions, 'addReportEntry');
+    return callable(entryData).then(result => result.data);
+}
+
+export async function getReportForOrder(orderId) {
+    const callable = httpsCallable(functions, 'getReportForOrder');
+    return callable({ orderId }).then(result => result.data);
+}
+
+export async function getServiceReportDetails(reportId) {
+    const reportRef = doc(db, 'serviceReports', reportId);
+    const reportSnap = await getDoc(reportRef);
+    if (!reportSnap.exists()) throw new Error("El parte de servicio no fue encontrado.");
+
+    const reportData = { id: reportSnap.id, ...reportSnap.data() };
+
+    if (reportData.order_id) {
+        const orderRef = doc(db, 'serviceOrders', reportData.order_id);
+        const orderSnap = await getDoc(orderRef);
+        if (orderSnap.exists()) {
+            reportData.order = { id: orderSnap.id, ...orderSnap.data() };
+        }
+    }
+
+    const requerimientosRef = collection(db, 'serviceReports', reportId, 'requerimientos');
+    const qRequerimientos = query(requerimientosRef, orderBy('createdAt', 'asc'));
+    const requerimientosSnap = await getDocs(qRequerimientos);
+    reportData.requerimientos = requerimientosSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    return reportData;
+}
+
+export async function submitServiceReport(reportId) {
+    const callable = httpsCallable(functions, 'submitServiceReport');
+    return callable({ reportId }).then(result => result.data);
+}
+
+export async function validateServiceReport(validationData) {
+    const callable = httpsCallable(functions, 'validateServiceReport');
+    return callable(validationData).then(result => result.data);
+}
+
+export async function getServiceReports(filters = {}) {
+    const callable = httpsCallable(functions, 'getServiceReports');
+    return callable(filters).then(result => result.data); 
+}
+
+export async function createDefaultServiceOrders(date, templateShiftType) {
+    const callable = httpsCallable(functions, 'createDefaultServiceOrders');
+    return callable({ date, templateShiftType }).then(result => result.data);
+}
+
+export async function updateChecklistItemStatus(data) {
+    const callable = httpsCallable(functions, 'updateChecklistItemStatus');
+    return callable(data).then(result => result.data);
+}
+
+export async function generateNextOrderNumber(service_date) {
+    const callable = httpsCallable(functions, 'generateNextOrderNumber');
+    return callable({ service_date }).then(result => result.data);
+}
+
+export async function deleteServiceOrder(orderId) {
+    const callable = httpsCallable(functions, 'deleteServiceOrder');
+    return callable({ orderId }).then(result => result.data);
+}
+
+export async function updateReportSummary(reportId, summaryData) {
+    const callable = httpsCallable(functions, 'updateReportSummary');
+    return callable({ reportId, summaryData }).then(result => result.data);
+}
+
+export async function addRequerimiento(reportId, description) {
+    const callable = httpsCallable(functions, 'addRequerimiento');
+    return callable({ reportId, description }).then(result => result.data);
+}
+
+export async function updateRequerimientoStatus(data) {
+    const callable = httpsCallable(functions, 'updateRequerimientoStatus');
+    return callable(data).then(result => result.data);
+}
+
+export async function getRequerimientosForReport(reportId) {
     try {
-        const agentsCol = collection(db, 'agents');
-        // Usar FieldPath.documentId() importado de 'firebase/firestore'
-        const q = query(agentsCol, orderBy(documentId())); 
+        const reqsRef = collection(db, 'serviceReports', reportId, 'requerimientos');
+        const q = query(reqsRef, orderBy('createdAt', 'asc'));
         const querySnapshot = await getDocs(q);
-        
-        const agentsList = querySnapshot.docs.map(doc => ({
-            id: String(doc.id), 
-            ...doc.data() 
-        }));
-        
-        console.log("[DEBUG - dataController] Agentes cargados desde Firestore:", agentsList);
-        setAvailableAgents(agentsList); // Actualiza el átomo de Nanostores
-        console.log("[DEBUG - dataController] 'availableAgents' atom actualizado. Verificación:", availableAgents.get()); 
-
-        return agentsList;
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
-        console.error("ERROR - dataController: Error cargando agentes iniciales:", error);
+        console.error("Error al obtener los requerimientos:", error);
+        throw new Error("No se pudieron cargar los requerimientos.");
+    }
+}
+
+export async function toggleRequerimientoStatus(reportId, requerimientoId, isResolved) {
+    const callable = httpsCallable(functions, 'toggleRequerimientoStatus');
+    try {
+        await callable({ reportId, requerimientoId, isResolved });
+    } catch (error) {
+        console.error("Error al llamar a la Cloud Function 'toggleRequerimientoStatus':", error);
         throw error;
     }
 }
 
-/**
- * Obtiene los tipos de permisos/licencias desde Firestore.
- * @returns {Promise<Array<Object>>} Una lista de los tipos de permiso.
- */
+export async function getActiveServiceOrdersForAgent(agentId) {
+    if (!agentId) {
+        console.error("Se requiere un agentId para buscar órdenes de servicio.");
+        return [];
+    }
+
+    try {
+        const ordersRef = collection(db, 'serviceOrders');
+        const q = query(ordersRef, where('assigned_agents', 'array-contains', agentId));
+        const querySnapshot = await getDocs(q);
+
+        const allAssignedOrders = [];
+        await Promise.all(querySnapshot.docs.map(async (doc) => {
+            const rawData = doc.data();
+            const orderData = {
+                id: doc.id,
+                ...rawData,
+                service_date: rawData.service_date.toDate() 
+            };
+            
+            if (orderData.status === 'in_progress') {
+                const reportsQuery = query(collection(db, 'serviceReports'), where('order_id', '==', orderData.id), orderBy('created_at', 'desc'));
+                const reportsSnapshot = await getDocs(reportsQuery);
+                if (!reportsSnapshot.empty) {
+                    const reportDoc = reportsSnapshot.docs[0];
+                    orderData.reportId = reportDoc.id;
+                    orderData.reportStatus = reportDoc.data().status;
+                }
+            }
+            allAssignedOrders.push(orderData);
+        }));
+
+        const activeOrders = allAssignedOrders.filter(order => 
+            order.status === 'assigned' || 
+            (order.status === 'in_progress' && order.reportStatus !== 'pending_review' && order.reportStatus !== 'validated' && order.reportStatus !== 'closed')
+        );
+
+        return activeOrders;
+
+    } catch (error) {
+        console.error("Error al obtener las órdenes de servicio activas para el agente:", error);
+        throw new Error("No se pudieron obtener las órdenes de servicio.");
+    }
+}
+
+// --- AUTOMATIZACIÓN ---
+
+export async function getAutomationConfig() {
+    const docRef = doc(db, 'configuration', 'automation');
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? docSnap.data() : { autoGenerateOrders: false };
+}
+
+export async function setAutomationConfig(config) {
+    const docRef = doc(db, 'configuration', 'automation');
+    await setDoc(docRef, config, { merge: true });
+}
+
+// --- MÓDULO DE CROQUIS ---
+
+export async function getCroquisAssets() {
+    const assetsRef = ref(storage, 'croquis_assets');
+    const assets = { vias: [], vehiculos: [], senales: [] };
+
+    try {
+        const folders = await listAll(assetsRef);
+        
+        for (const folderRef of folders.prefixes) {
+            const category = folderRef.name;
+            if (assets[category]) {
+                const items = await listAll(folderRef);
+                for (const itemRef of items.items) {
+                    const url = await getDownloadURL(itemRef);
+                    assets[category].push({
+                        name: itemRef.name.split('.')[0],
+                        url: url
+                    });
+                }
+            }
+        }
+        return assets;
+    } catch (error) {
+        console.error("Error al cargar los recursos para el croquis:", error);
+        throw new Error("No se pudieron cargar los recursos del croquis.");
+    }
+}
+
+export async function uploadCroquisImage(file) {
+    const user = currentUser.get();
+    if (!user) throw new Error("Usuario no autenticado.");
+
+    const timestamp = new Date().getTime();
+    const fileName = `croquis_${user.agentId}_${timestamp}.png`;
+    const storageRef = ref(storage, `sketches/${fileName}`);
+
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+    return downloadURL;
+}
+
+export async function saveSketchRecord(sketchData) {
+    const user = currentUser.get();
+    if (!user || !user.uid || !user.agentId) {
+        throw new Error("Datos de usuario no válidos. No se puede guardar el croquis.");
+    }
+
+    const sketchPayload = {
+        ...sketchData,
+        createdAt: serverTimestamp(),
+        createdByAgentId: user.agentId,
+        createdByUid: user.uid
+    };
+
+    try {
+        await addDoc(collection(db, "sketches"), sketchPayload);
+    } catch (error) {
+        console.error("Error de Firestore al intentar guardar el croquis:", error);
+        throw new Error("La base de datos rechazó la solicitud de guardado.");
+    }
+}
+
+export async function getSketches() {
+    const user = currentUser.get();
+    if (!user) {
+        throw new Error("Usuario no autenticado.");
+    }
+
+    const sketchesCol = collection(db, 'sketches');
+    let q;
+
+    if (user.role === 'admin' || user.role === 'supervisor') {
+        q = query(sketchesCol, orderBy('fechaSuceso', 'desc'));
+    } else {
+        q = query(
+            sketchesCol, 
+            where('createdByUid', '==', user.uid), 
+            orderBy('fechaSuceso', 'desc')
+        );
+    }
+    
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            if (data.fechaSuceso && typeof data.fechaSuceso.toDate === 'function') {
+                data.fechaSuceso = data.fechaSuceso.toDate();
+            }
+            return { id: doc.id, ...data };
+        });
+    } catch (error) {
+        console.error("Error al obtener los croquis:", error);
+        throw new Error("No se pudieron cargar los registros de croquis. Revisa la consola para crear un índice si es necesario.");
+    }
+}
+
+export async function getSketchById(sketchId) {
+    const docRef = doc(db, 'sketches', sketchId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.fechaSuceso && typeof data.fechaSuceso.toDate === 'function') {
+            data.fechaSuceso = data.fechaSuceso.toDate();
+        }
+        return { id: docSnap.id, ...data };
+    } else {
+        throw new Error("El croquis no fue encontrado.");
+    }
+}
+
+export async function updateSketch(sketchId, updateData) {
+    const callable = httpsCallable(functions, 'updateSketch');
+    const result = await callable({ sketchId, updateData });
+    return result.data;
+}
+
+export async function generateSketchPdf(sketchId) {
+    // ✅ ESTA ES LA SINTAXIS CORRECTA Y LA SOLUCIÓN AL PROBLEMA
+    // Se define la función con un tiempo de espera de 2 minutos (120,000 ms)
+    const callable = httpsCallable(functions, 'generateSketchPdf', { timeout: 120000 });
+    
+    // Se llama a la función con sus parámetros
+    const result = await callable({ sketchId });
+    return result.data;
+}
+
+export async function deleteSketch(sketchId) {
+    const callable = httpsCallable(functions, 'deleteSketch');
+    const result = await callable({ sketchId });
+    return result.data;
+}
+
+// --- MÓDULO DE REGISTRO ELECTRÓNICO Y PLANTILLAS ---
+
+export async function generateNextRegistrationNumber(documentType) {
+    const callable = httpsCallable(functions, 'generateNextRegistrationNumber');
+    return callable({ documentType }).then(result => result.data);
+}
+
+export async function createRegistro(documentType, data) {
+    const callable = httpsCallable(functions, 'createRegistro');
+    return callable({ documentType, data }).then(result => result.data);
+}
+
+export async function getRegistroById(recordId) {
+    const docRef = doc(db, 'registros', recordId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() };
+    } else {
+        throw new Error("El registro no fue encontrado.");
+    }
+}
+
+export async function getRegistros(filters = {}) {
+    const registrosCol = collection(db, 'registros');
+    let queryConstraints = [where('status', '!=', 'eliminado')];
+    
+    if (filters.type && filters.type !== 'all') {
+        queryConstraints.push(where('documentType', '==', filters.type));
+    }
+    if (filters.destinatario) {
+        queryConstraints.push(where('details.destinatario', '==', filters.destinatario));
+    }
+    if (filters.year && filters.year !== 'all') {
+        const yearInt = parseInt(filters.year);
+        const monthInt = filters.month && filters.month !== 'all' ? parseInt(filters.month) - 1 : null;
+        let startDate, endDate;
+        if (monthInt !== null) {
+            startDate = new Date(yearInt, monthInt, 1);
+            endDate = new Date(yearInt, monthInt + 1, 0, 23, 59, 59, 999);
+        } else {
+            startDate = new Date(yearInt, 0, 1);
+            endDate = new Date(yearInt, 11, 31, 23, 59, 59, 999);
+        }
+        queryConstraints.push(where('createdAt', '>=', startDate), where('createdAt', '<=', endDate));
+    }
+    
+    queryConstraints.push(orderBy('createdAt', 'desc'));
+    const q = query(registrosCol, ...queryConstraints);
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+export async function updateRegistro(recordId, data) {
+    const callable = httpsCallable(functions, 'updateRegistro');
+    return callable({ recordId, updateData: data }).then(result => result.data);
+}
+
+export async function markRegistroAsDeleted(recordId, reason) {
+    const callable = httpsCallable(functions, 'markRegistroAsDeleted');
+    return callable({ recordId, reason }).then(result => result.data);
+}
+
+export async function getDocumentTemplates() {
+    const templatesCol = collection(db, 'documentTemplates');
+    const q = query(templatesCol, orderBy('templateName', 'asc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+export async function createDocumentTemplate(templateData) {
+    const callable = httpsCallable(functions, 'createDocumentTemplate');
+    return callable(templateData).then(result => result.data);
+}
+
+export async function updateDocumentTemplate(templateId, updateData) {
+    const callable = httpsCallable(functions, 'updateDocumentTemplate');
+    return callable({ templateId, updateData }).then(result => result.data);
+}
+
+export async function getTemplatesByType(documentType) {
+    const templatesCol = collection(db, 'documentTemplates');
+    const q = query(templatesCol, where('documentType', '==', documentType), orderBy('templateName', 'asc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+export async function deleteDocumentTemplate(templateId) {
+    const callable = httpsCallable(functions, 'deleteDocumentTemplate');
+    return callable({ templateId }).then(result => result.data);
+}
+
+// --- OTRAS FUNCIONES ---
+
+export async function loadInitialAgents() {
+    const agentsCol = collection(db, 'agents');
+    const q = query(agentsCol, orderBy(documentId())); 
+    const querySnapshot = await getDocs(q);
+    const agentsList = querySnapshot.docs.map(doc => ({ id: String(doc.id), ...doc.data() }));
+    setAvailableAgents(agentsList);
+    return agentsList;
+}
+
 export async function getPermissionTypes() {
     try {
         const typesCol = collection(db, 'permissionTypes');
@@ -53,26 +450,21 @@ export async function getPermissionTypes() {
     }
 }
 
-/**
- * Añade una nueva solicitud de permiso a Firestore.
- * @param {Object} requestData - Los datos de la solicitud.
- * @returns {Promise<{success: boolean}>}
- */
 export async function addSolicitud(requestData) {
     try {
-        const userProfile = currentUser.get(); // Obtener del átomo
+        const userProfile = currentUser.get();
         if (!userProfile) throw new Error("Usuario no autenticado.");
 
         const solicitudPayload = {
             ...requestData,
-            agentId: String(requestData.agentId), // Asegurar que agentId es un string
+            agentId: String(requestData.agentId),
             userId: userProfile.uid,
             status: 'Pendiente',
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
             attachments: requestData.attachments || [],
             startDate: Timestamp.fromDate(parseISO(requestData.startDate)),
-            endDate: Timestamp.fromDate(parseISO(requestData.endDate))
+            endDate: Timestamp.fromDate(requestData.endDate ? parseISO(requestData.endDate) : parseISO(requestData.startDate))
         };
         await addDoc(collection(db, 'solicitudes'), solicitudPayload);
         return { success: true };
@@ -82,19 +474,13 @@ export async function addSolicitud(requestData) {
     }
 }
 
-/**
- * Sube un archivo a Firebase Storage.
- * @param {File} file - El archivo a subir.
- * @param {string} path - La ruta de destino en el Storage.
- * @returns {Promise<string>} La URL de descarga del archivo.
- */
 export async function uploadFile(file, path) {
     const storageRef = ref(storage, path);
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     return new Promise((resolve, reject) => {
         uploadTask.on('state_changed',
-            () => { /* Se puede implementar un indicador de progreso aquí */ },
+            () => {},
             (error) => {
                 console.error("ERROR - dataController: Error al subir archivo:", error);
                 reject(error);
@@ -107,50 +493,37 @@ export async function uploadFile(file, path) {
     });
 }
 
-/**
- * Obtiene una lista de solicitudes de permisos filtrada.
- * @param {Object} [filters={}] - Filtros a aplicar (status, agentId).
- * @returns {Promise<Array<Object>>} Una lista de solicitudes.
- */
-export async function getSolicitudes(filters = {}) { 
-    console.log("[DEBUG - dataController] getSolicitudes llamado con filtros:", filters);
+export async function getSolicitudes(filters = {}) {
     const userProfile = currentUser.get();
-    if (!userProfile) throw new Error("Perfil de usuario no disponible.");
+    if (!userProfile || !userProfile.uid) throw new Error("Perfil de usuario o UID no disponible.");
 
     const solicitudesRef = collection(db, 'solicitudes');
-    let q = query(solicitudesRef, orderBy('createdAt', 'desc'));
+    let queryConstraints = []; 
 
-    if (filters.status && filters.status !== 'all') {
-        q = query(q, where('status', '==', filters.status));
-    }
-
-    if (filters.agentId && filters.agentId !== 'all') {
-        q = query(q, where('agentId', '==', String(filters.agentId))); // Asegurar comparación como string
-    }
-
-    // Si el usuario no es admin, solo puede ver sus propias solicitudes
     if (userProfile.role !== 'admin') {
-        q = query(q, where('userId', '==', userProfile.uid));
+        queryConstraints.push(where('userId', '==', userProfile.uid));
+    } else {
+        if (filters.agentId && filters.agentId !== 'all') {
+            queryConstraints.push(where('agentId', '==', String(filters.agentId)));
+        }
     }
-
+    if (filters.status && filters.status !== 'all') {
+        queryConstraints.push(where('status', '==', filters.status));
+    }
+    queryConstraints.push(orderBy('createdAt', 'desc'));
+    
+    const q = query(solicitudesRef, ...queryConstraints);
     try {
         const querySnapshot = await getDocs(q);
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    } catch (error) {
+    }
+    catch (error) {
         console.error("ERROR - dataController: Error cargando solicitudes de permiso:", error);
         throw error;
     }
 }
 
-
-// --- FUNCIONES QUE INVOCAN CLOUD FUNCTIONS ---
-
-/**
- * Llama a una Cloud Function para añadir una solicitud de cambio de turno.
- * @param {Object} requestData - Datos de la propuesta de cambio.
- */
 export async function addShiftChangeRequest(requestData) {
-    console.log("[DEBUG - dataController] addShiftChangeRequest llamado. Invocando Cloud Function.");
     const callable = httpsCallable(functions, 'addShiftChangeRequest');
     try {
         const result = await callable(requestData);
@@ -162,33 +535,20 @@ export async function addShiftChangeRequest(requestData) {
     }
 }
 
-/**
- * Llama a una Cloud Function para obtener las solicitudes de cambio de turno.
- * @param {Object} [filters={}] - Filtros a aplicar (status, agentId).
- */
 export async function getShiftChangeRequests(filters = {}) {
-    console.log("[DEBUG - dataController] getShiftChangeRequests llamado. Invocando Cloud Function.");
     const userProfile = currentUser.get();
     if (!userProfile) throw new Error("Perfil de usuario no disponible.");
-
     const callable = httpsCallable(functions, 'getShiftChangeRequestsCallable');
-    
     try {
         const result = await callable({
             status: filters.status || null,
             agentId: userProfile.role === 'admin' ? (filters.agentId || 'all') : userProfile.agentId 
         });
-
         if (result.data?.success) {
             return result.data.data.map(req => {
-                // Convierte fechas de string (ISO) a objetos Date
                 Object.keys(req).forEach(key => {
                     if (typeof req[key] === 'string' && key.toLowerCase().includes('date')) {
-                        try {
-                            req[key] = parseISO(req[key]);
-                        } catch (e) {
-                            console.warn(`Could not parse date string: ${req[key]}`);
-                        }
+                        try { req[key] = parseISO(req[key]); } catch (e) { console.warn(`Could not parse date string: ${req[key]}`); }
                     }
                 });
                 return req;
@@ -202,10 +562,6 @@ export async function getShiftChangeRequests(filters = {}) {
     }
 }
 
-/**
- * Llama a una Cloud Function para responder a una propuesta de cambio de turno.
- * @param {{changeId: string, newStatus: string}} requestData - Datos de la respuesta.
- */
 export async function respondToShiftChangeRequest(requestData) {
     const callable = httpsCallable(functions, 'respondToShiftChangeRequest');
     try {
@@ -213,15 +569,11 @@ export async function respondToShiftChangeRequest(requestData) {
         if (result.data?.success) return result.data;
         throw new Error(result.data?.message || "Error en Cloud Function de respuesta.");
     } catch (error) {
-        console.error("ERROR - dataController: Error al enviar la respuesta:", error);
+        console.error("Error al enviar la respuesta:", error);
         throw error;
     }
 }
 
-/**
- * Llama a una Cloud Function para añadir un nuevo agente.
- * @param {{id: string|null, name: string, active: boolean}} agentData - Datos del nuevo agente.
- */
 export async function addAgent(agentData) {
     const callable = httpsCallable(functions, 'addAgentCallable');
     try {
@@ -229,16 +581,11 @@ export async function addAgent(agentData) {
         if (result.data?.success) return result.data;
         throw new Error(result.data?.message || "Error al añadir agente.");
     } catch (error) {
-        console.error("ERROR - dataController: Error al añadir agente (Cloud Function):", error);
+        console.error("Error al añadir agente (Cloud Function):", error);
         throw error;
     }
 }
 
-/**
- * Llama a una Cloud Function para actualizar un agente existente.
- * @param {string} agentId - El ID del agente a actualizar.
- * @param {Object} updateData - Los campos a actualizar.
- */
 export async function updateAgent(agentId, updateData) {
     const callable = httpsCallable(functions, 'updateAgentCallable');
     try {
@@ -246,15 +593,11 @@ export async function updateAgent(agentId, updateData) {
         if (result.data?.success) return result.data;
         throw new Error(result.data?.message || "Error al actualizar agente.");
     } catch (error) {
-        console.error("ERROR - dataController: Error al actualizar agente:", error);
+        console.error("Error al actualizar agente:", error);
         throw error;
     }
 }
 
-/**
- * Llama a una Cloud Function para eliminar un agente.
- * @param {string} agentId - El ID del agente a eliminar.
- */
 export async function deleteAgent(agentId) {
     const callable = httpsCallable(functions, 'deleteAgentCallable');
     try {
@@ -262,15 +605,11 @@ export async function deleteAgent(agentId) {
         if (result.data?.success) return result.data;
         throw new Error(result.data?.message || "Error al eliminar agente.");
     } catch (error) {
-        console.error("ERROR - dataController: Error al eliminar agente:", error);
+        console.error("Error al eliminar agente:", error);
         throw error;
     }
 }
 
-/**
- * Llama a una Cloud Function para aprobar o rechazar una solicitud de permiso.
- * @param {{solicitudId: string, newStatus: string}} requestData - Datos de la acción.
- */
 export async function updateSolicitudStatus(requestData) {
     const callable = httpsCallable(functions, 'updateSolicitudStatus');
     try {
@@ -278,73 +617,206 @@ export async function updateSolicitudStatus(requestData) {
         if (result.data?.success) return result.data;
         throw new Error(result.data?.message || "Error al actualizar estado de solicitud.");
     } catch (error) {
-        console.error("ERROR - dataController: Error al llamar a updateSolicitudStatus (Cloud Function):", error);
+        console.error("Error al llamar a updateSolicitudStatus (Cloud Function):", error);
         throw error;
     }
 }
 
+export async function addMarkedDateCallable(markedDateData) {
+    const callable = httpsCallable(functions, 'addMarkedDateCallable');
+    try {
+        const result = await callable(markedDateData);
+        if (result.data?.success) return result.data;
+        throw new Error(result.data?.message || "Error desconocido al añadir fecha marcada.");
+    } catch (error)
+    {
+        console.error("Error - dataController: Error al llamar a Cloud Function addMarkedDateCallable:", error);
+        throw error;
+    }
+}
 
-// === LÓGICA DE NOTIFICACIONES ===
-
-/**
- * Calcula y actualiza el número total de notificaciones pendientes para el usuario actual.
- */
 export async function updateNotificationCount() {
-    console.log("[DEBUG - dataController] updateNotificationCount llamado.");
     const userProfile = currentUser.get();
     if (!userProfile) {
         setPendingNotificationsCount(0);
-        console.log("[DEBUG - dataController] No hay usuario logueado. Contador de notificaciones: 0");
         return;
     }
-
     let totalNotifications = 0;
-
     try {
-        // Para ADMIN: Contar solicitudes de permisos pendientes y cambios de turno pendientes/aprobados.
         if (userProfile.role === 'admin') {
             const permissionRequests = await getSolicitudes({ status: 'Pendiente' });
             totalNotifications += permissionRequests.length;
-            console.log(`[DEBUG - dataController] Admin: Permisos Pendientes: ${permissionRequests.length}`);
-
             const shiftChangeRequests = await getShiftChangeRequests();
-            const approvedButNotNotified = shiftChangeRequests.filter(req => req.status === 'Aprobado_Ambos' && req.adminNotified === false);
-            const pendingForAdminReview = shiftChangeRequests.filter(req => req.status === 'Pendiente_Target');
-            
-            totalNotifications += approvedButNotNotified.length;
-            totalNotifications += pendingForAdminReview.length; 
-            
-            console.log(`[DEBUG - dataController] Admin: Cambios Aprobados no vistos: ${approvedButNotNotified.length}`);
-            console.log(`[DEBUG - dataController] Admin: Cambios Pendientes de otros: ${pendingForAdminReview.length}`);
-        }
-        // Para GUARDIAS: Contar solo propuestas de cambio de turno dirigidas a ellos.
-        else if (userProfile.role === 'guard') {
+            const approvedButNotifiedCount = shiftChangeRequests.filter(req => req.status === 'Aprobado_Ambos' && req.adminNotified === false).length;
+            const pendingForAdminReviewCount = shiftChangeRequests.filter(req => req.status === 'Pendiente_Target').length;
+            totalNotifications += approvedButNotifiedCount;
+            totalNotifications += pendingForAdminReviewCount; 
+        } else if (userProfile.role === 'guard') {
             const shiftChangeRequests = await getShiftChangeRequests({ status: 'Pendiente_Target' });
             const pendingForGuard = shiftChangeRequests.filter(req => String(req.targetAgentId) === String(userProfile.agentId));
             totalNotifications += pendingForGuard.length;
-            console.log(`[DEBUG - dataController] Guard: Cambios de Turno Pendientes (para mí): ${pendingForGuard.length}`);
         }
     } catch (error) {
         console.error("ERROR - dataController: Fallo al calcular notificaciones:", error);
     }
-    
     setPendingNotificationsCount(totalNotifications);
-    console.log("[DEBUG - dataController] Total de notificaciones pendientes actualizado a:", totalNotifications);
 }
 
-/**
- * Llama a una Cloud Function para marcar una notificación de cambio de turno como vista por el admin.
- * @param {string} changeId - El ID de la solicitud de cambio de turno.
- */
 export async function markShiftChangeNotificationAsSeen(changeId) {
     const callable = httpsCallable(functions, 'markShiftChangeNotificationAsSeen');
     try {
         const result = await callable({ changeId });
-        console.log("[DEBUG - dataController] Notificación marcada como vista:", changeId, result.data);
         await updateNotificationCount();
         return result.data;
     } catch (error) {
         console.error("ERROR - dataController: Error al marcar notificación como vista (Cloud Function):", error);
         throw error;
+    }
+}
+
+export async function getMarkedDates(monthId) {
+    const markedDatesRef = collection(db, 'markedDates');
+    let q = query(markedDatesRef);
+    if (monthId) {
+        const parts = monthId.split('_');
+        if (parts.length === 3) {
+            const monthName = parts[1];
+            const year = parseInt(parts[2]);
+            const startOfMonthDate = toZonedTime(new Date(year, getMonthNumberFromName(monthName), 1), MADRID_TIMEZONE);
+            const endOfMonthDate = toZonedTime(endOfMonth(startOfMonthDate), MADRID_TIMEZONE); 
+            endOfMonthDate.setHours(23, 59, 59, 999);
+            q = query(q, 
+                where('date', '>=', Timestamp.fromDate(startOfMonthDate)),
+                where('date', '<=', Timestamp.fromDate(endOfMonthDate)),
+                orderBy('date', 'asc')
+            );
+        }
+    } else {
+        q = query(q, orderBy('date', 'asc'));
+    }
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            if (data.date && typeof data.date.toDate === 'function') {
+                data.date = data.date.toDate();
+            }
+            return { id: doc.id, ...data };
+        });
+    } catch (error) {
+        console.error("ERROR - dataController: Error cargando fechas marcadas:", error);
+        throw error;
+    }
+}
+
+export async function addExtraService(serviceData) {
+    const userProfile = currentUser.get();
+    if (!userProfile || !userProfile.agentId) throw new Error("Perfil de agente no válido.");
+    const payload = { ...serviceData, agentId: String(userProfile.agentId), userId: userProfile.uid, date: Timestamp.fromDate(parseISO(serviceData.date)), createdAt: serverTimestamp() };
+    try {
+        const docRef = await addDoc(collection(db, 'extraordinaryServices'), payload);
+        return { success: true, id: docRef.id };
+    } catch (error) {
+        console.error("Error al añadir servicio extraordinario:", error);
+        throw error;
+    }
+}
+
+export async function getExtraServices(agentId, startDate, endDate) {
+    if (!agentId || !startDate || !endDate) return [];
+    const servicesRef = collection(db, 'extraordinaryServices');
+    const q = query( servicesRef, where('agentId', '==', String(agentId)), where('date', '>=', startDate), where('date', '<=', endDate), orderBy('date') );
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), date: doc.data().date.toDate() }));
+    }
+    catch (error) {
+        console.error("Error al obtener servicios extraordinarios:", error);
+        throw error;
+    }
+}
+
+export async function getAllExtraServices(filters = {}) {
+    const userProfile = currentUser.get();
+    if (!userProfile || userProfile.role !== 'admin') throw new Error("Acceso no autorizado.");
+    const servicesRef = collection(db, 'extraordinaryServices');
+    let queryConstraints = [];
+    if (filters.agentId && filters.agentId !== 'all') queryConstraints.push(where('agentId', '==', filters.agentId));
+    if (filters.type && filters.type !== 'all') queryConstraints.push(where('type', '==', filters.type));
+    if (filters.startDate) queryConstraints.push(where('date', '>=', Timestamp.fromDate(startOfMonth(parseISO(filters.startDate)))));
+    if (filters.endDate) queryConstraints.push(where('date', '<=', Timestamp.fromDate(endOfMonth(parseISO(filters.endDate)))));
+    queryConstraints.push(orderBy('date', 'desc'));
+    const q = query(servicesRef, ...queryConstraints);
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data(), date: doc.data().date.toDate() }));
+    } catch (error) {
+        console.error("Error al obtener todos los servicios extraordinarios (admin):", error);
+        throw error;
+    }
+}
+
+export async function updateExtraService(serviceId, updateData) {
+    const serviceRef = doc(db, 'extraordinaryServices', serviceId);
+    try {
+        const payload = { ...updateData };
+        if (typeof payload.date === 'string') {
+            payload.date = Timestamp.fromDate(parseISO(payload.date));
+        }
+        await updateDoc(serviceRef, payload);
+    } catch (error) {
+        console.error("Error al actualizar servicio extraordinario:", error);
+        throw error;
+    }
+}
+
+export async function deleteExtraService(serviceId) {
+    const serviceRef = doc(db, 'extraordinaryServices', serviceId);
+    try {
+        await deleteDoc(serviceRef);
+    } catch (error) {
+        console.error("Error al eliminar servicio extraordinario:", error);
+        throw error;
+    }
+}
+
+export async function updateShiftV2(shiftData) {
+    const callable = httpsCallable(functions, 'updateShiftV2');
+    try {
+        const result = await callable(shiftData);
+        if (result.data.success) {
+            return result.data;
+        } else {
+            throw new Error(result.data.message || 'Error desconocido al actualizar el turno.');
+        }
+    } catch (error) {
+        console.error("Error al llamar a la Cloud Function 'updateShiftV2':", error);
+        throw new Error('No se pudo actualizar el turno.');
+    }
+}
+
+export async function getAdminDashboardStats(startDate, endDate) {
+    const callable = httpsCallable(functions, 'getAdminDashboardStats');
+    try {
+        const result = await callable({ startDate, endDate });
+        if (result.data && result.data.success) {
+            return result.data.stats;
+        } else {
+            throw new Error(result.data.message || 'Error desconocido desde la Cloud Function.');
+        }
+    } catch (error) {
+        console.error("Error al llamar a la Cloud Function 'getAdminDashboardStats':", error);
+        throw new Error('No se pudieron cargar las estadísticas del panel de administrador.');
+    }
+}
+
+export async function getScheduleForMonth(monthId) {
+    try {
+        const scheduleRef = doc(db, 'schedules', monthId);
+        const scheduleSnap = await getDoc(scheduleRef);
+        return scheduleSnap.exists() ? scheduleSnap.data() : null;
+    } catch (error) {
+        console.error(`Error al obtener el cuadrante para ${monthId}:`, error);
+        throw new Error("No se pudo cargar el cuadrante.");
     }
 }

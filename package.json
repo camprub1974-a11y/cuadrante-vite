@@ -13,7 +13,10 @@
   },
   "dependencies": {
     "@nanostores/persistent": "^1.0.0",
+    "build": "^0.1.4",
+    "chart.js": "^4.5.0",
     "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
     "firebase": "^11.9.1",
     "firebase-admin": "^13.4.0",
     "nanostores": "^1.0.1"

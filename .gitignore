@@ -19,3 +19,7 @@ pnpm-debug.log*
 # Archivos de sistema operativo
 .DS_Store
 Thumbs.db
+
+# Ignorar claves de servicio de Firebase
+serviceAccountKey.json
+

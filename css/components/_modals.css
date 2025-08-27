@@ -1,0 +1,112 @@
+/* css/components/_modals.css (Versión corregida según la guía) */
+
+/* El overlay que cubre toda la pantalla */
+.modal { 
+    position: fixed; 
+    z-index: 9999; 
+    left: 0; 
+    top: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo negro semitransparente, según la guía */
+    overflow-y: auto;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    padding: var(--space-4);
+    
+    /* Lógica de visibilidad */
+    opacity: 0; 
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.modal:not(.hidden) { 
+    visibility: visible;
+    opacity: 1;
+}
+
+/* El contenedor principal del modal */
+.modal-content { 
+    background-color: var(--color-bg-card); /* Fondo blanco */
+    border-radius: var(--border-radius-lg); /* 12px */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* Sombra específica de la guía */
+    width: 100%; 
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+
+    /* Animación de entrada */
+    transform: scale(0.95);
+    transition: transform 0.2s ease;
+}
+
+.modal:not(.hidden) .modal-content {
+    transform: scale(1);
+}
+
+/* Modificadores de tamaño */
+.modal-content.large { max-width: 800px; }
+.modal-content.small { max-width: 450px; }
+
+/* Cabecera del Modal */
+.modal-header {
+    background-color: var(--color-header-bg); /* #1F2D3D */
+    color: var(--color-text-light);
+    padding: var(--space-2) var(--space-3); /* 16px vertical, 24px horizontal */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+}
+
+.modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-primary);
+    font-weight: 600; /* SemiBold */
+    font-size: var(--text-lg); /* 18px */
+}
+
+/* Cuerpo del Modal */
+.modal-body {
+    padding: var(--space-3); /* 24px */
+    overflow-y: auto;
+}
+
+/* Pie de página del Modal */
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    padding: var(--space-3); /* 24px */
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+    flex-shrink: 0;
+}
+
+/* Botón de guardar con altura especial */
+.modal-footer .button-save {
+    height: 44px;
+}
+
+/* Secciones específicas del informe */
+.tasks-section {
+    margin-top: var(--space-4); /* 32px */
+    padding: var(--space-2) 0;  /* 16px */
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.task-input-group {
+    display: flex;
+    gap: var(--space-2); /* 16px */
+    margin-top: var(--space-2);
+}
+
+.no-tasks {
+    color: var(--color-text-secondary);
+    font-style: italic;
+}

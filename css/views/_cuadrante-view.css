@@ -1,0 +1,73 @@
+/* css/views/_cuadrante-view.css */
+
+.quadrant-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap; /* Permite que los elementos se muevan a la siguiente línea en pantallas pequeñas */
+    gap: var(--space-3); /* Espacio entre los grupos de la izquierda y la derecha */
+}
+
+.month-navigation {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.month-title-container {
+    display: flex;
+    gap: var(--space-1);
+}
+
+/* Ajustamos el ancho de los selectores de fecha */
+.month-selector { min-width: 150px; }
+.year-selector { min-width: 100px; }
+
+.view-actions {
+    display: flex;
+    align-items: flex-end; /* Alinea la etiqueta "Ver Agente" con la base del selector */
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.info-banner {
+    width: 100%;
+    margin-top: var(--space-3);
+    padding: var(--space-2);
+    background-color: var(--color-background-inactive);
+    border-left: 4px solid var(--color-primary);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+/* Estilos para la lista de estadísticas en la sidebar */
+.stats-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.stats-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-1) 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.stats-list li:last-child {
+    border-bottom: none;
+}
+
+.stats-list li span {
+    font-weight: 600;
+}
+
+.stats-total {
+    margin-top: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 2px solid var(--color-border-subtle);
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+}

@@ -1,255 +1,308 @@
-// js/main.js
+// js/main.js (VERSIÓN FINAL CON CORRECCIÓN DE SINCRONIZACIÓN)
 
-import { auth, db, app } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-
-// --- MEJORA: Importaciones centralizadas y estáticas ---
+import { setUser, currentUser, pendingNotificationsCount, selectedMonthId, selectedAgentId } from './state.js';
 import { loadInitialAgents, updateNotificationCount } from './dataController.js';
-import { setUser, setAvailableAgents, selectedMonthId, availableAgents, setDate, selectedYear, selectedAgentId, currentUser, pendingNotificationsCount } from './state.js';
 import { initSelectors } from './ui/selectorManager.js';
-import { initializeViewButtons, showLoginScreen, showAppContent, showLoading, hideLoading, displayMessage } from './ui/viewManager.js';
-import { initializeAgentManagerModal, showAgentManagerModal } from './ui/agentManagerModal.js';
-import { initializeRequestPermissionModal, showRequestPermissionModal } from './ui/requestPermissionModal.js';
+import { showLoginScreen, showAppContent, showLoading, hideLoading, displayMessage } from './ui/viewManager.js';
+import { loadAndDisplaySchedule } from './logic.js';
+
+// Importación de las funciones de renderizado de cada vista
+import { renderPlanningView, resetPlanningView } from './ui/planningView.js';
+import { renderReportsList, resetReportsListView } from './ui/reportsListView.js';
+import { renderExtraServicesView, resetExtraServicesView } from './ui/extraServicesRenderer.js';
+import { renderAdminDashboard } from './ui/adminDashboardView.js';
+import { renderRegistroView, resetRegistroView } from './ui/registroView.js';
+import { renderCroquisView, resetCroquisView } from './ui/croquisView.js';
+import { renderServiceReport } from './ui/serviceReportView.js';
+import { renderTemplateManagerView } from './ui/templateManagerView.js'; // <-- Ya estaba importada, solo faltaba usarla
+import { renderActivityFeed } from './ui/activityFeedRenderer.js';
+
+// Importación de los inicializadores de modales y componentes
+import { initializeAgentManagerModal } from './ui/agentManagerModal.js';
+import { initializeRequestPermissionModal } from './ui/requestPermissionModal.js';
 import { initializeManageRequestsModal, showManageRequestsModal } from './ui/manageRequestsModal.js';
 import { initializeProposeChangeModal } from './ui/proposeChangeModal.js';
 import { initializeRespondToProposalModal } from './ui/respondToProposalModal.js';
 import { initializeShiftModal } from './ui/shiftModal.js';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { loadAndDisplaySchedule } from './logic.js';
-import { getMonthNumberFromName, formatDate } from './utils.js';
-import { handlePrintButtonClick } from './print.js'; // IMPORTACIÓN CONFIRMADA
+import { initializeViewSelectorModal, showViewSelectorModal } from './ui/viewSelectorModal.js';
+import { initializeManagementSelectorModal, showManagementSelectorModal } from './ui/managementSelectorModal.js';
+import { initializeAddMarkedDateModal } from './ui/addMarkedDateModal.js';
+import { initializeExtraServiceModal } from './ui/extraServiceModal.js';
+import { initializeServiceOrderModal } from './ui/serviceOrderModal.js';
+import { initializeAssignmentModal } from './ui/assignmentModal.js';
+import { initializeReportEntryModal } from './ui/reportEntryModal.js';
+import { initializeDefaultOrderTemplateModal } from './ui/defaultOrderTemplateModal.js';
+import { initializeReportSummaryModal } from './ui/reportSummaryModal.js';
+import { initializeAddRequerimientoModal } from './ui/addRequerimientoModal.js';
+import { initializeRegistroModal } from './ui/registroModal.js';
 
-const functions = getFunctions(app);
+const viewContainer = document.getElementById('app-view-container');
+let appInitialized = false;
+let currentLoadedView = null;
 
-/**
- * Gestiona los cambios en el estado de autenticación de Firebase.
- * Se ejecuta cuando el usuario inicia o cierra sesión.
- * @param {import('firebase/auth').User | null} user - El objeto de usuario de Firebase, o null si no está autenticado.
- */
-async function handleAuthStateChange(user) {
-    if (user) {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDocSnap = await getDoc(userDocRef);
+async function loadViewAndInitialize(viewName, renderFunction) {
+    if (currentLoadedView === viewName) return;
 
-        if (userDocSnap.exists()) {
-            const userData = userDocSnap.data();
-            const userProfile = {
-                uid: user.uid,
-                email: user.email,
-                ...userData,
-                agentId: String(userData.agentId)
-            };
-            setUser(userProfile);
-            showAppContent(userProfile.email);
-            await initializeAppData(); // Carga todos los datos y la UI de la aplicación.
-        } else {
-            displayMessage("El perfil de usuario no se encontró en la base de datos.", "error");
-            await signOut(auth);
-        }
-    } else {
-        setUser(null);
-        setAvailableAgents([]);
-        showLoginScreen();
+    // ... otros resets
+    if (currentLoadedView === 'servicios_extra') resetExtraServicesView();
+    if (currentLoadedView === 'planificacion') resetPlanningView();
+    if (currentLoadedView === 'registro_electronico') resetRegistroView();
+    if (currentLoadedView === 'croquizador') resetCroquisView();
+    if (currentLoadedView === 'partes_servicio') resetReportsListView();
+    
+    showLoading(`Cargando ${viewName}...`);
+    try {
+        const response = await fetch(`/views/${viewName}.html?v=${new Date().getTime()}`);
+        if (!response.ok) throw new Error(`El archivo /views/${viewName}.html no existe.`);
+        const html = await response.text();
+        viewContainer.innerHTML = html;
+        currentLoadedView = viewName;
+
+        await new Promise(resolve => setTimeout(resolve, 0)); 
+
+        if (renderFunction) await renderFunction();
+
+    } catch (error) {
+        console.error(`Error al cargar la vista ${viewName}:`, error);
+        displayMessage(`Error al cargar la sección.`, "error");
+    } finally {
+        hideLoading();
     }
 }
 
-/**
- * Inicializa los datos, la UI y los listeners de la aplicación una vez que el usuario está autenticado.
- */
+function updateActiveTab(viewName) {
+    document.querySelectorAll('.module-nav .module-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    const activeTab = document.querySelector(`.module-tab[data-view="${viewName}"]`);
+    if (activeTab) {
+        activeTab.classList.add('active');
+    }
+}
+
+export async function showScheduleView() {
+    await loadViewAndInitialize('cuadrante', async () => {
+        updateActiveTab('cuadrante');
+        
+         // ✅ LÍNEA AÑADIDA: Busca la sidebar y le quita la clase 'hidden'.
+        document.querySelector('.sidebar-column')?.classList.remove('hidden'); 
+
+        const managementSelectorBtn = document.getElementById('management-selector-btn');
+        if (managementSelectorBtn) {
+            managementSelectorBtn.addEventListener('click', showManagementSelectorModal);
+        }
+        await initSelectors();
+        loadAndDisplaySchedule(selectedMonthId.get(), selectedAgentId.get());
+    });
+}
+
+export async function showPlanningView() {
+    await loadViewAndInitialize('planificacion', () => {
+        updateActiveTab('planificacion');
+        renderPlanningView();
+    });
+}
+
+export async function showReportsListView() {
+    await loadViewAndInitialize('partes_servicio', () => {
+        updateActiveTab('partes_servicio');
+        renderReportsList();
+    });
+}
+
+export async function showExtraServicesView() {
+    await loadViewAndInitialize('servicios_extra', () => {
+        updateActiveTab('servicios_extra');
+        renderExtraServicesView();
+    });
+}
+
+export async function showAdminDashboardView() {
+    await loadViewAndInitialize('registros_estadisticas', () => {
+        updateActiveTab('registros_estadisticas');
+        renderAdminDashboard();
+    });
+}
+
+export async function showRegistroView() {
+    await loadViewAndInitialize('registro_electronico', () => {
+        updateActiveTab('registro_electronico');
+        renderRegistroView();
+    });
+}
+
+export async function showCroquisView() {
+    await loadViewAndInitialize('croquizador', async () => {
+        updateActiveTab('croquis');
+        await renderCroquisView();
+    });
+}
+
+// ✅ FUNCIÓN AÑADIDA QUE FALTABA
+export async function showTemplateManagerView() {
+    await loadViewAndInitialize('template_manager', () => {
+        // Mantenemos 'registro_electronico' como la pestaña activa para consistencia
+        updateActiveTab('registro_electronico');
+        // Llamamos a la función que renderiza el contenido de la vista
+        renderTemplateManagerView();
+    });
+}
+
+export function showServiceReportView(reportId) { 
+    viewContainer.innerHTML = '<div id="service-report-view" class="view-content"></div>';
+    currentLoadedView = 'service-report-detail';
+    updateActiveTab('partes_servicio');
+    renderServiceReport(reportId); 
+}
+
+// ... (El resto del archivo, desde handleAuthStateChange hasta el final, se mantiene exactamente igual)
+async function handleAuthStateChange(user) {
+    if (user) {
+        if (appInitialized) return;
+        showLoading("Verificando usuario...");
+        try {
+            const userDocRef = doc(db, 'users', user.uid);
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                const userProfile = { uid: user.uid, email: user.email, role: userData.role || 'guard', agentId: String(userData.agentId || ''), displayName: userData.name || userData.agentId };
+                setUser(userProfile);
+                showAppContent(userProfile.agentId);
+                await initializeAppData();
+                appInitialized = true;
+                await showScheduleView();
+            } else {
+                displayMessage("Perfil de usuario no encontrado en la base de datos.", "error");
+                await signOut(auth);
+            }
+        } catch (error) {
+            console.error("Error en handleAuthStateChange:", error);
+            await signOut(auth);
+        } finally {
+            hideLoading();
+        }
+    } else {
+        showLoginScreen();
+        appInitialized = false;
+        currentLoadedView = null;
+    }
+}
+
 async function initializeAppData() {
-    showLoading();
     try {
         await loadInitialAgents();
-
-        // Inicialización de componentes de la UI
-        initializeViewButtons();
-        initializeAgentManagerModal(); 
+        
+        initializeAgentManagerModal();
         initializeRequestPermissionModal();
         initializeManageRequestsModal();
         initializeProposeChangeModal();
         initializeRespondToProposalModal();
-        initializeShiftModal(); 
-        initializeNotificationBell();
-
-        // Configuración de botones y selectores principales
-        configureMainButtons();
-        await initSelectors();
+        initializeShiftModal();
+        initializeViewSelectorModal();
+        initializeManagementSelectorModal();
+        initializeAddMarkedDateModal();
+        initializeExtraServiceModal();
+        initializeServiceOrderModal();
+        initializeAssignmentModal();
+        initializeReportEntryModal();
+        initializeDefaultOrderTemplateModal();
+        initializeReportSummaryModal();
+        initializeAddRequerimientoModal();
+        initializeRegistroModal();
         
+        configureMainNavigationAndButtons();
         await updateNotificationCount();
+        renderActivityFeed();
 
+        document.addEventListener('viewReport', (event) => { if (event.detail.reportId) showServiceReportView(event.detail.reportId); });
+        document.addEventListener('scheduleShouldRefresh', async () => {
+            await loadAndDisplaySchedule(selectedMonthId.get(), selectedAgentId.get());
+        });
+        
     } catch (error) {
-        console.error("ERROR - main: Error al inicializar datos de la aplicación:", error);
-        displayMessage("Error crítico al cargar la aplicación. Por favor, recarga la página.", 'error');
-    } finally {
-        hideLoading();
+        console.error("Error crítico al cargar los componentes de la aplicación:", error);
     }
 }
 
-/**
- * Configura los botones principales de la aplicación, mostrando/ocultando según el rol del usuario
- * y asignando sus respectivos manejadores de eventos.
- */
-function configureMainButtons() {
+function configureMainNavigationAndButtons() {
     const userProfile = currentUser.get();
-    const isAdmin = userProfile?.role === 'admin';
+    const isMando = userProfile?.role === 'admin' || userProfile?.role === 'supervisor';
+    
+    const cleanAndListen = (element, handler) => {
+        if (!element) return;
+        const newElement = element.cloneNode(true); 
+        element.parentNode.replaceChild(newElement, element);
+        newElement.addEventListener('click', (e) => { e.preventDefault(); handler(e); });
+    };
 
-    const buttonConfigs = [
-        { id: 'manageAgentsButton', handler: showAgentManagerModal, adminOnly: true },
-        { id: 'requestPermissionButton', handler: showRequestPermissionModal, adminOnly: false },
-        { id: 'logout-button', handler: handleLogout, adminOnly: false },
-        { id: 'initializeMonthButton', handler: handleInitializeMonth, adminOnly: true },
-        { id: 'manageRequestsButton', handler: showManageRequestsModal, adminOnly: true },
-        { id: 'printButton', handler: handlePrintButtonClick, adminOnly: false }, 
-    ];
+    const loggedInUserDisplay = document.getElementById('logged-in-user-display');
+    if (loggedInUserDisplay) {
+        loggedInUserDisplay.textContent = userProfile.agentId;
+    }
 
-    buttonConfigs.forEach(config => {
-        const element = document.getElementById(config.id);
-        if (element) {
-            const shouldShow = !config.adminOnly || isAdmin;
-            element.style.display = shouldShow ? 'block' : 'none';
-            if (shouldShow) {
-                element.removeEventListener('click', config.handler); // Prevenir duplicados
-                element.addEventListener('click', config.handler);
-                // --- LOG DE DEPURACIÓN AÑADIDO ---
-                console.log(`[DEBUG - main] Botón ${config.id} configurado y visible.`);
-                // --- FIN LOG ---
-            } else {
-                console.log(`[DEBUG - main] Botón ${config.id} oculto.`);
-            }
-        } else {
-            console.warn(`[DEBUG - main] Botón no encontrado en DOM: ${config.id}`);
+    document.querySelectorAll('.module-tab').forEach(tab => {
+        const view = tab.dataset.view;
+        const handler = {
+            'cuadrante': showScheduleView,
+            'planificacion': showPlanningView,
+            'partes_servicio': showReportsListView,
+            'servicios_extra': showExtraServicesView,
+            'registros_estadisticas': showAdminDashboardView,
+            'registro_electronico': showRegistroView,
+            'croquis': showCroquisView
+        }[view];
+
+        const isMandoView = ['planificacion', 'registros_estadisticas'].includes(view);
+        if (isMandoView && !isMando) {
+            tab.style.display = 'none';
+        } else if(handler) {
+            cleanAndListen(tab, handler);
         }
     });
+    
+    cleanAndListen(document.getElementById('logout-button-header'), handleLogout);
+
+    const notificationBellButton = document.getElementById('notification-bell-button');
+    if (notificationBellButton) {
+        cleanAndListen(notificationBellButton, showManageRequestsModal);
+        const badge = notificationBellButton.querySelector('#notification-badge');
+        pendingNotificationsCount.subscribe(count => {
+            if (badge) {
+                badge.textContent = count > 9 ? '9+' : count;
+                badge.classList.toggle('hidden', count === 0);
+            }
+        });
+    }
 }
 
-/**
- * Gestiona el envío del formulario de login.
- * @param {Event} event - El evento de envío del formulario.
- */
 async function handleLogin(event) {
     event.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-
-    if (!email || !password) {
-        displayMessage("Por favor, introduce tu correo y contraseña.", "warning");
-        return;
-    }
     showLoading();
     try {
         await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-        displayMessage(`Error de autenticación: ${error.code}`, 'error');
-        console.error("Error de autenticación:", error);
-    } finally {
         hideLoading();
+        displayMessage("Nº de identificación o contraseña incorrectos.", 'error');
     }
 }
 
-/**
- * Gestiona el cierre de sesión del usuario.
- */
 async function handleLogout() {
     showLoading();
     try {
         await signOut(auth);
-        displayMessage("Sesión cerrada correctamente.", "info");
     } catch (error) {
-        displayMessage(`Error al cerrar sesión: ${error.message}`, 'error');
-        console.error("Error al cerrar sesión:", error);
+        displayMessage(`Error al cerrar sesión.`, 'error');
     } finally {
         hideLoading();
     }
 }
 
-/**
- * Gestiona la inicialización de un nuevo mes en el cuadrante (acción de admin).
- */
-async function handleInitializeMonth() {
-    const currentMonthId = selectedMonthId.get();
-    const currentYear = selectedYear.get();
-    
-    if (!currentMonthId || isNaN(currentYear)) {
-        displayMessage("Error: Mes o año no especificado para inicializar.", "error");
-        return;
-    }
-
-    const peopleToInitialize = availableAgents.get().map(agent => agent.id); 
-    if (!peopleToInitialize || peopleToInitialize.length === 0) {
-        displayMessage("No hay agentes disponibles para inicializar el cuadrante.", "warning");
-        return;
-    }
-
-    const monthNameFromId = currentMonthId.split('_')[1];
-    const monthIndex = getMonthNumberFromName(monthNameFromId);
-    if (monthIndex === null) { 
-        displayMessage("Error: Nombre de mes inválido para inicializar.", "error");
-        return;
-    }
-
-    showLoading();
-    try {
-        const initializeMonthCallable = httpsCallable(functions, 'initializeMonth');
-        const result = await initializeMonthCallable({
-            monthId: currentMonthId, 
-            year: currentYear, 
-            monthIndex: monthIndex, 
-            peopleToInitialize: peopleToInitialize
-        });
-        
-        displayMessage(result.data.message, result.data.status === 'success' ? 'success' : 'info');
-        
-        // Recargar el cuadrante para mostrar los datos recién inicializados
-        await loadAndDisplaySchedule(
-            currentMonthId, 
-            selectedAgentId.get(), 
-            document.getElementById('schedule-content'), 
-            document.getElementById('currentMonthTitle'), 
-            document.getElementById('printButton'), 
-            document.getElementById('agent-select'),
-            document.getElementById('seasonal-shift-note')
-        );
-    } catch (error) {
-        displayMessage(`Error al inicializar mes: ${error.message}`, "error");
-        console.error("ERROR - main: Error detallado al inicializar mes:", error);
-    } finally {
-        hideLoading();
-    }
-}
-
-/**
- * Inicializa la campana de notificaciones y la suscribe a los cambios en el estado.
- */
-function initializeNotificationBell() {
-    const bellContainer = document.getElementById('notification-bell-container');
-    const bellIcon = document.getElementById('notification-bell-icon');
-    const countSpan = document.getElementById('notification-count');
-
-    if (!bellContainer || !bellIcon || !countSpan) {
-        console.warn("[DEBUG - main] Elementos de la campana de notificación no encontrados.");
-        return;
-    }
-
-    pendingNotificationsCount.subscribe(count => {
-        const hasNotifications = count > 0;
-        countSpan.textContent = count;
-        countSpan.style.display = hasNotifications ? 'inline-block' : 'none';
-        bellIcon.classList.toggle('has-notifications', hasNotifications);
-        bellContainer.style.display = hasNotifications ? 'flex' : 'none';
-    });
-
-    bellContainer.addEventListener('click', showManageRequestsModal);
-}
-
-// Punto de entrada de la aplicación
 document.addEventListener('DOMContentLoaded', () => {
     onAuthStateChanged(auth, handleAuthStateChange);
-    
-    const loginForm = document.getElementById('loginForm');
-    if (loginForm) {
-        loginForm.addEventListener('submit', handleLogin);
-    } else {
-        console.error("ERROR - main: El formulario de login no se encontró en el DOM.");
-    }
+    document.getElementById('loginForm')?.addEventListener('submit', handleLogin);
 });

@@ -1,0 +1,103 @@
+/* Estilos específicos para la vista de Registro Electrónico */
+
+/* --- Estilos para la nueva barra de filtros del Registro --- */
+#registro-filters-card .view-controls {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* --- Corrección de diseño para que la tabla ocupe el espacio --- */
+/* Le decimos a la vista de registro que crezca y ocupe el espacio vertical disponible */
+#registro-view.view-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* ¡Esta es la clave! */
+}
+
+#registro-view > .card {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100%;
+}
+
+#registros-list-container {
+    flex-grow: 1; /* El contenedor de la tabla también debe crecer */
+    overflow-y: auto; /* Añade scroll si el contenido es muy largo */
+}
+
+/* ✅ REGLA FINAL Y CORRECTA PARA ALINEAR A LA IZQUIERDA */
+.data-table .actions-cell {
+    display: flex;
+    justify-content: flex-start; /* Alinear el contenido al inicio (izquierda) */
+    align-items: center;       /* Centrar los iconos verticalmente en la celda */
+    gap: 0.5rem;               /* Mantener el espacio entre los iconos */
+}
+
+/* ✅ REGLAS ESPECÍFICAS PARA LOS ICONOS DE LA TABLA DE REGISTRO */
+
+/* Usamos el ID de la vista (#registro-view) para aumentar la especificidad */
+#registro-view .data-table .actions-cell .material-icons {
+    color: #E53E3E; /* Rojo moderno */
+    transition: color 0.2s ease;
+}
+
+#registro-view .data-table .actions-cell button:hover .material-icons {
+    color: #C53030; /* Rojo más oscuro al pasar el ratón */
+}
+
+/* NUEVOS ESTILOS PARA EL FAB (Floating Action Button) */
+.fab-button {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    height: 3.5rem;
+    width: 3.5rem;
+    border-radius: 50%;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fab-button:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+}
+
+.fab-button .material-icons {
+    font-size: 1.5rem;
+    color: white;
+}
+
+/* NUEVOS ESTILOS PARA EL ESTADO VACÍO */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem;
+    color: var(--app-text-secondary);
+}
+
+.empty-state .empty-state-icon {
+    font-size: 5rem;
+    color: var(--app-primary-blue-lighter);
+    margin-bottom: 1rem;
+}
+
+.empty-state h4 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.empty-state p {
+    max-width: 400px;
+    margin: 0.5rem 0 1.5rem;
+    line-height: 1.5;
+}

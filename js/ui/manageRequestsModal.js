@@ -5,8 +5,12 @@ import { availableAgents, currentUser } from '../state.js';
 import { formatDate } from '../utils.js';
 import { getSolicitudes, getShiftChangeRequests, respondToShiftChangeRequest, getPermissionTypes, updateSolicitudStatus, markShiftChangeNotificationAsSeen, updateNotificationCount } from '../dataController.js';
 
-let manageRequestsModal; // Solo el modal principal se obtiene en initialize
-// Declarar el resto como null, se inicializarán la primera vez que showManageRequestsModal sea llamado
+/**
+ * @fileoverview Lógica para el modal de gestión de solicitudes.
+ * Muestra solicitudes de permisos y cambios de turno, adaptándose al rol del usuario (Admin o Guardia).
+ */
+
+let manageRequestsModal;
 let permissionsListContainer = null;
 let permissionsFilterStatus = null;
 let permissionsFilterAgent = null;
@@ -15,12 +19,15 @@ let shiftChangesListContainer = null;
 let shiftChangesFilterStatus = null;
 let shiftChangesFilterAgent = null;
 let shiftChangesApplyFilterBtn = null;
-let tabButtons = null; // Será un NodeList
+let tabButtons = null;
 let closeButton = null;
 
-let allPermissionTypes = []; // Para almacenar los tipos de permiso cargados
+let allPermissionTypes = [];
 
-// Esta función solo inicializa el modal principal y el botón de cerrar
+/**
+ * Inicializa el modal principal de selección de gestión.
+ * Esta función es llamada una sola vez al inicio de la aplicación.
+ */
 export function initializeManageRequestsModal() {
     console.log("[DEBUG - ManageRequestsModal] initializeManageRequestsModal llamado.");
     manageRequestsModal = document.getElementById('manage-requests-modal');
@@ -35,14 +42,16 @@ export function initializeManageRequestsModal() {
     } else {
         console.warn("WARN - ManageRequestsModal: Botón de cierre (.close-button) no encontrado en el modal principal.");
     }
-
     // Los demás elementos se inicializarán en showManageRequestsModal
     console.log("[DEBUG - ManageRequestsModal] Modal principal de gestión de solicitudes inicializado. Elementos internos se inicializarán al abrir.");
 }
 
-// Nueva función para inicializar los elementos internos si aún no lo han sido
+/**
+ * Inicializa los elementos DOM internos y los listeners.
+ * Se llama solo la primera vez que el modal se abre para mejorar el rendimiento.
+ * @returns {boolean} - true si la inicialización fue exitosa, false en caso contrario.
+ */
 function initializeInternalDOMElements() {
-    // Si permissionsListContainer ya tiene un valor, significa que ya se inicializaron
     if (permissionsListContainer) { 
         console.log("[DEBUG - ManageRequestsModal] Elementos internos ya inicializados.");
         return true; 
@@ -59,25 +68,12 @@ function initializeInternalDOMElements() {
     shiftChangesFilterAgent = manageRequestsModal.querySelector('#shift-changes-filter-agent');
     shiftChangesApplyFilterBtn = manageRequestsModal.querySelector('#shift-changes-apply-filter-btn');
     
-    tabButtons = manageRequestsModal.querySelectorAll('.tab-button'); // NodeList, se maneja diferente
-
-    // === NUEVOS LOGS DE DEPURACIÓN ESPECÍFICOS PARA CADA ELEMENTO ===
-    console.log("Elementos ManageRequestsModal - Estado de obtención (después de querySelector):");
-    console.log("  permissionsListContainer:", !!permissionsListContainer, permissionsListContainer);
-    console.log("  permissionsFilterStatus:", !!permissionsFilterStatus, permissionsFilterStatus);
-    console.log("  permissionsFilterAgent:", !!permissionsFilterAgent, permissionsFilterAgent);
-    console.log("  permissionsApplyFilterBtn:", !!permissionsApplyFilterBtn, permissionsApplyFilterBtn);
-    console.log("  shiftChangesListContainer:", !!shiftChangesListContainer, shiftChangesListContainer);
-    console.log("  shiftChangesFilterStatus:", !!shiftChangesFilterStatus, shiftChangesFilterStatus);
-    console.log("  shiftChangesFilterAgent:", !!shiftChangesFilterAgent, shiftChangesFilterAgent);
-    console.log("  shiftChangesApplyFilterBtn:", !!shiftChangesApplyFilterBtn, shiftChangesApplyFilterBtn);
-    console.log("  tabButtons (length):", tabButtons ? tabButtons.length : 0, tabButtons);
-    // === FIN NUEVOS LOGS ===
-
-    // Validar que todos los elementos esenciales se hayan encontrado
+    tabButtons = manageRequestsModal.querySelectorAll('.tab-button');
+    
+    // [VALIDACIÓN] Asegurar que todos los elementos esenciales se hayan encontrado
     if (!permissionsListContainer || !permissionsFilterStatus || !permissionsFilterAgent || !permissionsApplyFilterBtn ||
         !shiftChangesListContainer || !shiftChangesFilterStatus || !shiftChangesFilterAgent || !shiftChangesApplyFilterBtn ||
-        tabButtons.length === 0) { // tabButtons es un NodeList, se verifica su longitud
+        tabButtons.length === 0) {
         console.error("ERROR - ManageRequestsModal: Uno o más elementos DOM del modal de gestión de solicitudes NO SE ENCONTRARON AL INICIALIZAR INTERNAMENTE. Revise los logs detallados arriba.");
         const missing = [];
         if (!permissionsListContainer) missing.push('permissionsListContainer');
@@ -90,20 +86,23 @@ function initializeInternalDOMElements() {
         if (!shiftChangesApplyFilterBtn) missing.push('shiftChangesApplyFilterBtn');
         if (tabButtons.length === 0) missing.push('tabButtons');
         displayMessage("Error: No se pudo iniciar el modal de solicitudes. Recargue.", "error");
-        return false; // Indicar fallo
+        return false;
     }
     console.log("[DEBUG - ManageRequestsModal] Elementos internos del modal encontrados y asignados.");
 
     // Adjuntar listeners, solo si no estaban ya adjuntos
-    if (permissionsApplyFilterBtn) permissionsApplyFilterBtn.addEventListener('click', renderPermissionsList);
-    if (shiftChangesApplyFilterBtn) shiftChangesApplyFilterBtn.addEventListener('click', renderShiftChangesList); 
-    if (tabButtons) tabButtons.forEach(button => button.addEventListener('click', handleTabChange));
+    permissionsApplyFilterBtn.addEventListener('click', renderPermissionsList);
+    shiftChangesApplyFilterBtn.addEventListener('click', renderShiftChangesList); 
+    tabButtons.forEach(button => button.addEventListener('click', handleTabChange));
 
     loadPermissionTypesMapping();
     console.log("[DEBUG - ManageRequestsModal] Listeners y mapeo de tipos de permiso cargados para elementos internos.");
-    return true; // Indicar éxito
+    return true;
 }
 
+/**
+ * Muestra el modal de gestión de solicitudes, inicializando sus elementos internos si es la primera vez.
+ */
 export function showManageRequestsModal() {
     console.log("[DEBUG - ManageRequestsModal] showManageRequestsModal llamado.");
     if (!manageRequestsModal) {
@@ -114,16 +113,27 @@ export function showManageRequestsModal() {
     const initialized = initializeInternalDOMElements();
     if (!initialized) {
         console.error("[ERROR - ManageRequestsModal] Falló la inicialización de elementos internos. No se muestra el modal.");
-        return; // No mostrar si la inicialización interna falló
+        return;
     }
 
     populateAgentFilters(); 
     manageRequestsModal.classList.remove('hidden');
     manageRequestsModal.style.display = 'flex';
-    setActiveTab('permissions'); // Por defecto, la pestaña de permisos
+    
+    // [ADAPTACIÓN] Activa la pestaña correcta al abrir el modal, dependiendo del rol.
+    const userProfile = currentUser.get();
+    if (userProfile.role === 'admin') {
+        setActiveTab('permissions'); // Por defecto, la pestaña de permisos para admins
+    } else {
+        setActiveTab('shift-changes'); // Para guardias, por defecto muestra sus cambios de turno
+    }
+    
     console.log("[DEBUG - ManageRequestsModal] Modal de gestión de solicitudes visible. (display: flex)");
 }
 
+/**
+ * Oculta el modal de selección de gestión.
+ */
 export function hideManageRequestsModal() {
     console.log("[DEBUG - ManageRequestsModal] hideManageRequestsModal llamado.");
     if (manageRequestsModal) {
@@ -133,6 +143,10 @@ export function hideManageRequestsModal() {
     }
 }
 
+/**
+ * Activa la pestaña seleccionada y renderiza su contenido.
+ * @param {string} tabName - El nombre de la pestaña a activar ('permissions' o 'shift-changes').
+ */
 function setActiveTab(tabName) {
     console.log("[DEBUG - ManageRequestsModal] setActiveTab llamado. Pestaña:", tabName);
     const permissionsTab = document.getElementById('permissions-tab-content');
@@ -144,6 +158,23 @@ function setActiveTab(tabName) {
         return;
     }
 
+    // [ADAPTACIÓN] Ocultar/mostrar filtros de agentes para guardias
+    const userProfile = currentUser.get();
+    const isAdmin = userProfile?.role === 'admin';
+    if (!isAdmin) {
+        // Oculta los selectores de agente para usuarios no admin
+        permissionsFilterAgent.parentElement.style.display = 'none';
+        shiftChangesFilterAgent.parentElement.style.display = 'none';
+        permissionsApplyFilterBtn.style.display = 'none';
+        shiftChangesApplyFilterBtn.style.display = 'none';
+    } else {
+        // Muestra los selectores para admins
+        permissionsFilterAgent.parentElement.style.display = 'flex';
+        shiftChangesFilterAgent.parentElement.style.display = 'flex';
+        permissionsApplyFilterBtn.style.display = 'inline-flex';
+        shiftChangesApplyFilterBtn.style.display = 'inline-flex';
+    }
+
     tabButtons.forEach(button => button.classList.toggle('active', button.dataset.tab === tabName));
 
     if (tabName === 'permissions') {
@@ -151,24 +182,27 @@ function setActiveTab(tabName) {
         permissionsTab.style.display = 'block';
         shiftChangesTab.classList.add('hidden');
         shiftChangesTab.style.display = 'none';
+        renderPermissionsList();
     } else if (tabName === 'shift-changes') {
         shiftChangesTab.classList.remove('hidden');
         shiftChangesTab.style.display = 'block';
         permissionsTab.classList.add('hidden');
         permissionsTab.style.display = 'none';
-    }
-
-    if (tabName === 'permissions') {
-        renderPermissionsList();
-    } else if (tabName === 'shift-changes') {
         renderShiftChangesList();
     }
 }
 
+/**
+ * Maneja el cambio de pestaña.
+ * @param {Event} event - El evento de clic.
+ */
 function handleTabChange(event) {
     setActiveTab(event.target.dataset.tab);
 }
 
+/**
+ * Carga los tipos de permiso y los almacena en una variable global.
+ */
 async function loadPermissionTypesMapping() {
     console.log("[DEBUG - ManageRequestsModal] Cargando mapeo de tipos de permiso.");
     try {
@@ -179,19 +213,31 @@ async function loadPermissionTypesMapping() {
     }
 }
 
+/**
+ * Obtiene el nombre de un agente a partir de su ID.
+ * @param {string} agentId - El ID del agente.
+ * @returns {string} El nombre del agente o un identificador si no se encuentra.
+ */
 function getAgentName(agentId) {
     const agent = availableAgents.get().find(a => String(a.id) === String(agentId));
     return agent ? agent.name : `ID ${agentId}`;
 }
 
+/**
+ * Obtiene el nombre completo de un tipo de permiso a partir de su ID.
+ * @param {string} typeId - El ID del tipo de permiso.
+ * @returns {string} El nombre del tipo de permiso o 'Desconocido'.
+ */
 function getPermissionTypeName(typeId) {
     const type = allPermissionTypes.find(t => t.id === typeId);
     return type ? type.name : 'Desconocido';
 }
 
+/**
+ * Rellena los selectores de filtro de agente según el rol del usuario.
+ */
 function populateAgentFilters() {
     console.log("[DEBUG - ManageRequestsModal] populateAgentFilters llamado.");
-    // Asegurarse de que los selectores de filtro están inicializados
     if (!permissionsFilterAgent || !shiftChangesFilterAgent) {
         console.warn("[DEBUG - ManageRequestsModal] Selectores de filtro de agente no encontrados al poblar.");
         return;
@@ -212,7 +258,7 @@ function populateAgentFilters() {
         permissionsFilterAgent.disabled = false;
         shiftChangesFilterAgent.disabled = false;
         console.log("[DEBUG - ManageRequestsModal] Filtros de agente poblados para Admin.");
-    } else { // Guard
+    } else { // Rol 'guard'
         const userAgentOption = agents.find(a => String(a.id) === String(userProfile.agentId));
         const optionsHtml = userAgentOption 
             ? `<option value="${userAgentOption.id}">${userAgentOption.name}</option>`
@@ -226,6 +272,9 @@ function populateAgentFilters() {
     }
 }
 
+/**
+ * Renderiza la lista de solicitudes de permisos.
+ */
 async function renderPermissionsList() {
     console.log("[DEBUG - ManageRequestsModal] renderPermissionsList llamado.");
     if (!permissionsListContainer) {
@@ -235,17 +284,18 @@ async function renderPermissionsList() {
     permissionsListContainer.innerHTML = '<p>Cargando solicitudes...</p>';
     showLoading();
     try {
+        const userProfile = currentUser.get();
+        const isAdmin = userProfile?.role === 'admin';
+
+        // [ADAPTACIÓN CLAVE] Solo filtrar por el agente del usuario si no es admin
         const filters = {
             status: permissionsFilterStatus.value === 'all' ? null : permissionsFilterStatus.value,
-            agentId: permissionsFilterAgent.value, 
+            agentId: isAdmin ? permissionsFilterAgent.value : userProfile?.agentId,
         };
         console.log("[DEBUG - ManageRequestsModal] Filtros para permisos:", filters);
         const solicitudes = await getSolicitudes(filters);
         
         if (solicitudes.length > 0) {
-            const userProfile = currentUser.get();
-            const isAdmin = userProfile.role === 'admin';
-
             let tableRowsHtml = '';
             solicitudes.forEach(sol => {
                  const agentName = getAgentName(sol.agentId);
@@ -281,12 +331,15 @@ async function renderPermissionsList() {
                 </table>`;
             console.log("[DEBUG - ManageRequestsModal] Lista de permisos renderizada con éxito.");
 
-            permissionsListContainer.querySelectorAll('.approve-permission-btn').forEach(btn => {
-                btn.addEventListener('click', e => handleRespondToPermission(e.target.dataset.id, 'Aprobado'));
-            });
-            permissionsListContainer.querySelectorAll('.reject-permission-btn').forEach(btn => {
-                btn.addEventListener('click', e => handleRespondToPermission(e.target.dataset.id, 'Rechazado'));
-            });
+            // [VALIDACIÓN] Solo adjuntar listeners si el usuario es admin y hay botones de acción
+            if (isAdmin) {
+                permissionsListContainer.querySelectorAll('.approve-permission-btn').forEach(btn => {
+                    btn.addEventListener('click', e => handleRespondToPermission(e.target.dataset.id, 'Aprobado'));
+                });
+                permissionsListContainer.querySelectorAll('.reject-permission-btn').forEach(btn => {
+                    btn.addEventListener('click', e => handleRespondToPermission(e.target.dataset.id, 'Rechazado'));
+                });
+            }
 
         } else {
             permissionsListContainer.innerHTML = '<p>No hay solicitudes de permisos o licencias.</p>';
@@ -300,6 +353,11 @@ async function renderPermissionsList() {
     }
 }
 
+/**
+ * Maneja la respuesta a una solicitud de permiso.
+ * @param {string} solicitudId - El ID de la solicitud.
+ * @param {string} newStatus - El nuevo estado de la solicitud ('Aprobado' o 'Rechazado').
+ */
 async function handleRespondToPermission(solicitudId, newStatus) {
     console.log(`[DEBUG - ManageRequestsModal] handleRespondToPermission llamado para ID ${solicitudId} con estado ${newStatus}.`);
     showLoading();
@@ -308,7 +366,7 @@ async function handleRespondToPermission(solicitudId, newStatus) {
         displayMessage(`Solicitud de permiso procesada con éxito.`, 'success');
         console.log(`[DEBUG - ManageRequestsModal] Solicitud de permiso ${solicitudId} procesada.`);
         await renderPermissionsList();
-        await updateNotificationCount(); // Actualizar contador de notificaciones
+        await updateNotificationCount();
     } catch (error) {
         displayMessage(`Error al responder al permiso: ${error.message}`, 'error');
         console.error(`ERROR - ManageRequestsModal: Error al responder a la solicitud de permiso ${solicitudId}:`, error);
@@ -317,6 +375,9 @@ async function handleRespondToPermission(solicitudId, newStatus) {
     }
 }
 
+/**
+ * Renderiza la lista de solicitudes de cambio de turno.
+ */
 async function renderShiftChangesList() {
     console.log("[DEBUG - ManageRequestsModal] renderShiftChangesList llamado.");
     if (!shiftChangesListContainer) {
@@ -329,6 +390,8 @@ async function renderShiftChangesList() {
         const userProfile = currentUser.get();
         const isAdmin = userProfile.role === 'admin';
 
+        // [ADAPTACIÓN CLAVE] Filtros se adaptan al rol del usuario.
+        // Para admin, usa el filtro del selector. Para guardia, filtra por su propio ID.
         const filters = {
             status: shiftChangesFilterStatus.value === 'all' ? null : shiftChangesFilterStatus.value,
             agentId: isAdmin ? shiftChangesFilterAgent.value : userProfile.agentId
@@ -344,8 +407,13 @@ async function renderShiftChangesList() {
                 const targetAgentName = getAgentName(sol.targetAgentId);
                 const reqDateFormatted = sol.requesterShiftDate instanceof Date ? formatDate(sol.requesterShiftDate, 'dd/MM/yyyy') : 'Inválida';
                 const targetDateFormatted = sol.targetShiftDate instanceof Date ? formatDate(sol.targetShiftDate, 'dd/MM/yyyy') : 'Inválida';
+                
+                // [LÓGICA MEJORADA] Botones de acción solo si es Pendiente_Target Y el usuario es el agente objetivo o un admin
                 const showActionButtons = sol.status === 'Pendiente_Target' && (isAdmin || String(userProfile.agentId) === String(sol.targetAgentId));
                 
+                // [ADAPTACIÓN] Mostrar botón de "Marcar visto" solo para admins en solicitudes aprobadas
+                const showMarkSeenButton = isAdmin && sol.status === 'Aprobado_Ambos' && !sol.adminNotified;
+
                 tableRowsHtml += `
                     <tr>
                         <td>${sol.id.substring(0, 6)}...</td>
@@ -358,10 +426,11 @@ async function renderShiftChangesList() {
                             ${showActionButtons ? `
                                 <button class="button button-success button-sm approve-shift-change-btn" data-id="${sol.id}">Aprobar</button>
                                 <button class="button button-danger button-sm reject-shift-change-btn" data-id="${sol.id}">Rechazar</button>
-                            ` : '-'}
-                            ${isAdmin && sol.status === 'Aprobado_Ambos' && sol.adminNotified === false ? `
+                            ` : ''}
+                            ${showMarkSeenButton ? `
                                 <button class="button button-secondary button-sm mark-seen-btn" data-id="${sol.id}">Marcar visto</button>
                             ` : ''}
+                            ${!showActionButtons && !showMarkSeenButton ? '-' : ''}
                         </td>
                     </tr>
                 `;
@@ -372,15 +441,21 @@ async function renderShiftChangesList() {
                     <tbody>${tableRowsHtml}</tbody>
                 </table>`;
 
-            shiftChangesListContainer.querySelectorAll('.approve-shift-change-btn').forEach(btn => btn.addEventListener('click', e => handleRespondToShiftChange(e.target.dataset.id, 'Aprobado_Ambos')));
-            shiftChangesListContainer.querySelectorAll('.reject-shift-change-btn').forEach(btn => btn.addEventListener('click', e => handleRespondToShiftChange(e.target.dataset.id, 'Rechazado')));
-            // Listener para el nuevo botón "Marcar visto"
-            shiftChangesListContainer.querySelectorAll('.mark-seen-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
-                    await markShiftChangeNotificationAsSeen(e.target.dataset.id);
-                    renderShiftChangesList(); // Re-renderizar la lista para que el botón desaparezca
+            // [VALIDACIÓN] Solo adjuntar listeners si el usuario tiene permisos para responder
+            if (isAdmin || userProfile.role === 'guard') {
+                shiftChangesListContainer.querySelectorAll('.approve-shift-change-btn').forEach(btn => btn.addEventListener('click', e => handleRespondToShiftChange(e.target.dataset.id, 'Aprobado_Ambos')));
+                shiftChangesListContainer.querySelectorAll('.reject-shift-change-btn').forEach(btn => btn.addEventListener('click', e => handleRespondToShiftChange(e.target.dataset.id, 'Rechazado')));
+            }
+            // Listener para el nuevo botón "Marcar visto" (solo para admins)
+            if (isAdmin) {
+                shiftChangesListContainer.querySelectorAll('.mark-seen-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        await markShiftChangeNotificationAsSeen(e.target.dataset.id);
+                        renderShiftChangesList(); // Re-renderizar la lista para que el botón desaparezca
+                    });
                 });
-            });
+            }
+            
             console.log("[DEBUG - ManageRequestsModal] Lista de cambios de turno renderizada con éxito.");
         } else {
             shiftChangesListContainer.innerHTML = '<p>No hay solicitudes de cambio de turno para ti.</p>';
@@ -394,6 +469,11 @@ async function renderShiftChangesList() {
     }
 }
 
+/**
+ * Maneja la respuesta a una solicitud de cambio de turno.
+ * @param {string} changeId - El ID de la solicitud de cambio.
+ * @param {string} newStatus - El nuevo estado.
+ */
 async function handleRespondToShiftChange(changeId, newStatus) {
     console.log(`[DEBUG - ManageRequestsModal] handleRespondToShiftChange llamado para ID ${changeId} con estado ${newStatus}.`);
     showLoading();
@@ -402,7 +482,7 @@ async function handleRespondToShiftChange(changeId, newStatus) {
         displayMessage(`Solicitud procesada con éxito.`, 'success');
         console.log(`[DEBUG - ManageRequestsModal] Solicitud ${changeId} procesada por Cloud Function.`);
         await renderShiftChangesList();
-        await updateNotificationCount(); // Actualizar contador de notificaciones
+        await updateNotificationCount();
     } catch (error) {
         displayMessage(`Error al responder: ${error.message}`, 'error');
         console.error(`ERROR - ManageRequestsModal: Error al responder a la solicitud ${changeId}:`, error);
