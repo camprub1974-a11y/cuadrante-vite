@@ -9,17 +9,31 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin: 0 0 var(--space-2) 0;
   line-height: var(--leading-tight);
   color: var(--color-text);
   font-weight: 600; /* SemiBold por defecto */
 }
 
-h1 { font-size: var(--text-xl); } /* 24px */
-h2 { font-size: var(--text-lg); } /* 18px */
-h3 { font-size: var(--text-base); font-weight: 500; } /* 16px Medium */
-h4 { font-size: var(--text-sm); } /* 14px */
+h1 {
+  font-size: var(--text-xl);
+} /* 24px */
+h2 {
+  font-size: var(--text-lg);
+} /* 18px */
+h3 {
+  font-size: var(--text-base);
+  font-weight: 500;
+} /* 16px Medium */
+h4 {
+  font-size: var(--text-sm);
+} /* 14px */
 
 p {
   margin: 0 0 var(--space-2) 0;
@@ -37,8 +51,8 @@ a:hover {
 }
 
 label {
-    font-size: var(--text-sm);
-    font-weight: 500;
-    margin-bottom: 4px;
-    display: block;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
 }

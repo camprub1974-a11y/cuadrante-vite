@@ -6,8 +6,8 @@ export default defineConfig({
   resolve: {
     // Forzar a Vite a usar una única instancia de nanostores,
     // útil si tienes dependencias que también usan nanostores.
-    dedupe: ['nanostores'] 
-  }
+    dedupe: ['nanostores'],
+  },
   // Si tienes otras configuraciones de Vite (plugins, build, etc.), colócalas aquí
   // plugins: [react()], // Ejemplo si usaras React
   // build: { /* ... */ }

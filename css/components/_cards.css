@@ -21,7 +21,7 @@
 .card-header h4 {
   margin: 0;
   font-size: var(--text-base); /* Tamaño de 16px para consistencia */
-  color: var(--color-text);   /* Color de texto principal oscuro */
+  color: var(--color-text); /* Color de texto principal oscuro */
   font-weight: 600;
 }
 
@@ -31,4 +31,17 @@
 
 .card.no-padding .card-body {
   padding: 0;
+}
+
+/* 1. Convierte el .card-body de la tarjeta de parte en un contenedor flex vertical */
+.report-card .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Asegura que el cuerpo ocupe toda la altura de la tarjeta */
+}
+
+/* 2. Empuja el contenedor de acciones (.card-actions) hacia la parte inferior */
+.report-card .card-actions {
+  margin-top: auto; /* La magia de flexbox: empuja el elemento al final */
+  padding-top: 1rem; /* Añade un poco de espacio por encima del botón para que no se pegue al texto */
 }

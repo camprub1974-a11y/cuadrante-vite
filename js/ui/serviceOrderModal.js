@@ -1,185 +1,249 @@
-// js/ui/serviceOrderModal.js
+// js/ui/serviceOrderModal.js (VERSIÓN FINAL CORREGIDA)
 
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
-import { createServiceOrder, updateServiceOrder, getServiceOrders } from '../dataController.js'; // Asumiendo getServiceOrders puede buscar por ID
+import { getServiceOrderById, createServiceOrder, updateServiceOrder, createTask } from '../dataController.js';
+import { populateAgentSelector } from './selectorManager.js';
 import { formatDate } from '../utils.js';
-import { availableAgents } from '../state.js';
+import { currentUser } from '../state.js';
+// ✅ 1. Importamos la función para abrir el modal de asignación
+import { openAssignmentModal } from './assignmentModal.js';
 
-let modal, form, modalTitle, titleInput, dateInput, shiftSelect, descriptionInput, saveButton;
-let taskListContainer, newTaskInput, addTaskBtn;
-let currentOrderId = null;
-let tasks = [];
-let onSaveCallback = null; // Para refrescar la vista anterior
+let modal, form, orderIdInput, callbackOnSave;
 let isInitialized = false;
 
-export function initializeServiceOrderModal(onSave) {
-    if (isInitialized) return;
-    
-    modal = document.getElementById('service-order-modal');
-    if (!modal) {
-        console.error("Error Crítico: El modal #service-order-modal no fue encontrado en el HTML.");
-        return;
-    }
+// Tareas Generales
+let generalTasks = [];
+let generalTaskListContainer, newGeneralTaskInput, addGeneralTaskBtn;
 
-    form = modal.querySelector('#service-order-form');
-    modalTitle = modal.querySelector('#service-order-modal-title');
-    titleInput = modal.querySelector('#order-title');
-    dateInput = modal.querySelector('#order-date');
-    shiftSelect = modal.querySelector('#order-shift');
-    descriptionInput = modal.querySelector('#order-description');
-    saveButton = modal.querySelector('#save-order-btn');
-    taskListContainer = modal.querySelector('#task-list-container');
-    newTaskInput = modal.querySelector('#new-task-input');
-    addTaskBtn = modal.querySelector('#add-task-btn');
-    
-    onSaveCallback = onSave;
+// Tareas Específicas
+let specificTasksToCreate = [];
+let specificTasksPreviewContainer, newSpecificTaskDescription, newSpecificTaskAgent, addSpecificTaskBtn;
 
-    const elements = { form, modalTitle, titleInput, dateInput, shiftSelect, descriptionInput, saveButton, taskListContainer, newTaskInput, addTaskBtn };
-    for (const key in elements) {
-        if (!elements[key]) {
-            console.error(`Error de inicialización: El elemento del modal '${key}' no fue encontrado.`);
-            return;
-        }
-    }
+function initializeServiceOrderModal() {
+  if (isInitialized) return;
+  
+  modal = document.getElementById('service-order-modal');
+  if (!modal) return console.error("El modal de Orden de Servicio no fue encontrado.");
+  
+  form = document.getElementById('service-order-form');
+  
+  orderIdInput = document.createElement('input');
+  orderIdInput.type = 'hidden';
+  orderIdInput.id = 'order-id';
+  form.prepend(orderIdInput);
 
-    const closeButtons = modal.querySelectorAll('.close-button');
-    closeButtons.forEach(btn => btn.addEventListener('click', hideServiceOrderModal));
-    
-    modal.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            hideServiceOrderModal();
-        }
-    });
+  generalTaskListContainer = document.getElementById('task-list-container');
+  newGeneralTaskInput = document.getElementById('new-task-input');
+  addGeneralTaskBtn = document.getElementById('add-task-btn');
 
-    form.addEventListener('submit', handleFormSubmit);
-    addTaskBtn.addEventListener('click', handleAddTask);
-    
-    taskListContainer.addEventListener('click', (event) => {
-        // ✅ SELECTOR ACTUALIZADO: Buscamos el botón por su clase, no por el icono.
-        const deleteBtn = event.target.closest('.delete-task-btn');
-        if (deleteBtn) {
-            const taskIndex = deleteBtn.closest('.task-item').dataset.index;
-            handleDeleteTask(parseInt(taskIndex, 10));
+  specificTasksPreviewContainer = document.getElementById('specific-tasks-preview-container');
+  newSpecificTaskDescription = document.getElementById('new-specific-task-description');
+  newSpecificTaskAgent = document.getElementById('new-specific-task-agent');
+  addSpecificTaskBtn = document.getElementById('add-specific-task-btn');
+
+  // --- INICIO DE LA CORRECCIÓN ---
+
+  // 2. Buscamos el botón de "Asignar Agentes" por su ID
+  const openAssignmentBtn = document.getElementById('open-assignment-modal-btn');
+  
+  // 3. Le añadimos el event listener
+  if (openAssignmentBtn) {
+    openAssignmentBtn.addEventListener('click', () => {
+        const orderId = orderIdInput.value;
+        if (orderId) {
+            // Llamamos a la función que abre el modal de asignación
+            openAssignmentModal({ id: orderId });
+        } else {
+            displayMessage('Guarda la orden primero para poder asignar agentes.', 'info');
         }
     });
+  }
+  // --- FIN DE LA CORRECCIÓN ---
 
-    isInitialized = true;
+  // Eventos existentes
+  modal.querySelectorAll('.close-button').forEach(btn => btn.addEventListener('click', hideServiceOrderModal));
+  form.addEventListener('submit', handleFormSubmit);
+  addGeneralTaskBtn.addEventListener('click', handleAddGeneralTask);
+  addSpecificTaskBtn.addEventListener('click', handleAddSpecificTask);
+
+  isInitialized = true;
 }
 
-export async function openServiceOrderModal(orderId = null, callback) {
-    if (!isInitialized) initializeServiceOrderModal(callback);
-    if (!isInitialized) return;
+export function openServiceOrderModal(orderId = null, callback) {
+  callbackOnSave = callback;
+  if (!isInitialized) initializeServiceOrderModal();
+  
+  form.reset();
+  orderIdInput.value = orderId || '';
+  generalTasks = [];
+  specificTasksToCreate = [];
+  
+  renderGeneralTasks();
+  renderSpecificTasksPreview();
+  document.getElementById('assigned-agents-list').innerHTML = '<p class="empty-state-text">No hay agentes asignados.</p>';
 
-    form.reset();
-    tasks = [];
-    currentOrderId = orderId;
+  populateAgentSelector(document.getElementById('new-specific-task-agent'), true);
+  
+  if (orderId) {
+    document.getElementById('service-order-modal-title').textContent = 'Editar Orden de Servicio';
+    loadOrderForEditing(orderId);
+  } else {
+    document.getElementById('service-order-modal-title').textContent = 'Crear Nueva Orden';
+    document.getElementById('order-date').value = formatDate(new Date(), 'yyyy-MM-dd');
+    document.getElementById('order-number-display').textContent = 'N/A';
+    document.getElementById('order-status-display').textContent = 'Borrador';
+    document.getElementById('order-status-display').className = 'status-pill status-draft';
+  }
+  
+  modal.classList.remove('hidden');
+}
+
+async function loadOrderForEditing(orderId) {
+  showLoading('Cargando orden...');
+  try {
+    const order = await getServiceOrderById(orderId);
     
-    if (onSaveCallback === null && callback) {
-        onSaveCallback = callback;
-    }
+    document.getElementById('order-number-display').textContent = order.order_reg_number || 'N/A';
+    document.getElementById('order-status-display').textContent = (order.status || 'draft').replace('_', ' ');
+    document.getElementById('order-status-display').className = `status-pill status-${order.status || 'draft'}`;
+    document.getElementById('order-title').value = order.title || '';
+    document.getElementById('order-date').value = formatDate(new Date(order.service_date), 'yyyy-MM-dd');
+    document.getElementById('order-shift').value = order.service_shift || '';
+    document.getElementById('order-description').value = order.description || '';
 
-    if (orderId) {
-        modalTitle.textContent = 'Editar Orden de Servicio';
-        saveButton.textContent = 'Guardar Cambios';
-        showLoading("Cargando orden...");
-        try {
-            // Aquí necesitarías una función en dataController que obtenga una orden por ID
-            // const orderData = await getServiceOrderById(orderId); 
-            // titleInput.value = orderData.title;
-            // ... rellenar otros campos
-            // tasks = orderData.checklist || [];
-            console.warn("La carga de datos para editar una orden aún no está implementada.");
-        } catch(error) {
-            displayMessage(`Error al cargar la orden: ${error.message}`, 'error');
-            hideServiceOrderModal();
-        } finally {
-            hideLoading();
-        }
-    } else {
-        modalTitle.textContent = 'Crear Nueva Orden de Servicio';
-        saveButton.textContent = 'Guardar Orden';
-    }
+    renderAssignedAgents(order.assigned_agents || []);
+
+    generalTasks = order.checklist || [];
+    renderGeneralTasks();
     
-    renderTasks();
-    modal.classList.remove('hidden');
+  } catch (error) {
+    displayMessage(error.message, 'error');
+    hideServiceOrderModal();
+  } finally {
+    hideLoading();
+  }
+}
 
-    // ✅ ACTIVACIÓN DE ICONOS: Es crucial llamar a esto DESPUÉS de mostrar el modal.
-    if (window.feather) {
-        feather.replace();
+function renderAssignedAgents(agents) {
+    const container = document.getElementById('assigned-agents-list');
+    if (!agents || agents.length === 0) {
+        container.innerHTML = '<p class="empty-state-text">No hay agentes asignados.</p>';
+        return;
     }
+    container.innerHTML = agents.map(agentId => `<div class="resource-item"><span>Agente ${agentId}</span></div>`).join('');
 }
 
 function hideServiceOrderModal() {
-    if (modal) {
-        modal.classList.add('hidden');
-    }
+  if (modal) modal.classList.add('hidden');
 }
 
-function renderTasks() {
-    if (tasks.length === 0) {
-        taskListContainer.innerHTML = '<div class="no-tasks">No hay tareas añadidas</div>';
+function handleAddGeneralTask() {
+  const description = newGeneralTaskInput.value.trim();
+  if (description) {
+    generalTasks.push({ item: description, status: 'pendiente' });
+    newGeneralTaskInput.value = '';
+    renderGeneralTasks();
+  }
+}
+
+function renderGeneralTasks() {
+  if (!generalTaskListContainer) return;
+  if (generalTasks.length === 0) {
+    generalTaskListContainer.innerHTML = '<div class="no-tasks">No hay tareas generales.</div>';
+    return;
+  }
+  generalTaskListContainer.innerHTML = generalTasks.map((task, index) => `
+    <div class="task-item" data-index="${index}">
+      <span>${task.item}</span>
+      <button type="button" class="icon-button delete-task-btn" title="Eliminar Tarea"><i data-feather="trash-2"></i></button>
+    </div>`).join('');
+  feather.replace();
+  
+  generalTaskListContainer.querySelectorAll('.delete-task-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+          const index = e.target.closest('.task-item').dataset.index;
+          generalTasks.splice(index, 1);
+          renderGeneralTasks();
+      });
+  });
+}
+
+function handleAddSpecificTask() {
+  const description = newSpecificTaskDescription.value.trim();
+  const agentId = newSpecificTaskAgent.value;
+  const agentName = newSpecificTaskAgent.options[newSpecificTaskAgent.selectedIndex].text;
+  if (!description || !agentId) {
+    return displayMessage('Descripción y agente son obligatorios.', 'warning');
+  }
+  specificTasksToCreate.push({ description, assignedAgentId: agentId, assignedAgentName: agentName });
+  newSpecificTaskDescription.value = '';
+  newSpecificTaskAgent.value = '';
+  renderSpecificTasksPreview();
+}
+
+function renderSpecificTasksPreview() {
+    if (!specificTasksPreviewContainer) return;
+    if (specificTasksToCreate.length === 0) {
+        specificTasksPreviewContainer.innerHTML = '<p class="empty-state-text">No hay tareas específicas.</p>';
         return;
     }
-    
-    taskListContainer.innerHTML = tasks.map((task, index) => `
-        <div class="task-item" data-index="${index}">
-            <span>${task.item}</span>
-            <button type="button" class="icon-button delete-task-btn" title="Eliminar Tarea">
-                <i data-feather="trash-2"></i>
-            </button>
+    specificTasksPreviewContainer.innerHTML = specificTasksToCreate.map((task, index) => `
+        <div class="task-preview-item" data-index="${index}">
+            <p>${task.description}</p>
+            <span class="agent-tag">${task.assignedAgentName}</span>
+            <button type="button" class="icon-button remove-specific-task-btn" title="Quitar tarea"><i data-feather="x-circle"></i></button>
         </div>
     `).join('');
+    feather.replace();
 
-    // Activamos los iconos Feather que acabamos de añadir a la lista
-    if (window.feather) {
-        feather.replace();
-    }
-}
-
-function handleAddTask() {
-    const taskDescription = newTaskInput.value.trim();
-    if (taskDescription) {
-        tasks.push({ item: taskDescription, completed: false });
-        newTaskInput.value = '';
-        renderTasks();
-    }
-}
-
-function handleDeleteTask(index) {
-    tasks.splice(index, 1);
-    renderTasks();
+    specificTasksPreviewContainer.querySelectorAll('.remove-specific-task-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+            const index = e.target.closest('.task-preview-item').dataset.index;
+            specificTasksToCreate.splice(index, 1);
+            renderSpecificTasksPreview();
+        });
+    });
 }
 
 async function handleFormSubmit(event) {
-    event.preventDefault();
-    const orderData = {
-        title: titleInput.value.trim(),
-        service_date: dateInput.value,
-        service_shift: shiftSelect.value,
-        description: descriptionInput.value.trim(),
-        checklist: tasks
-    };
-    if (!orderData.title || !orderData.service_date || !orderData.service_shift) {
-        displayMessage("Los campos Título, Fecha y Turno son obligatorios.", "warning");
-        return;
+  event.preventDefault();
+  const orderId = orderIdInput.value;
+  
+  const orderData = {
+    title: document.getElementById('order-title').value,
+    service_date: document.getElementById('order-date').value,
+    service_shift: document.getElementById('order-shift').value,
+    description: document.getElementById('order-description').value,
+    checklist: generalTasks,
+  };
+
+  if (!orderData.title || !orderData.service_date || !orderData.service_shift) {
+    return displayMessage("Los campos 'título', 'fecha de servicio' y 'turno' son requeridos.", 'warning');
+  }
+
+  showLoading('Guardando...');
+  try {
+    let savedOrderId = orderId;
+    if (orderId) {
+      await updateServiceOrder(orderId, orderData);
+    } else {
+      const result = await createServiceOrder(orderData);
+      savedOrderId = result.orderId;
     }
-    showLoading("Guardando...");
-    try {
-        let result;
-        if (currentOrderId) {
-            result = await updateServiceOrder(currentOrderId, orderData);
-        } else {
-            result = await createServiceOrder(orderData);
-        }
-        
-        displayMessage(result.message || 'Operación realizada con éxito.', 'success');
-        hideServiceOrderModal();
-        if (onSaveCallback) {
-            onSaveCallback();
-        }
-    } catch (error) {
-        displayMessage(`Error al guardar: ${error.message}`, 'error');
-    } finally {
-        hideLoading();
+    
+    if (savedOrderId && specificTasksToCreate.length > 0) {
+      for (const task of specificTasksToCreate) {
+        await createTask({ ...task, orderId: savedOrderId });
+      }
     }
+
+    displayMessage('Orden guardada.', 'success');
+    hideServiceOrderModal();
+    if (callbackOnSave) callbackOnSave();
+
+  } catch (error) {
+    displayMessage(`Error: ${error.message}`, 'error');
+  } finally {
+    hideLoading();
+  }
 }

@@ -1,146 +1,151 @@
-// js/ui/shiftModal.js
+// js/ui/shiftModal.js (VERSIÓN CORREGIDA Y UNIFICADA)
 
-import { availableAgents } from '../state.js';
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
-import { updateShiftV2 } from '../dataController.js'; 
-import { FULL_SHIFT_TYPE_MAP } from '../constants.js';
-import { getAgentName } from './scheduleRenderer.js';
+import { updateShiftV2, getAllShiftTypes } from '../dataController.js';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
-let modal, closeButton, title, agentNameEl, dateEl, shiftButtonsContainer, removeBtn;
-let currentShiftData = null;
+// --- Variables del Módulo ---
+let modal, modalTitle, agentNameDisplay, dateDisplay, buttonsContainer, removeButton;
 let isInitialized = false;
+let currentShiftData = null;
+
+// --- Funciones Internas ---
 
 /**
- * @fileoverview Lógica para el modal de edición de turnos (para administradores).
- */
-
-/**
- * Inicializa el modal de edición de turnos, obteniendo sus referencias y listeners.
- */
-export function initializeShiftModal() {
-    if (isInitialized) return;
-
-    modal = document.getElementById('edit-shift-modal');
-    if (!modal) {
-        console.error("ERROR - ShiftModal: Modal #edit-shift-modal no encontrado.");
-        return;
-    }
-
-    closeButton = modal.querySelector('.close-button');
-    title = modal.querySelector('#shift-form-title');
-    agentNameEl = modal.querySelector('#shift-edit-agent-name');
-    dateEl = modal.querySelector('#shift-edit-date');
-    shiftButtonsContainer = modal.querySelector('#shift-type-buttons');
-    removeBtn = modal.querySelector('#remove-shift-btn');
-    
-    if (!closeButton || !title || !agentNameEl || !dateEl || !shiftButtonsContainer || !removeBtn) {
-        console.error("ERROR - ShiftModal: Faltan elementos internos en el modal de edición. Asegúrate de que los IDs en el HTML son correctos.");
-        return;
-    }
-
-    closeButton.addEventListener('click', hideShiftModal);
-    modal.addEventListener('click', (e) => { 
-        if (e.target === modal) hideShiftModal();
-    });
-    
-    shiftButtonsContainer.addEventListener('click', (e) => {
-        const button = e.target.closest('.shift-type-btn');
-        if (button && button.dataset.shiftType) {
-            handleShiftSelection(button.dataset.shiftType);
-        }
-    });
-
-    removeBtn.addEventListener('click', () => handleShiftSelection('-'));
-    
-    isInitialized = true;
-    console.log("✅ Módulo del Modal de Edición de Turnos inicializado.");
-}
-
-/**
- * Abre el modal y lo prepara con los datos del turno.
- * @param {object} shiftData - Objeto con los datos del turno.
- */
-export function openShiftModal(shiftData) {
-    if (!isInitialized) {
-        displayMessage("Error: El modal de edición de turnos no está listo. Reinicia la aplicación.", "error");
-        return;
-    }
-
-    currentShiftData = shiftData;
-
-    const agentObj = availableAgents.get().find(agent => String(agent.id) === String(shiftData.agentId));
-    const agentDisplayName = agentObj ? agentObj.name : getAgentName(shiftData.agentId);
-
-    agentNameEl.textContent = agentDisplayName || 'Agente Desconocido';
-    dateEl.textContent = formatDateForDisplay(shiftData.dayDate);
-
-    // ✅ LÓGICA CORREGIDA: Ahora lee correctamente el objeto simple { 'M': 'Mañana' }
-    // En lugar de `[key, { name, color }]`, ahora es `[key, name]`
-    shiftButtonsContainer.innerHTML = Object.entries(FULL_SHIFT_TYPE_MAP)
-        .filter(([key]) => key !== '-') // No mostrar el botón "Sin Asignación"
-        .map(([key, name]) => 
-            `<button class="shift-type-btn" data-shift-type="${key}">${name}</button>`
-        ).join('');
-
-    shiftButtonsContainer.querySelectorAll('.shift-type-btn').forEach(btn => {
-        if (btn.dataset.shiftType === shiftData.shiftType) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
-
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-}
-
-/**
- * Oculta el modal de edición de turnos.
+ * Cierra el modal. Se mueve aquí para asegurar que esté definida antes de su uso.
  */
 function hideShiftModal() {
-    if (modal) modal.classList.add('hidden');
-    currentShiftData = null;
+  if (modal) modal.classList.add('hidden');
 }
 
 /**
- * Maneja la selección de un nuevo tipo de turno o la acción de quitar turno.
- * @param {string} newShiftType - El nuevo tipo de turno.
+ * Gestiona el clic en uno de los botones de tipo de turno.
  */
-async function handleShiftSelection(newShiftType) {
-    if (newShiftType === 'N') {
-        displayMessage('El turno de Noche no se puede asignar directamente. Utilice la gestión de cambios de turno.', 'warning');
-        return; 
-    }
+async function handleShiftTypeClick(event) {
+  const newShiftType = event.currentTarget.dataset.shiftType;
+  if (!currentShiftData) return;
 
-    showLoading();
-    try {
-        await updateShiftV2({
-            monthId: currentShiftData.monthId,
-            weekKey: currentShiftData.weekKey,
-            dayKey: currentShiftData.dayKey,
-            agentId: currentShiftData.agentId, 
-            newShiftType: newShiftType,
-            existingShiftKey: currentShiftData.existingShiftKey
-        });
-        
-        displayMessage('Turno actualizado con éxito.', 'success');
-        hideShiftModal();
-        
-        document.dispatchEvent(new CustomEvent('scheduleShouldRefresh'));
+  showLoading('Actualizando turno...');
+  try {
+    await updateShiftV2({
+      monthId: currentShiftData.monthId,
+      weekKey: currentShiftData.weekKey,
+      dayKey: currentShiftData.dayKey,
+      agentId: currentShiftData.agentId,
+      newShiftType: newShiftType,
+    });
 
-    } catch (error) {
-        displayMessage(`Error al actualizar el turno: ${error.message}`, 'error');
-    } finally {
-        hideLoading();
-    }
+    hideShiftModal();
+    displayMessage('Turno actualizado con éxito.', 'success');
+    document.dispatchEvent(new CustomEvent('scheduleShouldRefresh'));
+  } catch (error) {
+    displayMessage(`Error al actualizar el turno: ${error.message}`, 'error');
+  } finally {
+    hideLoading();
+  }
 }
 
 /**
- * Formatea una cadena de fecha para mostrarla de forma legible en el modal.
- * @param {string} dateString - Fecha en formato YYYY-MM-DD.
- * @returns {string} Fecha formateada.
+ * Gestiona el clic en el botón de eliminar turno.
  */
-function formatDateForDisplay(dateString) {
-    const date = new Date(dateString + 'T12:00:00'); 
-    return date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+async function handleRemoveShift() {
+  if (!currentShiftData) return;
+
+  const newShiftType = '-'; // El guion representa un turno eliminado
+  showLoading('Eliminando turno...');
+  try {
+    await updateShiftV2({
+      monthId: currentShiftData.monthId,
+      weekKey: currentShiftData.weekKey,
+      dayKey: currentShiftData.dayKey,
+      agentId: currentShiftData.agentId,
+      newShiftType: newShiftType,
+    });
+
+    hideShiftModal();
+    displayMessage('Turno eliminado.', 'success');
+    document.dispatchEvent(new CustomEvent('scheduleShouldRefresh'));
+  } catch (error) {
+    displayMessage(`Error al eliminar el turno: ${error.message}`, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// --- Funciones Exportadas ---
+
+/**
+ * Abre el modal, lo rellena con datos y lo posiciona en la pantalla.
+ * @param {object} shiftData - Datos del turno.
+ * @param {MouseEvent} event - El evento de clic para posicionar el modal.
+ */
+export async function openShiftModal(shiftData) {
+  if (!isInitialized) initializeShiftModal();
+
+  currentShiftData = shiftData;
+  modalTitle.textContent = `Editar Turno`;
+  agentNameDisplay.textContent = shiftData.agentName;
+
+  try {
+    const date = new Date(`${shiftData.dateString}T12:00:00Z`);
+    dateDisplay.textContent = format(date, "EEEE, dd 'de' MMMM 'de' yyyy", { locale: es });
+  } catch (e) {
+    dateDisplay.textContent = 'Fecha inválida';
+  }
+
+  buttonsContainer.innerHTML = '';
+  showLoading('Cargando opciones...');
+  try {
+    const shiftTypes = await getAllShiftTypes();
+    shiftTypes.forEach((type) => {
+      if (type.quadrant_symbol !== '-') {
+        const button = document.createElement('button');
+        button.className = 'button button-secondary';
+        button.textContent = type.name;
+        button.dataset.shiftType = type.quadrant_symbol;
+        button.addEventListener('click', handleShiftTypeClick);
+        buttonsContainer.appendChild(button);
+      }
+    });
+  } catch (error) {
+    buttonsContainer.innerHTML =
+      '<p class="error-message">No se pudieron cargar los tipos de turno.</p>';
+  } finally {
+    hideLoading();
+  }
+
+  modal.classList.remove('hidden');
+}
+
+/**
+ * Inicializa los elementos del DOM y los listeners del modal una sola vez.
+ */
+export function initializeShiftModal() {
+  if (isInitialized) return;
+  modal = document.getElementById('edit-shift-modal');
+  if (!modal) return;
+
+  modalTitle = modal.querySelector('#shift-modal-title');
+  agentNameDisplay = modal.querySelector('#shift-modal-agent-name');
+  dateDisplay = modal.querySelector('#shift-modal-date');
+  buttonsContainer = modal.querySelector('#shift-modal-buttons');
+  removeButton = modal.querySelector('#shift-modal-remove-btn');
+  
+  // --- INICIO DE LA CORRECCIÓN ---
+  // Seleccionamos TODOS los botones de cierre, no solo el primero.
+  const closeButtons = modal.querySelectorAll('.close-button');
+
+  if (removeButton) removeButton.addEventListener('click', handleRemoveShift);
+  
+  // Aplicamos el evento de cierre a cada uno de los botones encontrados.
+  if (closeButtons) {
+    closeButtons.forEach(button => {
+      button.addEventListener('click', hideShiftModal);
+    });
+  }
+  // --- FIN DE LA CORRECCIÓN ---
+
+  isInitialized = true;
+  console.log('✅ Modal de edición de turnos inicializado correctamente.');
 }

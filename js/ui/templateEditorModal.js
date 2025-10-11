@@ -1,157 +1,204 @@
-// js/ui/templateEditorModal.js
+// js/ui/templateEditorModal.js (VERSIÓN FINAL CON <textarea>)
 
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
-// Aún no existen, pero las crearemos en el siguiente paso.
-import { createDocumentTemplate, updateDocumentTemplate } from '../dataController.js'; 
+import {
+  createDocumentTemplate,
+  updateDocumentTemplate,
+  // --- MODIFICACIÓN: Ya no necesitamos la subida de imágenes desde aquí ---
+  // uploadTemplateImage, 
+} from '../dataController.js';
+import Quill from 'quill';
+import 'quill/dist/quill.snow.css'; // Importa los estilos del editor
 
 // --- Variables del Módulo ---
-let modal, form, modalTitle, templateNameInput, templateTypeSelect, templateIdInput;
-let quill; // Variable para mantener la instancia del editor
+let modal, form, modalTitle, templateNameInput, templateTypeSelect;
+// --- MODIFICACIÓN: Reemplazamos 'quill' por una referencia al textarea ---
+let templateSourceTextarea; 
 let isInitialized = false;
-let onSaveCallback = null; // Función para refrescar la tabla de plantillas
+let onSaveCallback = null;
 let editingTemplateId = null;
+let editingTemplateData = null; // Mantenemos esto para el schema existente al editar
+
+// --- MODIFICACIÓN: La función imageHandler ya no es necesaria y ha sido eliminada ---
 
 /**
- * Inicializa el modal y el editor de texto Quill.js una sola vez.
+ * Inicializa el modal y los elementos del formulario una sola vez.
  */
 export function initializeTemplateEditorModal() {
-    if (isInitialized) return;
+  if (isInitialized) return;
 
-    modal = document.getElementById('template-editor-modal');
-    if (!modal) return;
+  modal = document.getElementById('template-editor-modal');
+  if (!modal) return;
 
-    // Referencias a los elementos del formulario
-    form = modal.querySelector('#template-form');
-    modalTitle = modal.querySelector('#template-modal-title');
-    templateNameInput = modal.querySelector('#template-name');
-    templateTypeSelect = modal.querySelector('#template-type');
-    const closeButton = modal.querySelector('.close-button');
+  form = modal.querySelector('#template-form');
+  modalTitle = modal.querySelector('#template-modal-title');
+  templateNameInput = modal.querySelector('#template-name');
+  templateTypeSelect = modal.querySelector('#template-type');
+  const closeButton = modal.querySelector('.close-button');
 
-    // Configuración de la barra de herramientas de Quill
-    const toolbarOptions = [
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'header': [1, 2, 3, 4, false] }],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'align': [] }],
-        ['clean']
-    ];
+  // --- MODIFICACIÓN: Obtenemos la referencia al nuevo <textarea> ---
+  // El div '#quill-editor' debe ser reemplazado en tu HTML por un <textarea id="template-html-source">
+  templateSourceTextarea = modal.querySelector('#template-html-source');
+  
+  // --- MODIFICACIÓN: Toda la inicialización de Quill ha sido eliminada ---
 
-    // Inicialización de Quill en el div #quill-editor
-    quill = new Quill('#quill-editor', {
-        modules: {
-            toolbar: toolbarOptions
-        },
-        theme: 'snow'
-    });
+  form.addEventListener('submit', handleFormSubmit);
+  closeButton.addEventListener('click', hideTemplateEditorModal);
 
-    // Asignación de eventos
-    form.addEventListener('submit', handleFormSubmit);
-    closeButton.addEventListener('click', hideTemplateEditorModal);
-
-    isInitialized = true;
+  isInitialized = true;
 }
 
 /**
  * Abre el modal, ya sea para crear una nueva plantilla o para editar una existente.
- * @param {function} callback - La función a llamar después de guardar (para refrescar la lista).
- * @param {object|null} templateData - Los datos de la plantilla si se está editando.
  */
 export function openTemplateEditorModal(callback, templateData = null) {
-    if (!isInitialized) initializeTemplateEditorModal();
-    
-    onSaveCallback = callback;
-    form.reset();
-    quill.setText(''); // Limpia el contenido del editor
+  console.log('🔵 Ejecutando openTemplateEditorModal...'); // Depuración
+  
+  if (!isInitialized) initializeTemplateEditorModal();
+  
+  // Vamos a verificar si la variable 'modal' es correcta
+  console.log('🔵 Elemento del modal encontrado:', modal); // Depuración
 
-    if (templateData) {
-        // --- MODO EDICIÓN ---
-        editingTemplateId = templateData.id;
-        modalTitle.textContent = 'Editar Plantilla';
-        templateNameInput.value = templateData.templateName;
-        templateTypeSelect.value = templateData.documentType;
-        quill.root.innerHTML = templateData.content; // Carga el HTML en el editor
-    } else {
-        // --- MODO CREACIÓN ---
-        editingTemplateId = null;
-        modalTitle.textContent = 'Nueva Plantilla';
+  onSaveCallback = callback;
+  form.reset();
+  
+  if (templateSourceTextarea) {
+    templateSourceTextarea.value = '';
+  }
+
+  if (templateData) {
+    // ... (el resto de la función no cambia)
+    editingTemplateId = templateData.id;
+    editingTemplateData = templateData;
+    modalTitle.textContent = 'Editar Plantilla';
+    templateNameInput.value = templateData.templateName;
+    templateTypeSelect.value = templateData.documentType;
+    if (templateSourceTextarea) {
+      templateSourceTextarea.value = templateData.content;
     }
-    
-    modal.classList.remove('hidden');
+  } else {
+    editingTemplateId = null;
+    editingTemplateData = null;
+    modalTitle.textContent = 'Nueva Plantilla';
+  }
+
+  console.log('🔵 Mostrando el modal ahora...'); // Depuración
+  modal.classList.remove('hidden');
 }
 
-/**
- * Cierra el modal.
- */
+// ✅ FUNCIÓN MOVIDA AQUÍ Y EXPORTADA
+export function openPreviewModal(templateData) {
+  const modal = document.getElementById('template-preview-modal');
+  if (!modal) {
+    console.error('El modal de previsualización no se encuentra en el DOM.');
+    return;
+  }
+
+  // 1. PRIMERO, le damos la orden de hacerse visible.
+  modal.classList.remove('hidden');
+
+  // 2. SEGUNDO, usamos setTimeout para darle tiempo al navegador a procesar el cambio visual
+  // ANTES de bloquearlo con la tarea de escritura del iframe.
+  setTimeout(() => {
+    try {
+      const modalTitle = modal.querySelector('#preview-modal-title');
+      const iframe = modal.querySelector('#preview-iframe');
+
+      if (modalTitle) modalTitle.textContent = `Previsualización: ${templateData.templateName}`;
+      
+      if (iframe) {
+        const previewDocument = iframe.contentDocument || iframe.contentWindow.document;
+        
+        // 3. TERCERO, ahora que el modal ya es visible, escribimos el contenido.
+        previewDocument.open();
+        previewDocument.write(templateData.content || '');
+        previewDocument.close();
+      }
+    } catch (error) {
+      console.error("Error al escribir en el iframe de previsualización:", error);
+    }
+  }, 0); // Un retardo de 0 es suficiente para que se ejecute en el siguiente ciclo.
+
+  // La lógica del botón de cierre se queda igual y fuera del setTimeout
+  const closeButton = modal.querySelector('.close-button');
+  const newCloseButton = closeButton.cloneNode(true);
+  closeButton.parentNode.replaceChild(newCloseButton, closeButton);
+  newCloseButton.addEventListener('click', () => modal.classList.add('hidden'));
+}
+
 function hideTemplateEditorModal() {
-    modal.classList.add('hidden');
+  modal.classList.add('hidden');
 }
 
-/**
- * Extrae los placeholders (ej. {{campo}}) del contenido HTML.
- * @param {string} htmlContent - El contenido del editor.
- * @returns {Array<string>} - Una lista de los placeholders encontrados.
- */
 function parsePlaceholdersFromContent(htmlContent) {
-    const regex = /{{\s*([a-zA-Z0-9_]+)\s*}}/g;
-    const matches = new Set(); // Usamos un Set para evitar duplicados
-    let match;
-    while ((match = regex.exec(htmlContent)) !== null) {
-        // Excluimos los placeholders automáticos que añadiremos en el backend
-        const autoPlaceholders = ['FECHA_ACTUAL', 'NUM_REGISTRO', 'AGENTES_FIRMANTES'];
-        if (!autoPlaceholders.includes(match[1])) {
-            matches.add(match[1]);
-        }
+  const regex = /{{\s*([a-zA-Z0-9_]+)\s*}}/g;
+  const matches = new Set();
+  let match;
+  while ((match = regex.exec(htmlContent)) !== null) {
+    const autoPlaceholders = ['FECHA_ACTUAL', 'NUM_REGISTRO', 'AGENTES_FIRMANTES'];
+    if (!autoPlaceholders.includes(match[1])) {
+      matches.add(match[1]);
     }
-    return Array.from(matches);
+  }
+  return Array.from(matches);
 }
 
-/**
- * Gestiona el envío del formulario.
- */
 async function handleFormSubmit(event) {
-    event.preventDefault();
-    showLoading();
+  event.preventDefault();
+  showLoading();
 
-    const name = templateNameInput.value.trim();
-    const type = templateTypeSelect.value;
-    const content = quill.root.innerHTML; // Obtenemos el contenido como HTML
+  const name = templateNameInput.value.trim();
+  const type = templateTypeSelect.value;
+  // --- MODIFICACIÓN: Obtenemos el contenido desde el .value del textarea ---
+  const content = templateSourceTextarea.value;
 
-    if (!name || !content || content === '<p><br></p>') {
-        hideLoading();
-        displayMessage("El nombre y el contenido de la plantilla son obligatorios.", "error");
-        return;
-    }
-    
-    // Generamos los placeholders y el schema automáticamente desde el contenido
+  // --- MODIFICACIÓN: La comprobación de contenido vacío es más simple ahora ---
+  if (!name || !content.trim()) {
+    hideLoading();
+    displayMessage('El nombre y el contenido de la plantilla son obligatorios.', 'error');
+    return;
+  }
+
+  let templateData;
+  if (editingTemplateId && editingTemplateData) {
+    templateData = {
+      templateName: name,
+      documentType: type,
+      content: content,
+      // Al editar, mantenemos el schema por si el usuario no quiere regenerarlo,
+      // pero actualizamos los placeholders por si ha añadido o quitado alguno.
+      schema: editingTemplateData.schema || {},
+      placeholders: parsePlaceholdersFromContent(content),
+    };
+  } else {
     const placeholders = parsePlaceholdersFromContent(content);
     const schema = {};
-    placeholders.forEach(p => {
-        schema[p] = { type: 'text', label: p.charAt(0).toUpperCase() + p.slice(1), required: true };
+    placeholders.forEach((p) => {
+      // Por defecto, cada nuevo placeholder es un campo de texto simple.
+      schema[p] = { type: 'text', label: p.charAt(0).toUpperCase() + p.slice(1), required: true };
     });
-
-    const templateData = {
-        templateName: name,
-        documentType: type,
-        content: content,
-        placeholders: placeholders,
-        schema: schema
+    templateData = {
+      templateName: name,
+      documentType: type,
+      content: content,
+      placeholders: placeholders,
+      schema: schema,
     };
+  }
 
-    try {
-        if (editingTemplateId) {
-            // Llama a la función para actualizar (la crearemos después)
-            await updateDocumentTemplate(editingTemplateId, templateData);
-            displayMessage("Plantilla actualizada con éxito.", "success");
-        } else {
-            // Llama a la función para crear (la crearemos después)
-            await createDocumentTemplate(templateData);
-            displayMessage("Plantilla creada con éxito.", "success");
-        }
-        hideTemplateEditorModal();
-        if (onSaveCallback) onSaveCallback(); // Refresca la tabla
-    } catch (error) {
-        displayMessage(`Error al guardar la plantilla: ${error.message}`, 'error');
-    } finally {
-        hideLoading();
+  try {
+    if (editingTemplateId) {
+      await updateDocumentTemplate(editingTemplateId, templateData);
+      displayMessage('Plantilla actualizada con éxito.', 'success');
+    } else {
+      await createDocumentTemplate(templateData);
+      displayMessage('Plantilla creada con éxito.', 'success');
     }
+    hideTemplateEditorModal();
+    if (onSaveCallback) onSaveCallback();
+  } catch (error) {
+    displayMessage(`Error al guardar la plantilla: ${error.message}`, 'error');
+  } finally {
+    hideLoading();
+  }
 }

@@ -1,0 +1,93 @@
+/* Ejemplo de CSS para las listas de tareas en el modal de visualización */
+
+.task-list-display, .resource-list-display {
+    background-color: var(--color-background-inactive);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.task-checklist-display {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-checklist-display li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px dotted var(--color-border);
+    color: var(--color-text);
+}
+
+.task-checklist-display li:last-child {
+    border-bottom: none;
+}
+
+.task-checklist-display li.completed {
+    color: var(--color-text-secondary);
+    text-decoration: line-through;
+}
+
+.task-checklist-display li .feather {
+    color: var(--color-text-secondary); /* Icono por defecto */
+}
+
+.task-checklist-display li.completed .feather {
+    color: var(--color-success); /* Icono de completado */
+}
+
+
+.specific-tasks-display {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.specific-task-item {
+    background-color: var(--color-background);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--border-radius-md);
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.specific-task-item.completed {
+    background-color: #f0fdf4; /* Un fondo más claro para completado */
+    border-color: #a7f3d0;
+}
+
+.specific-task-item .task-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+.specific-task-item.completed .task-info p {
+    text-decoration: line-through;
+    color: var(--color-text-secondary);
+}
+
+.specific-task-item .agent-tag {
+    font-size: 0.8em;
+    color: var(--color-text-secondary);
+    background-color: var(--color-background-inactive);
+    padding: 0.2em 0.6em;
+    border-radius: var(--border-radius-pill);
+    align-self: flex-start; /* Para que no ocupe todo el ancho */
+}
+
+.specific-task-item .feather {
+    color: var(--color-text-secondary);
+}
+
+.specific-task-item.completed .feather {
+    color: var(--color-success);
+}

@@ -19,7 +19,6 @@
 @import url('./components/_agent-manager.css');
 @import url('./components/_input-stepper.css');
 
-
 /* 3. Layout */
 @import url('./layout/_header.css');
 @import url('./layout/_main-layout.css');
@@ -41,7 +40,11 @@
 @import url('./views/_registro-view.css');
 @import url('./views/_croquis-view.css');
 @import url('./views/_cuadrante-view.css');
+@import url('./views/_identificaciones-view.css');
 @import url('./views/_planning-view.css');
+@import url('./views/_plantillas-view.css');
+@import url('./views/_assignment-modal.css');
+@import url('./views/_view-modal.css');
 
 /* 5. Utilidades */
 @import url('./utilities/_helpers.css');
