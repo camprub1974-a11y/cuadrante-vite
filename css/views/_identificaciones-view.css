@@ -139,6 +139,7 @@
   gap: 0.5rem;
   flex-shrink: 0;
 }
+<<<<<<< HEAD
 
 /* Añadir al final de css/views/_identificaciones-view.css */
 
@@ -148,3 +149,5 @@
   /* Hace que el grupo del formulario sea flexible y ocupe el espacio sobrante */
   flex-grow: 1;
 }
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33

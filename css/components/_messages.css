@@ -25,7 +25,11 @@
 }
 
 .app-message-info {
+<<<<<<< HEAD
   background-color: #ad944f;
+=======
+  background-color: #3b82f6;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 .app-message-success {
   background-color: #16a34a;
@@ -40,4 +44,7 @@
 .app-message.fade-out {
   opacity: 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33

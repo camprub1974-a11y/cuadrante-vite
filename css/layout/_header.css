@@ -78,9 +78,15 @@
   color: var(--color-text-main);
 }
 
+<<<<<<< HEAD
 .header-actions .icon-button i {
   width: 22px;
   height: 22px;
+=======
+.header-actions .icon-button svg {
+  width: 20px; /* Tamaño 20x20px según informe */
+  height: 20px;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 
 /* En css/layout/_header.css o similar */
@@ -111,6 +117,7 @@
   /* --- FIN DE LA CORRECCIÓN --- */
 }
 
+<<<<<<< HEAD
 
 /* Estilo específico para el botón del menú de gestión */
 #open-sidebar-btn {
@@ -123,3 +130,5 @@
   background-color: #0056b3; /* Un tono de azul más oscuro */
   color: var(--color-white);
 }
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33

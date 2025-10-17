@@ -30,14 +30,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+<<<<<<< HEAD
   flex-wrap: wrap; 
   gap: 1rem; 
+=======
+  flex-wrap: wrap; /* Permite que los elementos se muevan a la siguiente línea en pantallas pequeñas */
+  gap: var(--space-3); /* Espacio entre los grupos de la izquierda y la derecha */
+  align-items: flex-start;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 
 /* Grupo izquierdo: Navegación y título del mes */
 .month-navigation {
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   gap: 0.5rem; /* Espacio reducido entre flechas y título */
 }
 
@@ -55,6 +62,29 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+=======
+  gap: var(--space-1);
+}
+
+.month-title-container {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* Ajustamos el ancho de los selectores de fecha */
+.month-selector {
+  min-width: 150px;
+}
+.year-selector {
+  min-width: 100px;
+}
+
+.view-actions {
+  display: flex;
+  align-items: flex-start; /* Alinea la etiqueta "Ver Agente" con la base del selector */
+  flex-wrap: wrap;
+  gap: var(--space-2);
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 
 /* ¡LA CLAVE! Contenedor para que los selectores estén en horizontal */
@@ -123,21 +153,34 @@
   font-size: 1rem;
 }
 
+<<<<<<< HEAD
+=======
+/* Estilo para el botón de edición cuando está activo */
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 #edit-mode-toggle.active {
   background-color: var(--color-primary);
   color: var(--color-text-light);
   border-color: var(--color-primary);
 }
 
+<<<<<<< HEAD
+=======
+/* Cuando el modo edición está activo, cambia el cursor en las celdas de turno */
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 .edit-mode-active .shift-cell {
   cursor: pointer;
 }
 
+<<<<<<< HEAD
+=======
+/* Efecto visual sutil en las celdas editables */
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 .edit-mode-active .shift-cell:hover .turno-icon {
   transform: scale(1.15);
   box-shadow: 0 0 0 3px var(--color-primary);
 }
 
+<<<<<<< HEAD
 .shift-cell.has-novedad {
   background-color: #e6f7ff !important;
 }
@@ -181,3 +224,28 @@
   flex-wrap: wrap; 
   gap: 1rem; 
 }
+=======
+/* ================================================= */
+/* ESTILOS PARA LOS DÍAS CON NOVEDADES             */
+/* ================================================= */
+
+/* --- Para la VISTA DE CALENDARIO (FullCalendar) --- */
+.fc-daygrid-day.has-novedad {
+  background-color: #e6f7ff; /* Un azul claro suave */
+}
+.fc-daygrid-day.has-novedad:hover {
+  background-color: #d9f2ff;
+}
+.fc-day-today.has-novedad {
+  background-color: #cceeff !important;
+}
+
+/* --- ✅ Para la VISTA DE TABLA --- */
+.shift-cell.has-novedad {
+  background-color: #e6f7ff !important; /* Un azul claro suave */
+}
+
+.shift-cell.has-novedad:hover {
+  background-color: #d9f2ff !important; /* Un poco más oscuro al pasar el ratón */
+}
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33

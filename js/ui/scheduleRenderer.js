@@ -260,6 +260,7 @@ function handleShiftClick(event) {
   }
 }
 
+<<<<<<< HEAD
 // --- FUNCIÓN PRINCIPAL DE RENDERIZADO (MODIFICADA) ---
 export async function render(context) {
     const scheduleContent = document.getElementById('schedule-content');
@@ -360,26 +361,89 @@ async function renderAvailabilityView({
     return;
   }
 
+=======
+// REEMPLAZA TU FUNCIÓN 'render' CON ESTA
+export async function render(context) {
+  console.log('1. Renderer llamado con contexto:', context);
+  const scheduleContent = document.getElementById('schedule-content');
+  if (!scheduleContent) return;
+
+  const { userProfile, scheduleData, currentView: viewType } = context;
+
+  if (!userProfile || !scheduleData) {
+    scheduleContent.innerHTML = '<p class="info-message">Cargando contexto...</p>';
+    return;
+  }
+
+  // Limpiamos el contenido anterior
+  scheduleContent.innerHTML = '';
+
+  // Lógica para decidir qué vista renderizar
+  if (viewType === 'calendario') {
+    // Si la vista es 'calendario', creamos un contenedor y llamamos al renderizador del calendario
+    const calendarContainer = document.createElement('div');
+    calendarContainer.id = 'full-calendar-view';
+    scheduleContent.appendChild(calendarContainer);
+    await renderAvailabilityView(context);
+  } else {
+    // Para cualquier otra vista (por defecto 'tarjetas'), mostramos la vista gráfica
+    const desktopViewContainer = document.createElement('div');
+    desktopViewContainer.className = 'schedule-desktop-view';
+    scheduleContent.appendChild(desktopViewContainer);
+
+    desktopViewContainer.removeEventListener('click', handleShiftClick);
+    desktopViewContainer.addEventListener('click', handleShiftClick);
+
+    await renderGraphicalScheduleView(context);
+  }
+}
+
+// AÑADE ESTA FUNCIÓN COMPLETA AL FINAL DE TU ARCHIVO
+async function renderAvailabilityView({
+  scheduleData: data,
+  selectedAgentId: selectedAgent,
+  userProfile,
+  markedDates,
+}) {
+  const calendarContainer = document.getElementById('full-calendar-view');
+  if (!calendarContainer) {
+    console.error('Contenedor del calendario no encontrado.');
+    return;
+  }
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   if (!data || !data.weeks) {
     calendarContainer.innerHTML =
       '<p class="info-message">No hay datos de cuadrante disponibles.</p>';
     return;
   }
 
+<<<<<<< HEAD
   // --- El código para preparar los eventos se mantiene igual ---
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   if (!allShiftTypesCache) {
     allShiftTypesCache = await getAllShiftTypes();
   }
   const shiftTypeMap = new Map(allShiftTypesCache.map((type) => [type.quadrant_symbol, type.name]));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   const calendarEvents = [];
   let agentsToDisplay = availableAgents.get();
   if (selectedAgent && selectedAgent !== 'all') {
     agentsToDisplay = agentsToDisplay.filter((agent) => String(agent.id) === String(selectedAgent));
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   agentsToDisplay.forEach((agent) => {
     Object.values(data.weeks).forEach((week) => {
       Object.values(week.days).forEach((day) => {
         if (!day.isCurrentMonth) return;
+<<<<<<< HEAD
         let shift = null;
         if (day.shifts) {
           const shiftEntry = Object.values(day.shifts).find((s) => String(s.agentId) === String(agent.id));
@@ -388,6 +452,23 @@ async function renderAvailabilityView({
         if (shift) {
           const displayTxt = shift.shiftType;
           const eventClass = ['M', 'T', 'N', 'L', '-'].includes(displayTxt) ? `shift-${displayTxt}` : 'shift-permiso';
+=======
+
+        let shift = null;
+        if (day.shifts) {
+          const shiftEntry = Object.values(day.shifts).find(
+            (s) => String(s.agentId) === String(agent.id)
+          );
+          if (shiftEntry) shift = shiftEntry;
+        }
+
+        if (shift) {
+          const displayTxt = shift.shiftType;
+          const eventClass = ['M', 'T', 'N', 'L', '-'].includes(displayTxt)
+            ? `shift-${displayTxt}`
+            : 'shift-permiso';
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
           calendarEvents.push({
             title: `${displayTxt} - ${agent.name}`,
             start: day.date,
@@ -399,9 +480,13 @@ async function renderAvailabilityView({
     });
   });
 
+<<<<<<< HEAD
   // --- ✅ INICIO DE LA CORRECCIÓN ---
   // Se llama a "new Calendar" directamente, en lugar de "new FullCalendar.Calendar"
   const calendar = new Calendar(calendarContainer, {
+=======
+  const calendar = new FullCalendar.Calendar(calendarContainer, {
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     initialView: 'dayGridMonth',
     locale: 'es',
     headerToolbar: {
@@ -411,11 +496,16 @@ async function renderAvailabilityView({
     },
     events: calendarEvents,
     eventDidMount: function (info) {
+<<<<<<< HEAD
+=======
+      // Añade un tooltip con el nombre completo del turno
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
       if (info.event.extendedProps.description) {
         info.el.setAttribute('title', info.event.extendedProps.description);
       }
     },
   });
+<<<<<<< HEAD
   // --- FIN DE LA CORRECCIÓN ---
 
   calendar.render();
@@ -426,3 +516,8 @@ function getMonthNumberFromName(monthName) {
     const months = { 'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4, 'mayo': 5, 'junio': 6, 'julio': 7, 'agosto': 8, 'septiembre': 9, 'octubre': 10, 'noviembre': 11, 'diciembre': 12 };
     return months[monthName.toLowerCase()];
 }
+=======
+
+  calendar.render();
+}
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33

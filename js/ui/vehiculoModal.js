@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 // RUTA: js/ui/vehiculoModal.js (VERSIÓN ACTUALIZADA)
+=======
+// RUTA: js/ui/vehiculoModal.js (NUEVO ARCHIVO)
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
 import { saveVehiculo, updateVehiculo } from '../dataController.js';
 
+<<<<<<< HEAD
 // 1. DECLARAMOS la nueva variable para el input del nombre
 let modal, form, modalTitle, vehiculoIdInput, matriculaInput, marcaInput, modeloInput, colorInput, titularDniInput, titularNombreInput, telefonoInput, observacionesInput;
+=======
+let modal, form, modalTitle, vehiculoIdInput, matriculaInput, marcaInput, modeloInput, colorInput, titularDniInput, telefonoInput, observacionesInput;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 let onSaveCallback = null;
 
 function initializeVehiculoModal() {
@@ -17,8 +25,11 @@ function initializeVehiculoModal() {
     modeloInput = document.getElementById('vehiculo-modelo');
     colorInput = document.getElementById('vehiculo-color');
     titularDniInput = document.getElementById('vehiculo-titular-dni');
+<<<<<<< HEAD
     // 2. INICIALIZAMOS el nuevo elemento del DOM
     titularNombreInput = document.getElementById('vehiculo-titular-nombre');
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     telefonoInput = document.getElementById('vehiculo-telefono');
     observacionesInput = document.getElementById('vehiculo-observaciones');
 
@@ -43,8 +54,11 @@ export function openVehiculoModal(callback, vehiculoData = null) {
         modeloInput.value = vehiculoData.modelo || '';
         colorInput.value = vehiculoData.color || '';
         titularDniInput.value = vehiculoData.titularDni || '';
+<<<<<<< HEAD
         // 4. RELLENAMOS el campo de nombre al editar
         titularNombreInput.value = vehiculoData.titularNombre || '';
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         telefonoInput.value = vehiculoData.telefonoContacto || '';
         observacionesInput.value = vehiculoData.observaciones || '';
     } else {
@@ -65,8 +79,11 @@ async function handleFormSubmit(event) {
         modelo: modeloInput.value.trim(),
         color: colorInput.value.trim(),
         titularDni: titularDniInput.value.trim().toUpperCase(),
+<<<<<<< HEAD
         // 3. AÑADIMOS el nuevo campo al objeto de datos a guardar
         titularNombre: titularNombreInput.value.trim(),
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         telefonoContacto: telefonoInput.value.trim(),
         observaciones: observacionesInput.value.trim()
     };

@@ -14,6 +14,7 @@ import { openProposeChangeModal } from './proposeChangeModal.js';
 import { EXTRA_SERVICE_TYPES } from '../constants.js';
 
 function addAvailabilityListeners() {
+<<<<<<< HEAD
   // LOG 1: ¿Se está intentando siquiera añadir los listeners?
   console.log('1. ✅ addAvailabilityListeners: Adjuntando listeners a los días del calendario...');
 
@@ -31,18 +32,33 @@ function addAvailabilityListeners() {
         const { weekKey, dayKey, actualDayDate } = dayElement.dataset;
         let agentIdToEdit = selectedAgentId.get();
 
+=======
+  document.querySelectorAll('.calendar-day').forEach((dayElement) => {
+    const isCurrentMonthDay = dayElement.dataset.isCurrentMonth === 'true';
+    const userProfile = currentUser.get();
+
+    if (userProfile && userProfile.role === 'admin') {
+      dayElement.addEventListener('click', (event) => {
+        const { weekKey, dayKey, actualDayDate } = dayElement.dataset;
+        let agentIdToEdit = selectedAgentId.get();
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         if (String(agentIdToEdit) === 'all' || !agentIdToEdit) {
           displayMessage(
             'Por favor, selecciona un agente individual para editar su turno.',
             'info'
           );
+<<<<<<< HEAD
           console.warn('Clic detenido: No hay un agente individual seleccionado.');
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
           return;
         }
 
         const currentScheduleData = renderContext.get().scheduleData;
         const dayData = currentScheduleData?.weeks?.[weekKey]?.days?.[dayKey];
         let currentShiftType = '-';
+<<<<<<< HEAD
         
         if (dayData?.shifts) {
           const shiftEntry = Object.values(dayData.shifts).find(
@@ -73,6 +89,52 @@ function addAvailabilityListeners() {
       });
     } else if (userProfile && userProfile.role === 'guard') {
         // ... (la lógica para los guardias no necesita logs por ahora)
+=======
+        let existingShiftKey = '';
+
+        if (dayData?.shifts) {
+          const shiftEntry = Object.entries(dayData.shifts).find(
+            ([, s]) => String(s.agentId) === String(agentIdToEdit)
+          );
+          if (shiftEntry) {
+            existingShiftKey = shiftEntry[0];
+            currentShiftType = shiftEntry[1].shiftType;
+          }
+        }
+
+        openEditShiftModal(
+          weekKey,
+          dayKey,
+          agentIdToEdit,
+          currentShiftType,
+          actualDayDate,
+          dayElement,
+          existingShiftKey
+        );
+      });
+    } else if (userProfile && userProfile.role === 'guard' && isCurrentMonthDay) {
+      dayElement.addEventListener('click', (event) => {
+        const { weekKey, dayKey, actualDayDate } = dayElement.dataset;
+        const agentIdFromCell = selectedAgentId.get();
+
+        const currentScheduleData = renderContext.get().scheduleData;
+        const dayData = currentScheduleData?.weeks?.[weekKey]?.days?.[dayKey];
+        let currentShiftType = '-';
+
+        if (dayData?.shifts) {
+          const shiftEntry = Object.entries(dayData.shifts).find(
+            ([, s]) => String(s.agentId) === String(agentIdFromCell)
+          );
+          if (shiftEntry) currentShiftType = shiftEntry[1].shiftType;
+        }
+
+        if (String(userProfile.agentId) === String(agentIdFromCell) && isCurrentMonthDay) {
+          openProposeChangeModal(agentIdFromCell, actualDayDate, currentShiftType);
+        } else {
+          displayMessage('Solo puedes proponer cambios para tus propios turnos.', 'info');
+        }
+      });
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     }
   });
 }

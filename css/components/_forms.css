@@ -72,6 +72,7 @@ textarea:focus,
   white-space: nowrap;
 }
 /* ... (Se mantienen las variantes de color para .status-pill que ya tenías) ... */
+<<<<<<< HEAD
 /* Añadir a css/components/_forms.css si no existe */
 .form-row {
   display: flex;
@@ -80,3 +81,5 @@ textarea:focus,
 .form-row .form-group {
   flex: 1;
 }
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33

@@ -13,6 +13,7 @@
 #schedule-content,
 #extra-services-view {
   transition: opacity 0.5s ease-in-out;
+<<<<<<< HEAD
 }
 #schedule-content.fade-out,
 #extra-services-view.fade-out {
@@ -31,3 +32,10 @@
   white-space: nowrap;
   border-width: 0;
 }
+=======
+}
+#schedule-content.fade-out,
+#extra-services-view.fade-out {
+  opacity: 0;
+}
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33

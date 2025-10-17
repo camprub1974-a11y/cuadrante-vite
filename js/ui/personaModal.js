@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 // Archivo: js/ui/personaModal.js (VERSIÓN CORREGIDA)
 
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
+=======
+// Archivo: js/ui/personaModal.js
+
+import { displayMessage, showLoading, hideLoading } from './viewManager.js';
+// NOTA: Necesitarás crear las funciones savePersona y updatePersona en dataController.js
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 import { savePersona, updatePersona } from '../dataController.js'; 
 
 let modal, form, modalTitle, personaIdInput, dniInput, nombreInput, apellidosInput, moteInput, telefonoInput, fechaNacimientoInput, domicilioInput;
@@ -20,9 +27,13 @@ function initializePersonaModal() {
     domicilioInput = document.getElementById('persona-domicilio');
 
     form.addEventListener('submit', handleFormSubmit);
+<<<<<<< HEAD
     
     // --> LÍNEA CORREGIDA: Se usa querySelectorAll para afectar a ambos botones (X y Cancelar)
     modal.querySelectorAll('.close-button').forEach(btn => btn.addEventListener('click', () => modal.classList.add('hidden')));
+=======
+    modal.querySelector('.close-button').addEventListener('click', () => modal.classList.add('hidden'));
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 
 export function openPersonaModal(callback, personaData = null) {

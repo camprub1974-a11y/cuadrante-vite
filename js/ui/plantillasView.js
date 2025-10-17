@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // js/ui/plantillasView.js (Versión Final, Robusta y Corregida)
 
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
@@ -19,10 +20,25 @@ let editingTemplateData = null; // Importante para el estado de edición
 let importedTemplateJson = null;
 
 // Variables de paginación
+=======
+// js/ui/plantillasView.js (VERSIÓN CON FILTRO DE TIPO)
+
+import { displayMessage, showLoading, hideLoading } from './viewManager.js';
+import { getDocumentTemplates, getDocumentTemplateById, deleteDocumentTemplate, duplicateDocumentTemplate, createDocumentTemplate, updateDocumentTemplate } from '../dataController.js';
+import { formatDate } from '../utils.js';
+import { currentUser } from '../state.js';
+
+let isInitialized = false;
+let formContainer, templateForm, formTitle, templateNameInput, templateTypeSelect, templateSourceTextarea;
+let filterTypeSelect; // Variable para el nuevo filtro
+let editingTemplateId = null;
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 let currentPage = 1;
 let pageStartCursors = [null];
 let hasNextPage = false;
 
+<<<<<<< HEAD
 // --- FUNCIONES PRINCIPALES ---
 
 export function renderPlantillasView() {
@@ -175,11 +191,85 @@ function handleImportJsonClick() {
 }
 
 // --- LÓGICA DE CARGA Y RENDERIZADO ---
+=======
+export function renderPlantillasView() {
+  if (!isInitialized) {
+    // Referencias a elementos
+    formContainer = document.getElementById('inline-form-container');
+    templateForm = document.getElementById('template-form');
+    formTitle = document.getElementById('inline-form-title');
+    templateNameInput = document.getElementById('template-name');
+    templateTypeSelect = document.getElementById('template-type');
+    templateSourceTextarea = document.getElementById('template-html-source');
+    filterTypeSelect = document.getElementById('template-filter-type'); // Nuevo filtro
+    
+    setupEventListeners();
+    isInitialized = true;
+  }
+  currentPage = 1;
+  pageStartCursors = [null];
+  loadAndRenderTemplates();
+}
+
+export function resetPlantillasView() {
+  isInitialized = false;
+}
+
+function setupEventListeners() {
+    const viewContainer = document.getElementById('plantillas-master-detail-container');
+    const previewPanel = document.getElementById('plantillas-preview-panel');
+    const iframe = document.getElementById('preview-iframe');
+    const previewTitle = document.getElementById('preview-panel-title');
+    
+    // Listener para el filtro
+    filterTypeSelect.addEventListener('change', () => {
+        currentPage = 1;
+        pageStartCursors = [null];
+        loadAndRenderTemplates();
+    });
+
+    viewContainer.addEventListener('click', async (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        if (button.id === 'toggle-template-form-btn') openFormForCreate();
+        if (button.id === 'cancel-template-form-btn') closeForm();
+        if (button.id === 'close-preview-btn') previewPanel.classList.add('hidden');
+
+        const previewButton = event.target.closest('.preview-template-btn');
+        if (previewButton) await showPreview(event.target.closest('tr').dataset.id, iframe, previewTitle, previewPanel);
+
+        const editButton = event.target.closest('.button-edit');
+        if(editButton) await openFormForEdit(event.target.closest('tr').dataset.id);
+
+        const duplicateButton = event.target.closest('.button-duplicate');
+        if(duplicateButton) await handleDuplicateTemplateClick(event.target.closest('tr').dataset.id);
+
+        const deleteButton = event.target.closest('.button-delete');
+        if(deleteButton) await handleDeleteTemplateClick(event.target.closest('tr').dataset.id);
+
+        const paginationControls = event.target.closest('#plantillas-pagination-controls');
+        if (paginationControls) {
+            if (event.target.closest('#plantillas-next-page') && hasNextPage) {
+                currentPage++;
+                loadAndRenderTemplates();
+            } else if (event.target.closest('#plantillas-prev-page') && currentPage > 1) {
+                currentPage--;
+                loadAndRenderTemplates();
+            }
+        }
+    });
+
+    templateForm.addEventListener('submit', handleFormSubmit);
+}
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 async function loadAndRenderTemplates() {
   showLoading('Cargando plantillas...');
   const container = document.getElementById('plantillas-list-container');
   try {
     const startAfterDoc = pageStartCursors[currentPage - 1];
+<<<<<<< HEAD
     const documentType = filterTypeSelect.value === 'all' ? null : filterTypeSelect.value;
     
     const { templates, lastVisible } = await getDocumentTemplates({ startAfterDoc, limit: 15, documentType });
@@ -188,41 +278,68 @@ async function loadAndRenderTemplates() {
         throw new Error('El servidor devolvió un formato de datos de plantillas inesperado.');
     }
 
+=======
+    const documentType = filterTypeSelect.value; // Leemos el valor del filtro
+    
+    const { templates, lastVisible } = await getDocumentTemplates({ startAfterDoc, limit: 15, documentType });
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     hasNextPage = !!lastVisible;
     if (hasNextPage && pageStartCursors.length === currentPage) {
       pageStartCursors.push(lastVisible);
     }
     
     renderTemplatesList(templates);
+<<<<<<< HEAD
     updatePaginationControls();
 
   } catch (error) {
     displayMessage(`Error al cargar plantillas: ${error.message}`, 'error');
     renderTemplatesList([]);
+=======
+    updatePaginationControls(templates.length);
+
+  } catch (error) {
+    displayMessage(`Error al cargar plantillas: ${error.message}`, 'error');
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   } finally {
     hideLoading();
   }
 }
 
+<<<<<<< HEAD
 function updatePaginationControls() {
+=======
+function updatePaginationControls(recordCount) {
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   const pageInfo = document.getElementById('plantillas-page-info');
   const prevButton = document.getElementById('plantillas-prev-page');
   const nextButton = document.getElementById('plantillas-next-page');
 
   if(pageInfo) pageInfo.textContent = `Página ${currentPage}`;
   if(prevButton) prevButton.disabled = currentPage === 1;
+<<<<<<< HEAD
   if(nextButton) nextButton.disabled = !hasNextPage; 
+=======
+  if(nextButton) nextButton.disabled = !hasNextPage || recordCount < 15;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 
 function renderTemplatesList(templates) {
   const container = document.getElementById('plantillas-list-container');
   if (!container) return;
+<<<<<<< HEAD
   
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   if (templates.length === 0) {
     container.innerHTML = `<div class="empty-state"><p>No se encontraron plantillas con los filtros seleccionados.</p></div>`;
     return;
   }
+<<<<<<< HEAD
   
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   container.innerHTML = `
     <table class="data-table">
       <thead><tr><th>Nombre</th><th>Tipo</th><th>Acciones</th></tr></thead>
@@ -244,6 +361,7 @@ function renderTemplatesList(templates) {
   if(window.feather) feather.replace();
 }
 
+<<<<<<< HEAD
 // --- LÓGICA DE GESTIÓN DE FORMULARIO ---
 function openFormForCreate() {
   editingTemplateId = null;
@@ -355,11 +473,39 @@ async function handleFormSubmit(event) {
         await loadAndRenderTemplates(); // Solo recargamos la lista, no toda la vista
     } catch (error) {
         displayMessage(`Error al guardar la plantilla: ${error.message}`, 'error');
+=======
+// --- Resto de funciones (openForm, closeForm, handleFormSubmit, etc.) sin cambios ---
+// ... (pega aquí el resto de tus funciones auxiliares)
+
+function openFormForCreate() {
+    editingTemplateId = null;
+    templateForm.reset();
+    formTitle.textContent = 'Crear Nueva Plantilla';
+    formContainer.classList.remove('hidden');
+    templateNameInput.focus();
+}
+
+async function openFormForEdit(templateId) {
+    showLoading('Cargando plantilla...');
+    try {
+        const templateData = await getDocumentTemplateById(templateId);
+        if (!templateData) throw new Error('Plantilla no encontrada.');
+        editingTemplateId = templateData.id;
+        formTitle.textContent = 'Editar Plantilla';
+        templateNameInput.value = templateData.templateName || '';
+        templateTypeSelect.value = templateData.documentType || 'informe';
+        templateSourceTextarea.value = templateData.content || '';
+        formContainer.classList.remove('hidden');
+        templateNameInput.focus();
+    } catch (error) {
+        displayMessage(error.message, 'error');
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     } finally {
         hideLoading();
     }
 }
 
+<<<<<<< HEAD
 // --- RESTO DE MANEJADORES ---
 async function showPreview(templateData, iframe, previewTitle, previewPanel) {
     const previewDocument = iframe.contentDocument || iframe.contentWindow.document;
@@ -370,6 +516,54 @@ async function showPreview(templateData, iframe, previewTitle, previewPanel) {
     previewDocument.close();
     previewTitle.textContent = `Vista Previa: ${templateData.templateName}`;
     previewPanel.classList.remove('hidden');
+=======
+function closeForm() {
+    formContainer.classList.add('hidden');
+    templateForm.reset();
+    editingTemplateId = null;
+}
+
+async function handleFormSubmit(event) {
+    event.preventDefault();
+    showLoading('Guardando plantilla...');
+    const templateData = {
+        templateName: templateNameInput.value.trim(),
+        documentType: templateTypeSelect.value,
+        content: templateSourceTextarea.value
+    };
+    try {
+        if (editingTemplateId) {
+            await updateDocumentTemplate(editingTemplateId, templateData);
+            displayMessage('Plantilla actualizada.', 'success');
+        } else {
+            await createDocumentTemplate(templateData);
+            displayMessage('Plantilla creada.', 'success');
+        }
+        closeForm();
+        await renderPlantillasView();
+    } catch (error) {
+        displayMessage(`Error al guardar: ${error.message}`, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+async function showPreview(recordId, iframe, previewTitle, previewPanel) {
+    showLoading('Cargando previsualización...');
+    try {
+        const templateData = await getDocumentTemplateById(recordId);
+        const previewDocument = iframe.contentDocument || iframe.contentWindow.document;
+        previewDocument.open();
+        previewDocument.write(templateData.content || '');
+        previewDocument.close();
+        previewTitle.textContent = `Vista Previa: ${templateData.templateName}`;
+        previewPanel.classList.remove('hidden');
+    } catch (error) {
+        displayMessage(error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 
 async function handleDeleteTemplateClick(templateId) {
@@ -377,7 +571,11 @@ async function handleDeleteTemplateClick(templateId) {
         showLoading('Eliminando...');
         try {
             await deleteDocumentTemplate(templateId);
+<<<<<<< HEAD
             await loadAndRenderTemplates(); // Recargamos la lista
+=======
+            await renderPlantillasView();
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         } catch (error) {
             displayMessage(`Error: ${error.message}`, 'error');
         } finally {
@@ -390,8 +588,12 @@ async function handleDuplicateTemplateClick(templateId) {
     showLoading('Duplicando...');
     try {
         await duplicateDocumentTemplate(templateId);
+<<<<<<< HEAD
         displayMessage('Plantilla duplicada con éxito. Actualiza el nombre.', 'success');
         await loadAndRenderTemplates(); // Recargamos la lista
+=======
+        await renderPlantillasView();
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     } catch (error) {
         displayMessage(`Error al duplicar: ${error.message}`, 'error');
     } finally {

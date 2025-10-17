@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 // EN: js/ui/registroModal.js
 
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
 import Handlebars from 'handlebars';
 import {
@@ -8,15 +11,30 @@ import {
   markRegistroAsDeleted,
   getTemplatesByType,
   uploadRecordImage,
+<<<<<<< HEAD
   getDocumentTemplateById, // Importamos la función para obtener la plantilla completa
   getRegistroById // Importamos para el modo edición
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 } from '../dataController.js';
 import { availableAgents, currentUser } from '../state.js';
 import { resizeImage } from '../utils.js';
 
+<<<<<<< HEAD
 Handlebars.registerHelper('eq', function (a, b) {
   return a === b;
 });
+=======
+// ===================================================================
+// == INICIO DE LA CORRECCIÓN: AÑADIMOS EL HELPER QUE FALTABA       ==
+// ===================================================================
+Handlebars.registerHelper('eq', function (a, b) {
+  return a === b;
+});
+// ===================================================================
+// == FIN DE LA CORRECCIÓN                                          ==
+// ===================================================================
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 
 // --- VARIABLES GLOBALES DEL MÓDULO ---
 let modalClone;
@@ -30,10 +48,15 @@ let currentStep = 1;
 let totalSteps = 0;
 let fieldOrderGroups = [];
 let allFields = [];
+<<<<<<< HEAD
 let currentTaskId = null; // Para la trazabilidad de tareas
 let currentParentId = null;
 
 // --- ESTILOS CSS ---
+=======
+
+// --- ESTILOS CSS (Se mantienen para el wizard) ---
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 const wizardStyles = `
   #wizard-progress { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0; }
   .step-indicator { padding: 6px 12px; border: 1px solid #ccc; border-radius: 20px; color: #888; background-color: #f9f9f9; font-size: 0.85em; cursor: default; transition: all 0.3s ease; }
@@ -46,9 +69,15 @@ const wizardStyles = `
   .repeater-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #e0e0e0; }
   .repeater-item-header h4 { margin: 0; font-size: 1em; }
   .modal-overlay .modal-content {
+<<<<<<< HEAD
     width: 90%;
     max-width: 800px;
   }
+=======
+  width: 90%;
+  max-width: 800px; /* O el ancho máximo que prefieras */
+}
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 `;
 const styleElementId = 'wizard-modal-styles';
 
@@ -78,8 +107,11 @@ function closeAndDestroyModal() {
     modalClone.classList.add('hidden');
     setTimeout(() => modalClone.remove(), 300);
   }
+<<<<<<< HEAD
   currentTaskId = null;
   currentParentId = null; // ✅ LIMPIEZA DEL ESTADO
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 
 function getFormDefinition(template) {
@@ -92,6 +124,7 @@ function getFormDefinition(template) {
             if (template.schema[fieldId]) fieldsArray.push({ id: fieldId, ...template.schema[fieldId] });
         }
         return fieldsArray;
+<<<<<<< HEAD
     }
     return [];
 }
@@ -178,6 +211,60 @@ export async function openRegistroModal(options = {}) {
 // --- SETUP DE EVENTOS ---
 function setupEventListeners() {
     const form = modalClone.querySelector('#registro-form');
+=======
+    }
+    return [];
+}
+
+
+// --- Inicialización ---
+export function initializeRegistroModal() {
+    modalTemplate = document.getElementById('template-registro-modal');
+    if (!modalTemplate) {
+        console.error('Error Crítico: El <template> con id "template-registro-modal" no fue encontrado.');
+    }
+}
+
+// --- Apertura del Modal ---
+export function openRegistroModal(options = {}) {
+    const { direction = 'salida', callback, dataForEdit = null } = options;
+    onSaveSuccessCallback = callback;
+
+    if (!modalTemplate) return;
+    
+    modalClone = modalTemplate.content.cloneNode(true).firstElementChild;
+    document.body.appendChild(modalClone);
+    injectWizardStyles();
+
+    const directionInput = modalClone.querySelector('#registro-direction');
+    if(directionInput) directionInput.value = direction;
+
+    // Lógica para modo Edición vs Creación
+    if (dataForEdit) {
+        editingRecordId = dataForEdit.id;
+        // ... (tu lógica para rellenar en modo edición)
+    } else {
+        editingRecordId = null;
+    }
+
+    setupEventListeners();
+    
+    // Mostramos el modal y el primer paso (selector de tipo)
+    modalClone.querySelector('#type-select-step').classList.remove('hidden');
+    modalClone.querySelector('#template-select-step').classList.add('hidden');
+    
+    setTimeout(() => {
+        modalClone.classList.remove('hidden');
+        if (window.feather) feather.replace();
+    }, 10);
+}
+
+
+// --- SETUP DE EVENTOS ---
+function setupEventListeners() {
+    const form = modalClone.querySelector('#registro-form');
+    // Si el formulario no existe o los listeners ya están añadidos, salimos de la función.
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     if (!form || form.dataset.listenerAttached) return;
 
     const typeSelect = modalClone.querySelector('#registro-type-select');
@@ -185,49 +272,102 @@ function setupEventListeners() {
     const deleteBtn = modalClone.querySelector('#delete-registro-btn');
     const dynamicFormContainer = modalClone.querySelector('#registro-dynamic-form-container');
 
+<<<<<<< HEAD
     form.addEventListener('submit', handleFormSubmit);
     typeSelect.addEventListener('change', () => handleTypeChange());
     closeButtons.forEach(btn => btn.addEventListener('click', closeAndDestroyModal));
 
+=======
+    // Listener para el envío principal del formulario.
+    form.addEventListener('submit', handleFormSubmit);
+
+    // Listener para el cambio en el selector de "Tipo de Documento".
+    // La lógica de la versión anterior se mantiene, pero usamos una función dedicada.
+    typeSelect.addEventListener('change', () => handleTypeChange());
+
+    // Listeners para todos los botones de cerrar el modal.
+    closeButtons.forEach(btn => btn.addEventListener('click', closeAndDestroyModal));
+
+    // Listener para el botón de eliminar, solo si el usuario es administrador.
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     if (deleteBtn && currentUser.get()?.role === 'admin') {
         deleteBtn.addEventListener('click', handleDelete);
     }
 
+<<<<<<< HEAD
+=======
+    // Un único listener delegado para todas las acciones dinámicas dentro del formulario.
+    // Esto es más eficiente que añadir listeners a cada botón individualmente.
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     dynamicFormContainer.addEventListener('click', (event) => {
         const button = event.target.closest('button');
         if (!button) return;
 
+<<<<<<< HEAD
+=======
+        // Lógica para el botón "Volver".
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         if (button.id === 'back-to-type-btn') {
             const typeSelectStep = modalClone.querySelector('#type-select-step');
             const templateSelectStep = modalClone.querySelector('#template-select-step');
             
+<<<<<<< HEAD
             typeSelectStep.classList.remove('hidden');
             templateSelectStep.classList.add('hidden');
             templateSelectStep.innerHTML = '';
+=======
+            // Usamos las clases 'hidden' para alternar la visibilidad de los pasos.
+            typeSelectStep.classList.remove('hidden');
+            templateSelectStep.classList.add('hidden');
+            templateSelectStep.innerHTML = ''; // Limpiamos el contenido del paso 2.
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 
             currentTemplate = null;
             updatePreview();
             return;
         }
 
+<<<<<<< HEAD
+=======
+        // Lógica para subir imágenes.
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         if (button.classList.contains('upload-image-btn')) {
             handleImageUpload(button);
         }
 
+<<<<<<< HEAD
+=======
+        // Lógica para añadir un elemento a un "repeater".
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         if (button.classList.contains('add-repeater-item-btn')) {
             addRepeaterItem(button.dataset.repeaterId);
         }
 
+<<<<<<< HEAD
+=======
+        // Lógica para eliminar un elemento de un "repeater".
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         if (button.classList.contains('delete-repeater-item-btn')) {
             const itemToDelete = button.closest('.repeater-item');
             if (itemToDelete) {
                 itemToDelete.remove();
+<<<<<<< HEAD
                 updatePreview();
+=======
+                updatePreview(); // Actualizamos la vista previa después de borrar.
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
             }
         }
     });
 
+<<<<<<< HEAD
     dynamicFormContainer.addEventListener('input', updatePreview);
+=======
+    // Listener para actualizar la vista previa en tiempo real con cada cambio en el input.
+    dynamicFormContainer.addEventListener('input', updatePreview);
+    
+    // Marcamos el formulario para evitar que los listeners se añadan de nuevo.
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     form.dataset.listenerAttached = 'true';
 }
 
@@ -299,16 +439,30 @@ function renderFormFromSchema(dataForEdit = null) {
     return;
   }
 
+<<<<<<< HEAD
+=======
+  // Obtenemos los grupos de campos para el wizard
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   fieldOrderGroups = currentTemplate.fieldOrder || [];
   totalSteps = fieldOrderGroups.length;
   currentStep = 1;
   allFields = getFormDefinition(currentTemplate);
   const details = dataForEdit ? dataForEdit.details : {};
 
+<<<<<<< HEAD
+=======
+  // --- Lógica para generar el HTML del Asistente (Wizard) ---
+
+  // 1. Indicadores de progreso (los círculos de pasos)
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   let progressHtml = fieldOrderGroups.map((group, index) => 
     `<div class="step-indicator ${index === 0 ? 'active' : ''}" data-step="${index + 1}">${group.groupName}</div>`
   ).join('');
 
+<<<<<<< HEAD
+=======
+  // 2. Contenido de cada paso (los campos del formulario)
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   let stepsHtml = fieldOrderGroups.map((group, index) => {
     let stepFieldsHtml = (group.fields || []).map(fieldId => {
       const field = allFields.find(f => f.id === fieldId);
@@ -319,6 +473,7 @@ function renderFormFromSchema(dataForEdit = null) {
       const required = field.optional === false;
       let fieldHtml = '';
       
+<<<<<<< HEAD
       if (field.type === 'checkbox') {
           fieldHtml = `<div class="form-group-checkbox ${required ? 'required' : ''}"><input type="checkbox" id="field-${key}" name="${key}" ${value ? 'checked' : ''}><label class="form-label" for="field-${key}">${field.label}</label></div>`;
       } else if (field.type === 'image') {
@@ -349,6 +504,45 @@ function renderFormFromSchema(dataForEdit = null) {
   let navHtml = `<div id="wizard-navigation"><button type="button" id="prev-step-btn" class="button button-secondary" style="display: none;">Anterior</button><div><button type="button" id="next-step-btn" class="button button-primary">Siguiente</button><button type="submit" id="save-registro-btn" class="button button-primary" style="display: none;">Guardar Registro</button></div></div>`;
   container.innerHTML = `<div id="wizard-progress">${progressHtml}</div><div id="wizard-steps">${stepsHtml}</div>${navHtml}`;
 
+=======
+      // Aquí va tu lógica SWITCH completa para cada tipo de campo (checkbox, image, repeater, etc.)
+      // Esta parte es la que ya tenías y funcionaba bien.
+        if (field.type === 'checkbox') {
+            fieldHtml = `<div class="form-group-checkbox ${required ? 'required' : ''}"><input type="checkbox" id="field-${key}" data-key="${key}" ${value ? 'checked' : ''}><label class="form-label" for="field-${key}">${field.label}</label></div>`;
+        } else if (field.type === 'image') {
+            fieldHtml = `<div class="form-group ${required ? 'required' : ''}"><label class="form-label">${field.label}</label><div class="image-upload-container"><img id="preview-${key}" src="${value || 'assets/placeholder-image.png'}" alt="Vista previa" class="image-preview"><input type="hidden" id="field-${key}" data-key="${key}" value="${value || ''}"><button type="button" class="button button-secondary upload-image-btn" data-target-key="${key}"><i data-feather="upload"></i><span>Subir Imagen</span></button></div></div>`;
+        } else if (field.type === 'repeater') {
+            fieldHtml = `<div class="form-group repeater-group ${required ? 'required' : ''}" id="repeater-${key}" data-field-id="${key}"><label class="form-label">${field.label}</label><div class="repeater-items-container"></div><button type="button" class="button button-secondary add-repeater-item-btn" data-repeater-id="${key}" data-item-label="${field.itemLabel || 'Elemento'}"><i data-feather="plus"></i><span>Añadir ${field.itemLabel || 'Elemento'}</span></button></div>`;
+        } else {
+            fieldHtml = `<div class="form-group ${required ? 'required' : ''}"><label class="form-label" for="field-${key}">${field.label}</label>`;
+            switch (field.type) {
+                case 'textarea': fieldHtml += `<textarea id="field-${key}" data-key="${key}" rows="4" ${required ? 'required' : ''}>${value || ''}</textarea>`; break;
+                case 'select':
+                    fieldHtml += `<select id="field-${key}" class="selector" data-key="${key}" ${required ? 'required' : ''}><option value="">-- Selecciona --</option>`;
+                    (field.options || []).forEach(opt => { fieldHtml += `<option value="${opt}" ${opt === value ? 'selected' : ''}>${opt}</option>`; });
+                    fieldHtml += `</select>`; break;
+                case 'multiselect':
+                    const agents = availableAgents.get();
+                    const agentOptions = agents.map(agent => `<option value="${agent.id}">${agent.name}</option>`).join('');
+                    fieldHtml += `<select id="field-${key}" data-key="${key}" class="selector" multiple ${required ? 'required' : ''}>${agentOptions}</select><small>Mantén pulsada la tecla Ctrl (o Cmd en Mac) para seleccionar varios agentes.</small>`; break;
+                default: fieldHtml += `<input type="${field.type || 'text'}" id="field-${key}" data-key="${key}" value="${value || ''}" ${required ? 'required' : ''}>`; break;
+            }
+            fieldHtml += `</div>`;
+        }
+      return fieldHtml;
+    }).join('');
+
+    return `<div class="form-step" id="step-${index + 1}" data-step="${index + 1}" style="display: ${index === 0 ? 'block' : 'none'};">${stepFieldsHtml}</div>`;
+  }).join('');
+  
+  // 3. Botones de navegación (Anterior, Siguiente, Guardar)
+  let navHtml = `<div id="wizard-navigation"><button type="button" id="prev-step-btn" class="button button-secondary" style="display: none;">Anterior</button><div><button type="button" id="next-step-btn" class="button button-primary">Siguiente</button><button type="submit" id="save-registro-btn" class="button button-primary" style="display: none;">Guardar Registro</button></div></div>`;
+
+  // 4. Unimos todo y lo inyectamos en el contenedor
+  container.innerHTML = `<div id="wizard-progress">${progressHtml}</div><div id="wizard-steps">${stepsHtml}</div>${navHtml}`;
+
+  // Rellenamos los datos si estamos en modo edición (esta lógica es la original)
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   const repeaterField = allFields.find(f => f.type === 'repeater');
   if (repeaterField && dataForEdit && details[repeaterField.id]) {
     details[repeaterField.id].forEach(itemData => {
@@ -356,6 +550,10 @@ function renderFormFromSchema(dataForEdit = null) {
     });
   }
 
+<<<<<<< HEAD
+=======
+  // Conectamos los eventos a los nuevos botones de navegación
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   modalClone.querySelector('#next-step-btn').addEventListener('click', handleNextStep);
   modalClone.querySelector('#prev-step-btn').addEventListener('click', handlePrevStep);
 
@@ -405,11 +603,66 @@ function validateStep(stepNumber) {
     } else {
       field.classList.remove('is-invalid');
       if (parentGroup) parentGroup.classList.remove('is-invalid');
+<<<<<<< HEAD
+=======
     }
   });
   return isStepValid;
 }
 
+function addRepeaterItem(repeaterId, data = {}) {
+  const repeaterGroup = allFields.find(f => f.id === repeaterId);
+  if (!repeaterGroup) return;
+
+  const container = modalClone.querySelector(`#repeater-${repeaterId} .repeater-items-container`);
+  const itemIndex = container.children.length;
+  const itemDiv = document.createElement('div');
+  itemDiv.className = 'repeater-item';
+  itemDiv.dataset.index = itemIndex;
+
+  let itemHtml = `<div class="repeater-item-header"><h4>${repeaterGroup.itemLabel || 'Elemento'} #${itemIndex + 1}</h4><button type="button" class="icon-button delete-repeater-item-btn"><i data-feather="trash-2"></i></button></div>`;
+
+  (repeaterGroup.itemFields || []).forEach(field => {
+    const key = field.id;
+    const value = data[key] !== undefined ? data[key] : (field.default !== undefined ? field.default : '');
+    const required = field.optional === false;
+    
+    // --- INICIO DE LA CORRECCIÓN ---
+    itemHtml += `<div class="form-group ${required ? 'required' : ''}">`;
+    itemHtml += `<label class="form-label">${field.label}</label>`;
+
+    switch (field.type) {
+      case 'select':
+        itemHtml += `<select class="selector" data-key="${key}" ${required ? 'required' : ''}>`;
+        itemHtml += '<option value="">-- Selecciona --</option>';
+        (field.options || []).forEach(opt => {
+          itemHtml += `<option value="${opt}" ${opt === value ? 'selected' : ''}>${opt}</option>`;
+        });
+        itemHtml += `</select>`;
+        break;
+
+      case 'image':
+        const uniqueIdPrefix = `${repeaterId}-${itemIndex}-${key}`;
+        itemHtml += `
+          <div class="image-upload-container">
+            <img id="preview-${uniqueIdPrefix}" src="${value || 'assets/placeholder-image.png'}" alt="Vista previa" class="image-preview">
+            <input type="hidden" id="field-${uniqueIdPrefix}" data-key="${key}" value="${value || ''}">
+            <button type="button" class="button button-secondary upload-image-btn" data-target-prefix="${uniqueIdPrefix}" data-key="${key}">
+              <i data-feather="upload"></i><span>Subir Imagen</span>
+            </button>
+          </div>`;
+        break;
+
+      default: // Para 'text', 'number', 'date', 'time', etc.
+        itemHtml += `<input type="${field.type || 'text'}" data-key="${key}" value="${value || ''}" ${required ? 'required' : ''}>`;
+        break;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
+    }
+  });
+  return isStepValid;
+}
+
+<<<<<<< HEAD
 function addRepeaterItem(repeaterId, data = {}) {
   const repeaterGroup = allFields.find(f => f.id === repeaterId);
   if (!repeaterGroup) return;
@@ -502,6 +755,92 @@ function collectWizardData() {
     });
 
     return data;
+=======
+    itemHtml += `</div>`;
+    // --- FIN DE LA CORRECCIÓN ---
+  });
+
+  itemDiv.innerHTML = itemHtml;
+  container.appendChild(itemDiv);
+  if (window.feather) feather.replace();
+}
+
+function normalizeAgente(agente) {
+  return {
+    ...agente,
+    normal_check: Boolean(agente.normal_check),
+    nocturna_check: Boolean(agente.nocturna_check),
+    festiva_check: Boolean(agente.festiva_check),
+    festiva_noct_check: Boolean(agente.festiva_noct_check),
+    normal_horas: agente.normal_horas ? String(Number(agente.normal_horas) || 0) : "0",
+    nocturna_horas: agente.nocturna_horas ? String(Number(agente.nocturna_horas) || 0) : "0",
+    festiva_horas: agente.festiva_horas ? String(Number(agente.festiva_horas) || 0) : "0",
+    festiva_noct_horas: agente.festiva_noct_horas ? String(Number(agente.festiva_noct_horas) || 0) : "0",
+    total_horas: agente.total_horas ? String(Number(agente.total_horas) || 0) : "0",
+    tramos_html: agente.tramos
+      ? `<ul style="margin:0; padding-left: 15px;">${agente.tramos.split('\n').map(s => `<li>${s.trim()}</li>`).join('')}</ul>`
+      : ''
+  };
+}
+
+function collectAndSanitizeData(sanitizeForSave = true) {
+    const details = {};
+    for (const field of allFields) {
+        if (field.type === 'repeater') {
+            const repeaterItems = [];
+            const itemNodes = modalClone.querySelectorAll(`#repeater-${field.id} .repeater-item`);
+            const repeaterDef = allFields.find(f => f.id === field.id);
+
+            itemNodes.forEach(itemNode => {
+                const itemData = {};
+                if (repeaterDef && repeaterDef.itemFields) {
+                    repeaterDef.itemFields.forEach(subField => {
+                        const key = subField.id;
+                        const element = itemNode.querySelector(`[data-key="${key}"]`);
+                        
+                        if (element) {
+                            if (subField.type === 'checkbox') {
+                                itemData[key] = element.checked;
+                            } else if (subField.type === 'number') {
+                                itemData[key] = sanitizeForSave ? (parseFloat(element.value) || 0) : element.value;
+                            } else {
+                                itemData[key] = element.value;
+                            }
+                        } else {
+                            itemData[key] = subField.type === 'checkbox' ? false : (subField.type === 'number' ? (sanitizeForSave ? 0 : '') : '');
+                        }
+                    });
+                }
+                repeaterItems.push(itemData);
+            });
+            details[field.id] = repeaterItems;
+        } else {
+            const element = modalClone.querySelector(`#field-${field.id}`);
+            if (element) {
+                if (field.type === 'checkbox') {
+                    details[field.id] = element.checked;
+                } else if (field.type === 'number') {
+                    details[field.id] = sanitizeForSave ? (parseFloat(element.value) || 0) : element.value;
+                } else if (field.type === 'multiselect') {
+                    details[field.id] = Array.from(element.selectedOptions).map(opt => opt.value);
+                } else {
+                    details[field.id] = element.value.trim();
+                }
+            } else {
+                if (field.type === 'checkbox') {
+                    details[field.id] = false;
+                } else if (field.type === 'number') {
+                    details[field.id] = sanitizeForSave ? 0 : '';
+                } else if (field.type === 'multiselect') {
+                    details[field.id] = [];
+                } else {
+                    details[field.id] = '';
+                }
+            }
+        }
+    }
+    return details;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }
 
 function updatePreview() {
@@ -517,6 +856,7 @@ function updatePreview() {
     }
 
     let fullHtml = unescapeHtml(currentTemplate.content);
+<<<<<<< HEAD
     const details = collectWizardData(); // Usamos la nueva función para obtener datos para la preview
     
     try {
@@ -534,7 +874,74 @@ function updatePreview() {
         previewDocument.open();
         previewDocument.write(`Error en la plantilla: ${error.message}`);
         previewDocument.close();
+=======
+    const styleMatch = fullHtml.match(/<style>([\s\S]*?)<\/style>/i);
+    const bodyMatch = fullHtml.match(/<body>([\s\S]*?)<\/body>/i);
+    let templateStyles = styleMatch ? styleMatch[1] : '';
+    let templateBody = bodyMatch ? bodyMatch[1] : fullHtml;
+
+    const details = collectAndSanitizeData(false);
+
+    if (details.agentes) {
+        details.agentes = details.agentes.map(normalizeAgente);
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     }
+    
+    try {
+        const compiledTemplate = Handlebars.compile(templateBody);
+        const renderedHtml = compiledTemplate(details);
+
+        const zoomStyle = `
+          body { 
+            transform: scale(0.8); 
+            transform-origin: top left; 
+            width: 125%;
+          }
+        `;
+
+        previewDocument.open();
+        previewDocument.write(`<!DOCTYPE html><html><head><title>Vista Previa</title><style>${templateStyles} ${zoomStyle}</style></head><body>${renderedHtml}</body></html>`);
+        previewDocument.close();
+
+    } catch (error) {
+        console.error("Error al compilar la plantilla con Handlebars:", error);
+        previewDocument.open();
+        previewDocument.write(`Error en la plantilla: ${error.message}`);
+        previewDocument.close();
+    }
+}
+
+async function handleImageUpload(uploadButton) {
+  const targetPrefix = uploadButton.dataset.targetPrefix;
+  const key = uploadButton.dataset.key;
+
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    showLoading('Procesando imagen...');
+    try {
+      const resizedFile = await resizeImage(file, { width: 800, height: 600, quality: 0.8 });
+      showLoading('Subiendo imagen...');
+      const imageUrl = await uploadRecordImage(resizedFile);
+
+      const previewEl = modalClone.querySelector(`#preview-${targetPrefix}`);
+      const fieldEl = modalClone.querySelector(`#field-${targetPrefix}`);
+
+      if (previewEl) previewEl.src = imageUrl;
+      if (fieldEl) fieldEl.value = imageUrl;
+      
+      updatePreview();
+    } catch (error) {
+      displayMessage(`Error al subir la imagen: ${error.message}`, 'error');
+    } finally {
+      hideLoading();
+    }
+  };
+  input.click();
 }
 
 async function handleImageUpload(uploadButton) {
@@ -570,14 +977,27 @@ async function handleImageUpload(uploadButton) {
 
 async function handleFormSubmit(event) {
     event.preventDefault();
+<<<<<<< HEAD
 
     if (totalSteps > 0 && !validateStep(currentStep)) {
         displayMessage('Por favor, completa todos los campos obligatorios (*).', 'error');
         return;
+=======
+    const form = event.target;
+
+    // Validar el último paso si es un formulario con asistente
+    if (totalSteps > 0 && !validateStep(currentStep)) {
+      displayMessage('Por favor, completa todos los campos obligatorios (*).', 'error');
+      return;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     }
 
     showLoading('Guardando registro...');
     try {
+<<<<<<< HEAD
+=======
+        // Obtenemos los datos que no dependen de la plantilla
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         const direction = modalClone.querySelector('#registro-direction')?.value || 'salida';
         const documentType = modalClone.querySelector('#registro-type-select')?.value;
         
@@ -585,6 +1005,7 @@ async function handleFormSubmit(event) {
             throw new Error('El Tipo de Documento es obligatorio.');
         }
 
+<<<<<<< HEAD
         let dataToSave = {
             direction: direction,
         };
@@ -616,6 +1037,31 @@ console.log("Datos que se van a enviar:", dataToSave);
             await updateRegistro(editingRecordId, dataToSave);
             displayMessage('Registro actualizado con éxito.', 'success');
         } else {
+=======
+        // Inicializamos el objeto de datos que se enviará al backend
+        let dataToSave = {
+            direction: direction,
+            // El documentType se pasará como argumento principal a createRegistro
+        };
+
+        if (currentTemplate && allFields.length > 0) {
+            // Si hay una plantilla, recolectamos todos los datos dinámicos del formulario
+            const dynamicDetails = collectAndSanitizeData(true);
+            dataToSave.details = dynamicDetails;
+            dataToSave.templateUsed = currentTemplate.id;
+            // Usamos el nombre de la plantilla como el 'asunto' del registro
+            dataToSave.subject = currentTemplate.templateName;
+        } else {
+             throw new Error('No se ha seleccionado ninguna plantilla válida.');
+        }
+
+        if (editingRecordId) {
+            // Para la actualización, el backend espera el ID y el objeto de datos
+            await updateRegistro(editingRecordId, dataToSave);
+            displayMessage('Registro actualizado con éxito.', 'success');
+        } else {
+            // Para la creación, llamamos a createRegistro con el tipo y los datos
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
             await createRegistro(documentType, dataToSave);
             displayMessage('Registro guardado con éxito.', 'success');
         }

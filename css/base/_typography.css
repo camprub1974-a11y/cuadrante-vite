@@ -9,13 +9,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+<<<<<<< HEAD
 h1 {
+=======
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   margin: 0 0 var(--space-2) 0;
   line-height: var(--leading-tight);
   color: #07096b;
   font-weight: 600; /* SemiBold por defecto */
 }
 
+<<<<<<< HEAD
 h2,
 h3,
 h4,
@@ -27,6 +37,8 @@ h6 {
   font-weight: 600; /* SemiBold por defecto */
 }
 
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 h1 {
   font-size: var(--text-xl);
 } /* 24px */

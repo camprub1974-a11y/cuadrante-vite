@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Cuadrante de Servicio v2.0</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+<<<<<<< HEAD
     <link rel="stylesheet" href="./css/main.css?v=1.7" />
+=======
+    <link rel="stylesheet" href="./css/main.css?v=1.5" />
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     <link rel="stylesheet" href="./css/components/_modals.css?v=1.5" />
     <link rel="stylesheet" href="./css/_planning-view.css" />
     <link rel="stylesheet" href="./css/registro-view-styles.css">
@@ -72,6 +76,7 @@
         </div>
       </div>
       <div class="header-actions">
+<<<<<<< HEAD
   <span id="logged-in-user-display" class="user-id"></span>
 
   <button id="tasks-bell-button" class="icon-button" title="Mis Tareas Pendientes">
@@ -120,6 +125,63 @@
     </div>
   </div>
 </nav>
+=======
+        <span id="logged-in-user-display" class="user-id"></span>
+        <button id="notification-bell-button" class="icon-button" title="Notificaciones">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+          </svg>
+          <span id="notification-badge" class="notification-badge hidden">0</span>
+        </button>
+        <button id="logout-button-header" class="icon-button" title="Cerrar Sesión">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <nav class="module-nav">
+      <div class="container-fluid">
+        <a href="#" class="module-tab active" data-view="cuadrante">
+          <i data-feather="calendar"></i>
+          <span>Cuadrante</span>
+        </a>
+        <a href="#" class="module-tab" data-view="planificacion">
+          <i data-feather="clipboard"></i>
+          <span>Planificación</span>
+        </a>
+        <a href="#" class="module-tab" data-view="partes_servicio">
+          <i data-feather="file-text"></i>
+          <span>Partes de Servicio</span>
+        </a>
+        <a href="#" class="module-tab" data-view="servicios_extra">
+          <i data-feather="clock"></i>
+          <span>Servicios Extraordinarios</span>
+        </a>
+        <a href="#" class="module-tab" data-view="registros_estadisticas">
+          <i data-feather="bar-chart-2"></i>
+          <span>Estadísticas</span>
+        </a>
+        <a href="#" class="module-tab" data-view="registro_electronico">
+          <i data-feather="archive"></i>
+          <span>Registro</span>
+        </a>
+        <a href="#" class="module-tab admin-only" data-view="gestion_plantillas" style="display: none;">
+          <i data-feather="clipboard"></i>
+          <span>Plantillas</span>
+        </a>
+        <a href="#" class="module-tab" data-view="croquis">
+          <i data-feather="edit-3"></i>
+          <span>Croquizador</span>
+        </a>
+        <a href="#" class="module-tab" data-view="identificaciones">
+          <i data-feather="users"></i>
+          <span>Identificaciones</span>
+        </a>
+      </div>
+    </nav>
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 
     <div id="app-content" class="hidden">
         <div class="container">
@@ -161,6 +223,7 @@
     <div id="loading-overlay" class="hidden">
       <div class="spinner"></div>
       <p>Cargando...</p>
+<<<<<<< HEAD
     </div>
 
 <div id="sidebar-overlay" class="sidebar-overlay"></div>
@@ -179,6 +242,43 @@
   </div>
 </nav>
     
+=======
+    </div>
+
+    <div id="edit-shift-modal" class="modal-overlay hidden">
+  <div class="modal-content card" style="max-width: 450px;">
+    
+    <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="edit"></i>
+        <span id="shift-modal-title">Editar Turno</span>
+      </div>
+      <button type="button" class="icon-button close-button">
+        <i data-feather="x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="shift-info">
+        <p><strong>Agente:</strong> <span id="shift-modal-agent-name"></span></p>
+        <p><strong>Fecha:</strong> <span id="shift-modal-date"></span></p>
+      </div>
+      <hr>
+      <p class="form-label">Selecciona el nuevo turno:</p>
+      <div id="shift-modal-buttons" class="shift-buttons-container">
+        </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" id="shift-modal-remove-btn" class="button button-danger">Quitar Turno</button>
+      <div class="flex-spacer"></div>
+      <button type="button" class="button button-secondary close-button">Cancelar</button>
+    </div>
+
+  </div>
+</div>
+
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script type="module" src="/js/main.js"></script>
 
@@ -705,6 +805,7 @@
           <label class="form-label" for="vehiculo-matricula">Matrícula</label>
           <input type="text" id="vehiculo-matricula" style="text-transform: uppercase;" required>
         </div>
+<<<<<<< HEAD
 
         <div class="form-row">
           <div class="form-group">
@@ -733,6 +834,26 @@
             </div>
         </div>
 
+=======
+        <div style="display: flex; gap: var(--space-2)">
+            <div class="form-group" style="flex: 1">
+              <label class="form-label" for="vehiculo-marca">Marca</label>
+              <input type="text" id="vehiculo-marca" required>
+            </div>
+            <div class="form-group" style="flex: 1">
+              <label class="form-label" for="vehiculo-modelo">Modelo</label>
+              <input type="text" id="vehiculo-modelo" required>
+            </div>
+        </div>
+         <div class="form-group">
+          <label class="form-label" for="vehiculo-color">Color</label>
+          <input type="text" id="vehiculo-color">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="vehiculo-titular-dni">Titular (DNI)</label>
+          <input type="text" id="vehiculo-titular-dni" style="text-transform: uppercase;">
+        </div>
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
         <div class="form-group">
           <label class="form-label" for="vehiculo-telefono">Teléfono de Contacto</label>
           <input type="tel" id="vehiculo-telefono">
@@ -1157,6 +1278,7 @@
           </div>
         </div>
 
+<<<<<<< HEAD
        <div class="column">
   <h4 class="column-title">Recursos Asignados</h4>
   
@@ -1179,6 +1301,19 @@
   </div>
   
   </div>
+=======
+        <div class="column">
+          <h4 class="column-title">Recursos Asignados</h4>
+          <div class="form-group">
+            <label class="form-label">Agentes</label>
+            <div id="assigned-agents-list" class="resource-list">
+              </div>
+            <button type="button" id="open-assignment-modal-btn" class="button button-secondary button-small">
+              <i data-feather="users"></i> Asignar Agentes
+            </button>
+          </div>
+          </div>
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 
         <div class="column">
           <h4 class="column-title">Tareas y Checklist</h4>
@@ -1839,7 +1974,11 @@
 <div id="task-comment-modal" class="modal-overlay hidden">
   <div class="modal-content card">
     <div class="card-header">
+<<<<<<< HEAD
       <div class="modal-title"><i data-feather="message-square"></i>
+=======
+      <div class="modal-title"><i data-feather="message"></i>
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 
     <div id="template-editor-modal" class="modal-overlay hidden">
       <div class="modal-content card large">

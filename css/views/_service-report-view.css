@@ -293,7 +293,11 @@
   width: 100%;
   box-sizing: border-box;
   display: flex;
+<<<<<<< HEAD
   justify-content: center;
+=======
+  justify-content: flex-end;
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
   background-color: #ffffff;
@@ -382,6 +386,7 @@
   font-size: 0.9rem;
   line-height: 1.5;
   color: var(--color-text-secondary);
+<<<<<<< HEAD
 }
 
 /* Estilo para la fila de la tarea cuando está finalizada */
@@ -404,4 +409,6 @@
   /* Esta línea es la clave: crea un espacio uniforme y perfecto 
      entre todas las tarjetas de esta columna */
   gap: var(--space-4); /* --space-4 suele ser 1.5rem o 24px */
+=======
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
 }

@@ -40,7 +40,11 @@
 .card-header h4 {
   margin: 0;
   font-size: var(--text-base); /* Tamaño de 16px para consistencia */
+<<<<<<< HEAD
   color: #ff0015;
+=======
+  color: var(--color-text); /* Color de texto principal oscuro */
+>>>>>>> 96c3d57486e4f06bd38451d4c921030c59481b33
   font-weight: 600;
 }
 
