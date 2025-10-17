@@ -1,208 +1,265 @@
-// js/ui/planningView.js
+// js/ui/planningView.js (VERSIÓN CORREGIDA Y LIMPIA)
 
 import { displayMessage, showLoading, hideLoading } from './viewManager.js';
-import { getServiceOrders, deleteServiceOrder, getAutomationConfig, setAutomationConfig } from '../dataController.js';
+import { getServiceOrders, deleteServiceOrder, generateAiServiceOrder } from '../dataController.js';
 import { formatDate } from '../utils.js';
-import { initializeServiceOrderModal, openServiceOrderModal } from './serviceOrderModal.js';
+import { openServiceOrderModal } from './serviceOrderModal.js';
 import { openAssignmentModal } from './assignmentModal.js';
-import { currentUser } from '../state.js';
-import { openDefaultOrderTemplateModal } from './defaultOrderTemplateModal.js';
+import { openViewOrderModal } from './viewOrderModal.js';
+// ✅ La importación de 'renderContext' ha sido eliminada.
 
-let listContainer, createOrderBtn, createDefaultOrdersBtn;
-let filterYear, filterMonth, filterShift, filterStatus, applyFiltersBtn, clearFiltersBtn;
 let isInitialized = false;
 let currentOrders = [];
 
-export function initializePlanningView() {
-    if (isInitialized) return true;
+// --- VARIABLES DE ESTADO PARA LA PAGINACIÓN ---
+let currentPage = 1;
+let lastVisibleDoc = null;
+let pageHistory = [null];
+let hasNextPage = false;
 
-    listContainer = document.getElementById('service-orders-list-container');
-    createOrderBtn = document.getElementById('create-order-btn');
-    createDefaultOrdersBtn = document.getElementById('create-default-orders-btn');
+// --- FUNCIONES PRINCIPALES ---
 
-    filterYear = document.getElementById('order-filter-year');
-    filterMonth = document.getElementById('order-filter-month');
-    filterShift = document.getElementById('order-filter-shift');
-    filterStatus = document.getElementById('order-filter-status');
-    applyFiltersBtn = document.getElementById('apply-order-filters-btn');
-    clearFiltersBtn = document.getElementById('clear-order-filters-btn');
-    const autoGenerateToggle = document.getElementById('auto-generate-toggle');
-
-    if (!listContainer || !createOrderBtn || !createDefaultOrdersBtn || !applyFiltersBtn || !clearFiltersBtn) {
-        console.error("Faltan elementos de la interfaz en la vista de Planificación.");
-        return false;
-    }
-
-    initializeServiceOrderModal(loadAndRenderOrders);
-
-    createOrderBtn.addEventListener('click', () => openServiceOrderModal(null, loadAndRenderOrders));
-    createDefaultOrdersBtn.addEventListener('click', openDefaultOrderTemplateModal);
-    applyFiltersBtn.addEventListener('click', loadAndRenderOrders);
-
-    clearFiltersBtn.addEventListener('click', () => {
-        populateDateFilters();
-        filterShift.value = 'all';
-        filterStatus.value = 'all';
-        loadAndRenderOrders();
-    });
-
-    listContainer.addEventListener('click', handleTableActions);
-
-    // ✅ INICIO: LÓGICA DE REFRESCO AUTOMÁTICO
-    // Escucha los eventos personalizados que dispara el modal al guardar.
-    document.addEventListener('serviceOrderCreated', loadAndRenderOrders);
-    document.addEventListener('serviceOrderUpdated', loadAndRenderOrders);
-    // ✅ FIN: LÓGICA DE REFRESCO AUTOMÁTICO
-
-    isInitialized = true;
-    return true;
-}
-
-export function renderPlanningView() {
-    const success = initializePlanningView();
-    if (success) {
-        populateDateFilters();
-        loadAndRenderOrders();
+export async function renderPlanningView() {
+    try {
+        initializePlanningView();
+        currentPage = 1;
+        lastVisibleDoc = null;
+        pageHistory = [null];
+        await loadAndRenderOrders();
+    } catch (error) {
+        console.error("Fallo crítico en la inicialización de PlanningView:", error);
+        displayMessage(`Error al iniciar la vista: ${error.message}`, 'error');
+        hideLoading();
     }
 }
 
-async function loadAndRenderOrders() {
-    if (!listContainer) return;
-    showLoading();
-    listContainer.innerHTML = `<p class="info-message">Cargando órdenes...</p>`;
+export function resetPlanningView() {
+    isInitialized = false;
+    // Detener listeners si es necesario al salir de la vista
+    const listContainer = document.getElementById('service-orders-list-container');
+    if (listContainer) listContainer.removeEventListener('click', handleTableActions);
+    document.removeEventListener('serviceOrderCreated', renderPlanningView);
+    document.removeEventListener('serviceOrderUpdated', renderPlanningView);
+}
 
-    const filters = {
-        year: parseInt(filterYear.value, 10),
-        month: parseInt(filterMonth.value, 10),
-        service_shift: filterShift.value !== 'all' ? filterShift.value : null,
-        status: filterStatus.value !== 'all' ? filterStatus.value : null,
+// --- LÓGICA DE INICIALIZACIÓN Y EVENTOS ---
+
+function initializePlanningView() {
+    if (isInitialized) return;
+
+    const elements = {
+        listContainer: document.getElementById('service-orders-list-container'),
+        createOrderBtn: document.getElementById('create-order-btn'),
+        aiGenerateBtn: document.getElementById('ai-generate-order-btn'),
+        dateFilter: document.getElementById('order-filter-date'),
+        shiftFilter: document.getElementById('order-filter-shift'),
+        statusFilter: document.getElementById('order-filter-status'),
+        applyFiltersBtn: document.getElementById('apply-filters-btn'),
+        clearFiltersBtn: document.getElementById('clear-filters-btn'),
+        paginationControls: document.getElementById('planning-pagination-controls'),
     };
 
+    for (const [key, element] of Object.entries(elements)) {
+        if (!element) {
+            throw new Error(`El elemento con ID para '${key}' no se encontró en planificacion.html.`);
+        }
+    }
+
+    elements.createOrderBtn.addEventListener('click', () => openServiceOrderModal(null, renderPlanningView));
+    elements.aiGenerateBtn.addEventListener('click', () => handleAiGenerateClick(elements.dateFilter, elements.shiftFilter));
+    elements.applyFiltersBtn.addEventListener('click', () => {
+        currentPage = 1;
+        lastVisibleDoc = null;
+        pageHistory = [null];
+        loadAndRenderOrders();
+    });
+    elements.clearFiltersBtn.addEventListener('click', () => clearFilters(elements));
+    elements.listContainer.addEventListener('click', handleTableActions);
+    elements.paginationControls.addEventListener('click', handlePaginationClick);
+
+    document.addEventListener('serviceOrderCreated', renderPlanningView);
+    document.addEventListener('serviceOrderUpdated', renderPlanningView);
+
+    isInitialized = true;
+}
+
+// --- LÓGICA DE DATOS Y RENDERIZADO ---
+
+async function loadAndRenderOrders() {
+    const listContainer = document.getElementById('service-orders-list-container');
+    if (!listContainer) return;
+
+    showLoading('Cargando órdenes...');
+
     try {
+        const filters = {
+            date: document.getElementById('order-filter-date').value || null,
+            service_shift: document.getElementById('order-filter-shift').value !== 'all' ? document.getElementById('order-filter-shift').value : null,
+            status: document.getElementById('order-filter-status').value !== 'all' ? document.getElementById('order-filter-status').value : null,
+            limit: 15,
+            startAfter: pageHistory[currentPage - 1]
+        };
+
         const result = await getServiceOrders(filters);
-        currentOrders = result.success ? result.orders : [];
+
+        if (!result.success) {
+            throw new Error(result.message || 'Error en la respuesta del servidor.');
+        }
+
+        currentOrders = result.orders || [];
+        lastVisibleDoc = result.lastVisible || null;
+        hasNextPage = !!lastVisibleDoc;
+
+        if (hasNextPage && pageHistory.length === currentPage) {
+            pageHistory.push(lastVisibleDoc);
+        }
+
         renderOrdersTable(currentOrders);
+        updatePaginationControls(currentOrders.length);
+
     } catch (error) {
         displayMessage(`Error al cargar las órdenes: ${error.message}`, 'error');
+        renderOrdersTable([]);
     } finally {
         hideLoading();
     }
 }
 
 function renderOrdersTable(orders) {
+    const listContainer = document.getElementById('service-orders-list-container');
     if (!listContainer) return;
+
     if (orders.length === 0) {
         listContainer.innerHTML = `<div class="empty-state"><h4>No hay órdenes</h4><p>No se encontraron órdenes con los filtros actuales.</p></div>`;
         return;
     }
 
-    const tableHtml = `
-        <table class="data-table">
-            <thead class="sticky-header">
-                <tr>
-                    <th>Nº Registro</th>
-                    <th>Título</th>
-                    <th>Fecha y Turno</th>
-                    <th>Estado</th>
-                    <th>Agentes</th>
-                    <th style="text-align: right;">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${orders.map(order => {
-                    const statusText = (order.status || 'unknown').replace('_', ' ');
-                    return `
-                        <tr data-id="${order.id}">
-                            <td>${order.order_reg_number || '---'}</td>
-                            <td>${order.title}</td>
-                            <td>${formatDate(new Date(order.service_date), 'dd/MM/yyyy')} - ${order.service_shift}</td>
-                            <td><span class="status-pill status-${order.status}">${statusText}</span></td>
-                            <td>${(order.assigned_agents || []).length}</td>
-                            <td class="actions-cell">
-                                <button class="icon-button" data-action="assign" title="Asignar Agentes">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
-                                    </svg>
-                                </button>
-                                <button class="icon-button" data-action="edit" title="Editar Orden">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                    </svg>
-                                </button>
-                                <button class="icon-button" data-action="delete" title="Eliminar Orden">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="20" height="20">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.134-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.067-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                    </svg>
-                                </button>
-                                </td>
-                        </tr>
-                    `;
-                }).join('')}
-            </tbody>
-        </table>
-    `;
-    listContainer.innerHTML = tableHtml;
+    listContainer.innerHTML = `
+    <table class="data-table">
+      <thead class="sticky-header">
+        <tr>
+          <th>Nº Registro</th><th>Título</th><th>Fecha y Turno</th>
+          <th>Estado</th><th>Agentes</th><th style="text-align: left;">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${orders.map(order => {
+        const statusText = (order.status || 'unknown').replace('_', ' ');
+        const serviceDate = order.service_date ? new Date(order.service_date) : new Date();
+        return `
+            <tr data-id="${order.id}">
+              <td>${order.order_reg_number || '---'}</td>
+              <td>${order.title}</td>
+              <td>${formatDate(serviceDate, 'dd/MM/yyyy')} - ${order.service_shift}</td>
+              <td><span class="status-pill status-${order.status}">${statusText}</span></td>
+              <td>${(order.assigned_agents || []).length}</td>
+              <td class="actions-cell">
+                <button class="icon-button" data-action="view" title="Ver Contenido"><i data-feather="eye"></i></button>
+                <button class="icon-button" data-action="assign" title="Asignar Agentes"><i data-feather="user-plus"></i></button>
+                <button class="icon-button" data-action="edit" title="Editar Orden"><i data-feather="edit-2"></i></button>
+                <button class="icon-button" data-action="delete" title="Eliminar Orden"><i data-feather="trash-2"></i></button>
+              </td>
+            </tr>
+          `;
+    }).join('')}
+      </tbody>
+    </table>
+  `;
+    if (window.feather) feather.replace();
 }
 
-async function handleTableActions(event) {
+// --- MANEJADORES DE ACCIONES (HANDLERS) ---
+
+function handlePaginationClick(event) {
+    const nextButton = event.target.closest('#planning-next-page');
+    const prevButton = event.target.closest('#planning-prev-page');
+
+    if (nextButton && hasNextPage) {
+        currentPage++;
+        loadAndRenderOrders();
+    } else if (prevButton && currentPage > 1) {
+        currentPage--;
+        pageHistory.pop();
+        loadAndRenderOrders();
+    }
+}
+
+function updatePaginationControls(recordCount) {
+    const pageInfo = document.getElementById('planning-page-info');
+    const prevButton = document.getElementById('planning-prev-page');
+    const nextButton = document.getElementById('planning-next-page');
+
+    if (pageInfo) pageInfo.textContent = `Página ${currentPage}`;
+    if (prevButton) prevButton.disabled = currentPage === 1;
+    if (nextButton) nextButton.disabled = !hasNextPage;
+}
+
+function handleTableActions(event) {
     const button = event.target.closest('button[data-action]');
     if (!button) return;
-
     const orderId = button.closest('tr')?.dataset.id;
     if (!orderId) return;
 
     const action = button.dataset.action;
+    const orderToProcess = currentOrders.find(o => o.id === orderId);
+    if (!orderToProcess) return;
 
-    if (action === 'assign') {
-        const orderToProcess = currentOrders.find(o => o.id === orderId);
-        if (orderToProcess) openAssignmentModal(orderToProcess);
-    } else if (action === 'edit') {
-        openServiceOrderModal(orderId, loadAndRenderOrders);
-    } else if (action === 'delete') {
-        handleDeleteOrder(orderId);
+    switch (action) {
+        case 'view':
+            openViewOrderModal(orderToProcess);
+            break;
+        case 'assign':
+            openAssignmentModal(orderToProcess);
+            break;
+        case 'edit':
+            openServiceOrderModal(orderId, loadAndRenderOrders);
+            break;
+        case 'delete':
+            handleDeleteOrder(orderId);
+            break;
+    }
+}
+
+async function handleAiGenerateClick(dateFilter, shiftFilter) {
+    const dateString = dateFilter.value;
+    const shiftType = shiftFilter.value;
+
+    if (!dateString || shiftType === 'all' || shiftType === 'Especial') {
+        displayMessage('Por favor, selecciona una fecha y un turno específicos (Mañana, Tarde o Noche) para usar la IA.', 'info');
+        return;
+    }
+    showLoading('Generando orden con IA...');
+    try {
+        const result = await generateAiServiceOrder(dateString, shiftType);
+        displayMessage(result.message, 'success');
+        await renderPlanningView();
+    } catch (error) {
+        displayMessage(`Error de la IA: ${error.message}`, 'error');
+    } finally {
+        hideLoading();
     }
 }
 
 async function handleDeleteOrder(orderId) {
-    if (confirm(`¿Estás seguro? Esta acción no se puede deshacer.`)) {
-        showLoading();
+    if (confirm(`¿Estás seguro de que quieres eliminar esta orden?`)) {
+        showLoading('Eliminando orden...');
         try {
             await deleteServiceOrder(orderId);
-            displayMessage('Orden eliminada.', 'success');
-            loadAndRenderOrders();
+            displayMessage('Orden eliminada con éxito.', 'success');
+            await renderPlanningView();
         } catch (error) {
-            displayMessage(`Error: ${error.message}`, 'error');
+            displayMessage(`Error al eliminar la orden: ${error.message}`, 'error');
         } finally {
             hideLoading();
         }
     }
 }
 
-function populateDateFilters() {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-    if (!filterYear || !filterMonth) return;
-
-    if (filterYear.options.length === 0) {
-        for (let y = currentYear - 2; y <= currentYear + 1; y++) {
-            filterYear.add(new Option(y, y));
-        }
-    }
-    filterYear.value = currentYear;
-
-    if (filterMonth.options.length === 0) {
-        const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-        meses.forEach((mes, index) => {
-            filterMonth.add(new Option(mes, index));
-        });
-    }
-    filterMonth.value = currentMonth;
+function clearFilters(elements) {
+    elements.dateFilter.value = '';
+    elements.shiftFilter.value = 'all';
+    elements.statusFilter.value = 'all';
+    renderPlanningView();
 }
 
-export function resetPlanningView() {
-    // ✅ ELIMINAMOS LOS LISTENERS AL SALIR DE LA VISTA PARA EVITAR DUPLICADOS
-    document.removeEventListener('serviceOrderCreated', loadAndRenderOrders);
-    document.removeEventListener('serviceOrderUpdated', loadAndRenderOrders);
-    isInitialized = false;
-}
+// ✅ La función obsoleta 'render()' ha sido eliminada por completo.

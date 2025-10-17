@@ -1,9 +1,18 @@
 <div class="card">
-    <div class="planning-header">
-        <h3>Gestión de Plantillas de Documentos</h3>
-        <button id="create-template-btn" class="button button-success">
-            <span class="material-icons">add_circle</span> Crear Nueva Plantilla
-        </button>
+  <div class="card-header">
+    <h2>
+      <i data-feather="file-text" style="vertical-align: middle; margin-right: 8px"></i>
+      <span>Gestión de Plantillas de Documentos</span>
+    </h2>
+    <div class="actions-group">
+      <button id="create-template-btn" class="button button-primary">
+        <i data-feather="plus-circle"></i>
+        <span>Crear Nueva Plantilla</span>
+      </button>
     </div>
-    <div id="templates-list-container"></div>
+  </div>
+
+  <div class="card-body">
+    <div id="templates-list-container" class="table-container"></div>
+  </div>
 </div>

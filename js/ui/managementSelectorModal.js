@@ -1,62 +1,68 @@
-// js/ui/managementSelectorModal.js (VERSIÓN CORREGIDA Y FINAL)
+// js/ui/managementSelectorModal.js (VERSIÓN FINAL CORREGIDA)
 
 import { showAgentManagerModal } from './agentManagerModal.js';
 import { showManageRequestsModal } from './manageRequestsModal.js';
 import { showAddMarkedDateModal } from './addMarkedDateModal.js';
-import { showTemplateManagerView } from '../main.js'; 
 
-let modal;
+let modal = null;
 let isInitialized = false;
 
+// Oculta el modal
+function hideManagementSelectorModal() {
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
+// Inicializa el modal y sus listeners
 export function initializeManagementSelectorModal() {
-    if (isInitialized) return;
+  if (isInitialized) return;
+  modal = document.getElementById('management-selector-modal');
+  if (!modal) return;
 
-    modal = document.getElementById('management-selector-modal');
-    if (!modal) return;
+  // --- LÓGICA DE EVENTOS CORREGIDA ---
 
-    const closeButton = modal.querySelector('.close-button');
-    const manageAgentsButton = modal.querySelector('#select-manage-agents');
-    const manageRequestsButton = modal.querySelector('#select-manage-requests');
-    const addMarkedDateButton = modal.querySelector('#select-add-marked-date');
-    const manageTemplatesButton = modal.querySelector('#select-manage-templates');
+  // 1. Asigna el cierre a todos los botones de cerrar/cancelar
+  modal.querySelectorAll('.close-button').forEach(button => {
+    button.addEventListener('click', hideManagementSelectorModal);
+  });
 
-    if (closeButton) closeButton.addEventListener('click', hideManagementSelectorModal);
-    
-    if (manageAgentsButton) manageAgentsButton.addEventListener('click', () => {
-        hideManagementSelectorModal();
-        showAgentManagerModal();
+  // 2. Asigna la acción a cada botón de opción por su ID específico
+  const manageAgentsBtn = document.getElementById('select-manage-agents');
+  if (manageAgentsBtn) {
+    manageAgentsBtn.addEventListener('click', () => {
+      hideManagementSelectorModal();
+      showAgentManagerModal();
     });
-    
-    if (manageRequestsButton) manageRequestsButton.addEventListener('click', () => {
-        hideManagementSelectorModal();
-        showManageRequestsModal();
+  }
+  
+  const manageRequestsBtn = document.getElementById('select-manage-requests');
+  if (manageRequestsBtn) {
+    manageRequestsBtn.addEventListener('click', () => {
+      hideManagementSelectorModal();
+      showManageRequestsModal('permissions');
     });
-    
-    if (addMarkedDateButton) addMarkedDateButton.addEventListener('click', () => {
-        hideManagementSelectorModal();
-        showAddMarkedDateModal();
-    });
+  }
 
-    // ✅ AÑADIMOS EL LISTENER PARA EL BOTÓN DE GESTIONAR PLANTILLAS
-    if (manageTemplatesButton) {
-        manageTemplatesButton.addEventListener('click', () => {
-            hideManagementSelectorModal();
-            showTemplateManagerView();
-        });
-    }
-    
-    modal.addEventListener('click', (event) => {
-        if (event.target === modal) hideManagementSelectorModal();
+  const addMarkedDateBtn = document.getElementById('select-add-marked-date');
+  if (addMarkedDateBtn) {
+    addMarkedDateBtn.addEventListener('click', () => {
+      hideManagementSelectorModal();
+      showAddMarkedDateModal();
     });
+  }
 
-    isInitialized = true;
+  // --- FIN DE LA CORRECCIÓN ---
+
+  isInitialized = true;
 }
 
+// Muestra el modal
 export function showManagementSelectorModal() {
-    if (!isInitialized) initializeManagementSelectorModal();
-    if (modal) modal.classList.remove('hidden');
-}
-
-export function hideManagementSelectorModal() {
-    if (modal) modal.classList.add('hidden');
+  if (!isInitialized) {
+    initializeManagementSelectorModal();
+  }
+  if (modal) {
+    modal.classList.remove('hidden');
+  }
 }

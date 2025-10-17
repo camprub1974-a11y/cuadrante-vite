@@ -1,0 +1,146 @@
+/* EN: css/views/_tasks-view.css */
+
+.tasks-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.task-filters {
+  display: flex;
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border-main);
+}
+
+.task-filters .filter-btn {
+  background-color: var(--color-background-light);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-main);
+}
+
+.task-filters .filter-btn.active {
+  background-color: var(--app-primary-blue);
+  color: var(--color-white);
+  border-color: var(--app-primary-blue);
+}
+
+#tasks-list-container {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+/* Reemplaza tu estilo .task-item con este */
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3); /* Espacio entre número, contenido e icono */
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-main);
+  border-left-width: 4px;
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--space-2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* ✅ NUEVOS ESTILOS A AÑADIR */
+
+.task-item-number {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background-color: var(--color-background-light);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Evita que el círculo se deforme */
+  transition: all 0.2s ease;
+}
+
+.task-item-content {
+  flex-grow: 1; /* Ocupa el espacio sobrante */
+}
+
+/* Limpiamos márgenes internos porque ahora usamos 'gap' */
+.task-item-content .task-header,
+.task-item-content .task-description {
+  margin: 0;
+}
+
+.task-item-content .task-header {
+  margin-bottom: 0.25rem;
+}
+
+.task-item-indicator {
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+/* --- Efectos Visuales --- */
+
+.task-item:hover {
+  box-shadow: var(--shadow-medium);
+  border-color: var(--app-primary-blue);
+}
+
+.task-item.selected {
+  border-color: var(--app-primary-blue);
+  background-color: #f0f7ff; /* Un azul muy claro */
+}
+
+/* Al seleccionar, el número cambia de color */
+.task-item.selected .task-item-number {
+  background-color: var(--app-primary-blue);
+  color: var(--color-white);
+}
+
+/* Al seleccionar o pasar el ratón, el icono se mueve y cambia de color */
+.task-item.selected .task-item-indicator,
+.task-item:hover .task-item-indicator {
+  color: var(--app-primary-blue);
+  transform: translateX(4px);
+}
+
+.task-item.status-pendiente { border-left-color: var(--color-warning); }
+.task-item.status-finalizada { border-left-color: var(--color-success); }
+.task-item.status-finalizada .task-description { text-decoration: line-through; color: var(--color-text-muted); }
+
+.task-item.selected {
+  border-color: var(--app-primary-blue);
+  background-color: #f0f7ff;
+}
+
+.task-header { font-size: 0.8rem; color: var(--color-text-secondary); margin-bottom: 0.5rem; }
+.task-description { font-weight: 500; margin-bottom: 1rem; }
+.task-actions { text-align: right; }
+
+.task-description-preview {
+  background-color: var(--color-background-light);
+  padding: var(--space-3);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 1rem;
+}
+
+.placeholder-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  border: 2px dashed var(--color-border-main);
+  border-radius: var(--border-radius-lg);
+  color: var(--color-text-muted);
+  text-align: center;
+  height: 100%;
+}
+
+.placeholder-card i {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-3);
+}

@@ -1,33 +1,44 @@
 /* css/base/_global.css */
-
-html {
-    box-sizing: border-box;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-*, *::before, *::after {
-    box-sizing: inherit;
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
 body {
-    margin: 0;
-    background-color: var(--color-bg); 
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  font-family: var(--font-primary);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Contenedor principal de la aplicación, se asegura de ocupar el espacio restante */
-#app-container, #app-content {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+/* ✅ CORRECCIÓN CLAVE: Asegura que el contenedor del login ocupe toda la ventana */
+#auth-container {
+  display: flex;
+  flex-grow: 1; /* Ocupa todo el espacio vertical disponible */
 }
 
-/* Mantenemos el contenedor de la vista principal */
+#app-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
 .container {
-    width: 100%;
-    max-width: 1600px; 
-    margin: 0 auto;
-    padding: var(--space-4); /* 32px */
-    flex-grow: 1;
+  max-width: 1600px;
+  margin: var(--space-4) auto;
+  padding: 0 var(--space-4);
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
 }
