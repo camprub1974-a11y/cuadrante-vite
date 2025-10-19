@@ -1,5 +1,3 @@
-# Dependencias
-node_modules/
 
 # Archivos de compilación (si usas 'npm run build')
 dist/
@@ -23,3 +21,15 @@ Thumbs.db
 # Ignorar claves de servicio de Firebase
 serviceAccountKey.json
 
+# Dependencias
+node_modules/
+functions/node_modules/
+
+# Archivos de configuración y secretos
+js/firebase-config.js
+
+# Archivos de caché y logs de Firebase
+.firebase/
+
+# Historial personal
+.bash_history
