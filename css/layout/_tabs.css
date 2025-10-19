@@ -1,51 +1,76 @@
-/* css/layout/_tabs.css */
+/* css/layout/_tabs.css (CÓDIGO CORREGIDO) */
 
+/* 1. Barra de navegación principal (ocupa todo el ancho) */
 .module-nav {
-  display: flex;
-  gap: var(--space-3); /* 24px */
-  padding: var(--space-2) var(--space-4); /* 16px vertical, 32px horizontal */
-  border-bottom: 1px solid var(--color-border);
-  background-color: var(--color-bg-card);
-  position: relative;
-  overflow-x: auto; /* Permite scroll horizontal en móvil */
-  white-space: nowrap;
+  background-color: var(--color-primary);
+  width: 100%;
 }
 
-.module-tab {
-  display: inline-flex; /* Permite alinear icono y texto */
+/* 2. Contenedor interior que centra los enlaces */
+.module-nav > .container-fluid {
+  /* Centrado y con el ancho del contenido principal */
+  max-width: var(--container-max-width, 1280px); 
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  /* Propiedades flex para alinear los enlaces dentro de este contenedor */
+  display: flex;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: var(--space-1); /* 8px de espacio entre icono y texto */
-  padding: var(--space-2) var(--space-3); /* 16px vertical, 24px horizontal */
+  gap: var(--space-1);
+  justify-content: flex-end; /* Alinea los enlaces a la izquierda */
+}
+
+/* 3. Estilos para cada pestaña individual (tu código existente) */
+.module-nav .module-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 8px 16px;
   font-family: var(--font-primary);
-  font-size: var(--text-base); /* 16px */
-  font-weight: 500; /* Medium, buen balance para navegación */
+  font-size: 15px;
+  font-weight: 600;
   text-decoration: none;
-  border-radius: var(--border-radius-md); /* 8px */
-  background-color: var(--color-bg-header-table);
-  color: var(--color-text);
+  border-radius: var(--border-radius-md);
   border: none;
   cursor: pointer;
   position: relative;
   transition: all var(--transition-fast);
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.module-tab:hover {
-  background-color: var(--color-border);
-  color: var(--color-text);
+.module-nav .module-tab svg {
+  stroke: currentColor;
 }
 
-.module-tab.active {
-  background-color: var(--color-primary);
-  color: var(--color-text-light);
-  box-shadow: var(--shadow-card);
+.module-nav .module-tab:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
-.module-tab.active::after {
-  content: '';
+.module-nav .module-tab.active {
+  background-color: white;
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Resto de tu código de _tabs.css (menú desplegable, etc.) --- */
+.module-tab-dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
   position: absolute;
-  bottom: calc(-1 * var(--space-2) - 1px);
+  top: 100%;
   left: 0;
-  right: 0;
-  height: 3px;
-  background-color: var(--color-primary);
+  z-index: 100;
+  background-color: var(--color-bg-card, white);
+  border-radius: var(--border-radius-md, 8px);
+  box-shadow: var(--shadow-dropdown);
+  padding: var(--space-1);
+  min-width: 200px;
+  list-style: none;
+  margin: 0;
 }

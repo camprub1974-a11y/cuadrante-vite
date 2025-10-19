@@ -1,112 +1,469 @@
-/* css/components/_modals.css (Versión corregida según la guía) */
+/* css/components/_modals.css (Versión Final y Corregida) */
 
-/* El overlay que cubre toda la pantalla */
-.modal { 
-    position: fixed; 
-    z-index: 9999; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo negro semitransparente, según la guía */
-    overflow-y: auto;
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-    padding: var(--space-4);
-    
-    /* Lógica de visibilidad */
-    opacity: 0; 
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+/* ==========================================================================
+   Modals
+   ========================================================================== */
+
+.modal-overlay {
+  /* --- Comportamiento de ventana flotante --- */
+  position: fixed; /* Fija el modal a la ventana del navegador */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999; /* Asegura que esté por encima de todo */
+
+  /* --- Centrado perfecto --- */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* --- Estilo y transición --- */
+  background-color: rgba(17, 24, 39, 0.7); /* Fondo oscuro semitransparente */
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
 }
 
-.modal:not(.hidden) { 
-    visibility: visible;
-    opacity: 1;
+/* Oculta el modal por defecto */
+.modal-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
 }
 
-/* El contenedor principal del modal */
-.modal-content { 
-    background-color: var(--color-bg-card); /* Fondo blanco */
-    border-radius: var(--border-radius-lg); /* 12px */
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* Sombra específica de la guía */
-    width: 100%; 
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-
-    /* Animación de entrada */
-    transform: scale(0.95);
-    transition: transform 0.2s ease;
+/* Estilos para el contenido del modal (la tarjeta blanca) */
+.modal-content {
+  background-color: var(--color-bg-card);
+  border-radius: var(--border-radius-large);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 600px; /* Ancho máximo por defecto */
+  max-height: 90vh; /* Altura máxima para no ocupar toda la pantalla */
+  overflow: hidden; /* Controla el scroll dentro del modal-body */
 }
-
-.modal:not(.hidden) .modal-content {
-    transform: scale(1);
+.modal-overlay.hidden .modal-content {
+  transform: scale(0.95); /* <-- Se encoge SOLO cuando el overlay está oculto */
 }
 
 /* Modificadores de tamaño */
-.modal-content.large { max-width: 800px; }
-.modal-content.small { max-width: 450px; }
+.modal-content.large {
+  max-width: 800px;
+}
+.modal-content.small {
+  max-width: 450px;
+}
 
-/* Cabecera del Modal */
+/* 3. Cabecera y Pie de página (fijos) */
+.modal-header,
+.modal-footer {
+  flex-shrink: 0; /* Evita que se encojan */
+}
+
 .modal-header {
-    background-color: var(--color-header-bg); /* #1F2D3D */
-    color: var(--color-text-light);
-    padding: var(--space-2) var(--space-3); /* 16px vertical, 24px horizontal */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-light);
+  background-color: var(--color-header-bg, #1f2d3d);
 }
 
 .modal-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-primary);
-    font-weight: 600; /* SemiBold */
-    font-size: var(--text-lg); /* 18px */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 600;
+  font-size: var(--text-lg);
 }
 
-/* Cuerpo del Modal */
+/* 4. Cuerpo del Modal (la parte con scroll) */
 .modal-body {
-    padding: var(--space-3); /* 24px */
-    overflow-y: auto;
+  flex-grow: 1; /* Ocupa el espacio sobrante */
+  overflow-y: auto; /* Muestra la barra de scroll vertical SOLO si es necesario */
+  padding: var(--space-3);
 }
 
-/* Pie de página del Modal */
+/* 5. Pie de página del Modal */
 .modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-2);
-    padding: var(--space-3); /* 24px */
-    border-top: 1px solid var(--color-border);
-    background-color: var(--color-bg);
-    flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-background-inactive);
 }
 
-/* Botón de guardar con altura especial */
-.modal-footer .button-save {
-    height: 44px;
+/* ================================================================ */
+/* == ESTILOS ESPECÍFICOS PARA EL MODAL DE NUEVO REGISTRO == */
+/* ================================================================ */
+
+#registro-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  max-height: 95vh;
+  resize: both;
+  overflow: auto;
+  min-width: 700px;
+  min-height: 600px;
+  max-width: 1800px; /* Ancho máximo aumentado */
 }
 
-/* Secciones específicas del informe */
-.tasks-section {
-    margin-top: var(--space-4); /* 32px */
-    padding: var(--space-2) 0;  /* 16px */
-    border-top: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
+#registro-modal #registro-form {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
 }
 
-.task-input-group {
-    display: flex;
-    gap: var(--space-2); /* 16px */
-    margin-top: var(--space-2);
+#registro-modal .modal-body {
+  flex-grow: 1;
+  overflow-y: auto;
+  min-height: 0;
+  display: flex; /* Cambiado a flex para el layout de dos columnas */
+  flex-direction: column; /* Asegura el flujo vertical interno */
 }
 
-.no-tasks {
-    color: var(--color-text-secondary);
-    font-style: italic;
+#registro-modal .card-header,
+#registro-modal .modal-footer {
+  flex-shrink: 0;
+}
+
+/* --- Estilos para la vista previa en dos columnas --- */
+
+.modal-content-grid {
+  display: flex;
+  gap: 20px;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+#registro-dynamic-form-container {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.preview-container {
+  flex: 1;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-background-inactive);
+  display: flex;
+}
+
+.preview-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: #fff;
+}
+
+/* Estilos para los campos de tipo checkbox en los modales */
+.form-group-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--space-2);
+}
+
+.form-group-checkbox input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+}
+
+.form-group-checkbox label {
+  margin-bottom: 0;
+}
+
+/*==============================================================*/
+/* == SOLUCIÓN DEFINITIVA PARA SCROLL EN MODAL DE RESUMEN == */
+/*==============================================================*/
+
+#report-summary-modal .modal-body {
+  /* 1. Altura Máxima: Esta es la regla más importante.
+     Le decimos al navegador que el cuerpo del modal no puede ocupar más
+     del 85% de la altura de la ventana, restando 150px para dar
+     espacio a la cabecera y el pie de página del modal.
+     Puedes ajustar '150px' si tu cabecera/pie son más grandes o pequeños. */
+  max-height: calc(85vh - 150px);
+
+  /* 2. Overflow Automático: El disparador del scroll.
+     Esto crea la barra de scroll vertical ÚNICAMENTE si el contenido
+     interno es más alto que la 'max-height' que definimos arriba. */
+  overflow-y: auto;
+  
+  /* 3. (Opcional pero recomendado) Pequeño padding a la derecha.
+     Esto evita que la barra de scroll aparezca pegada al contenido. */
+  padding-right: 1em;
+}
+
+
+#report-summary-modal .modal-body {
+  /* Esta es la clave: permite que el cuerpo crezca y se desplace */
+  overflow-y: auto;
+  flex-grow: 1; /* Ocupa el espacio disponible */
+  padding-right: 1rem; /* Espacio para la barra de scroll */
+}
+
+/* Opcional: mejora la visualización del grid en pantallas más pequeñas */
+.resumen-compacto {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+/* --- NUEVO: Estilos para el Modal de Edición de Turno --- */
+
+/* Contenedor de la información del agente */
+.shift-info-display {
+  background-color: var(--color-background-inactive);
+  border-radius: var(--border-radius-md);
+  padding: 12px;
+  border: 1px solid var(--color-border);
+}
+.shift-info-display .info-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+.shift-info-display .info-item:first-child {
+  margin-bottom: 8px;
+}
+.shift-info-display .info-item strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+.shift-info-display .info-item i {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* Divisor sutil */
+.subtle-divider {
+  border: none;
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 16px 0;
+}
+
+/* Rejilla de botones genérica */
+.button-grid {
+  display: grid;
+  gap: 8px;
+}
+
+/* Rejilla principal (4 columnas para M, T, N, L) */
+.icon-grid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Rejilla secundaria (más densa) */
+.secondary-grid {
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+/* Botón de icono (el nuevo estilo) */
+.shift-button-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 60px;
+  width: 100%;
+  padding: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  border: 1px solid var(--color-border);
+  background-color: white;
+  color: var(--color-text);
+  transition: all 0.2s ease;
+  border-radius: var(--border-radius-md); /* Añadido */
+}
+.shift-button-icon:hover {
+  border-color: var(--color-primary-active);
+  background-color: var(--color-background-hover);
+  color: var(--color-primary-active);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+.shift-button-icon i {
+  width: 20px;
+  height: 20px;
+}
+
+/* Colores de los botones principales (usando los del calendario) */
+.shift-button-icon.shift-m { color: #2563eb; border-color: #2563eb; }
+.shift-button-icon.shift-m:hover { background-color: #eff6ff; } /* Azul claro */
+
+.shift-button-icon.shift-t { color: #ea580c; border-color: #ea580c; }
+.shift-button-icon.shift-t:hover { background-color: #fff7ed; } /* Naranja claro */
+
+.shift-button-icon.shift-n { color: #4b5563; border-color: #4b5563; }
+.shift-button-icon.shift-n:hover { background-color: #f8fafc; } /* Gris claro */
+
+.shift-button-icon.shift-l { color: #78716c; border-color: #78716c; }
+.shift-button-icon.shift-l:hover { background-color: #f8fafc; } /* Gris claro */
+
+/* Botones secundarios (V, AP, B...) */
+.secondary-grid .button {
+  width: 100%;
+}
+
+/* Contenedor principal de las tarjetas */
+#shift-changes-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Espacio entre tarjetas */
+  padding: 1rem; /* Espacio alrededor */
+  max-height: 60vh; /* Altura máxima con scroll */
+  overflow-y: auto;
+}
+
+/* Tarjeta individual */
+.shift-change-card {
+  background-color: white;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden; /* Para que el header redondeado funcione */
+}
+
+/* Cabecera de la tarjeta */
+.shift-change-card .card-header {
+  background-color: var(--color-background-inactive);
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+.shift-change-card .card-header strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* Cuerpo de la tarjeta */
+.shift-change-card .card-body {
+  padding: 1rem;
+}
+
+/* Contenedor de la comparación de turnos */
+.shift-comparison {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px dashed var(--color-border-light);
+}
+
+/* Detalles de cada turno (Ofrecido y Recibido) */
+.shift-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1; /* Ocupa espacio equitativo */
+}
+.shift-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.shift-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+.shift-icon {
+  display: inline-flex; /* Cambiado a inline-flex */
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+  font-size: 0.8rem;
+  border: 2px solid white;
+  box-shadow: var(--shadow-xs);
+}
+.shift-type {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.shift-date {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+/* Icono de intercambio */
+.exchange-icon {
+  color: var(--color-primary);
+}
+.exchange-icon i {
+  width: 24px;
+  height: 24px;
+}
+
+/* Sección de comentarios */
+.comments-section {
+  background-color: var(--color-background-subtle);
+  padding: 0.75rem;
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+.comments-section p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+.comments-section strong {
+  color: var(--color-text);
+}
+
+/* Sección de estado */
+.status-section {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+.status-pill {
+  /* Usar tus clases de status-pill existentes */
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  font-size: 0.8em;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.375rem;
+}
+/* Colores específicos para status (ajusta según tus clases) */
+.status-Pendiente_Target { background-color: var(--color-warning-light); color: var(--color-warning-dark); }
+.status-Aprobado_Ambos { background-color: var(--color-success-light); color: var(--color-success-dark); }
+.status-Rechazado { background-color: var(--color-danger-light); color: var(--color-danger-dark); }
+/* Añade más estados si los tienes */
+
+/* Footer con acciones */
+.shift-change-card .card-footer.actions {
+  display: flex;
+  justify-content: flex-end; /* Botones a la derecha */
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-background-inactive);
+  border-top: 1px solid var(--color-border);
 }

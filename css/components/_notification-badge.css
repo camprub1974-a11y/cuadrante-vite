@@ -1,39 +1,81 @@
-/* css/components/_notification-badge.css */
-.notification-bell-container {
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-}
+/* EN: css/components/_notification-badge.css (VERSIÓN CORREGIDA) */
 
+/* Estilo base para TODOS los badges de notificación */
 .notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--danger-color);
-    color: white;
-    font-size: 10px;
-    font-weight: bold;
-    padding: 2px 6px;
-    border-radius: 10px;
-    min-width: 12px;
-    text-align: center;
-    line-height: 1;
-    border: 2px solid var(--app-primary-blue);
-    transform: scale(1);
-    transform-origin: center;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+  /* Tamaño y forma */
+  min-width: 20px; /* Ancho mínimo */
+  height: 20px;    /* Altura */
+  padding: 0 6px;  /* Espaciado horizontal para que el número respire */
+  border-radius: 10px; /* Redondeado para forma de píldora/círculo */
+  
+  /* Color */
+  background-color: #dc2626; /* Rojo intenso (puedes cambiarlo) */
+  color: white;             /* Texto blanco */
+  
+  /* Posicionamiento */
+  position: absolute;   /* Permite colocarlo sobre el botón */
+  top: -8px;            /* Sube un poco por encima del icono */
+  right: -8px;           /* Mueve un poco a la derecha del icono */
+  
+  /* Texto */
+  font-size: 0.75rem;     /* Tamaño de fuente (12px) */
+  font-weight: 700;       /* Negrita */
+  line-height: 20px;      /* Centra el número verticalmente (igual a height) */
+  text-align: center;
+  
+  /* Visibilidad */
+  display: flex;          /* Usar flex para centrar */
+  align-items: center;
+  justify-content: center;
+  
+  /* Sombra sutil para destacar */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  
+  /* Transición suave para cuando aparece/desaparece */
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out; 
 }
 
-.notification-badge:not(.hidden) {
-    animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+/* Estilo para cuando está oculto (cuando el contador es 0) */
+.notification-badge.hidden {
+  opacity: 0;
+  transform: scale(0.5); /* Efecto de encoger al desaparecer */
+  pointer-events: none; /* No interactuable cuando está oculto */
 }
 
-@keyframes pop-in {
-    0% { transform: scale(0); opacity: 0; }
-    80% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); }
+/* Contenedor del botón necesita ser relativo para que el badge se posicione bien */
+.icon-button {
+  position: relative; 
+}
+
+/* Ajuste específico si el badge se ve mal en ESE botón en particular */
+#requests-bell-button .notification-badge {
+  /* Puedes añadir ajustes finos de 'top' o 'right' aquí si es necesario */
+  /* top: -7px; */
+  /* right: -9px; */
+}
+
+/* Estilo para el botón de la campana cuando hay notificaciones */
+/* Esta regla es más específica y DEBE ir después de la regla general de .icon-button */
+.header-actions .icon-button.has-notifications .feather-bell {
+  color: var(--color-error); /* Color rojo para el icono de la campana */
+  animation: bell-ring 0.5s ease-in-out;
+}
+
+@keyframes bell-ring {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(15deg); }
+  75% { transform: rotate(-15deg); }
+}
+
+/* También necesitamos asegurarnos de que el icono no se pinte de azul si está dentro de .has-notifications */
+.header-actions .icon-button.has-notifications {
+    /* Quitamos el color de texto azul que estaba en main.css */
+    color: red; /* O lo establecemos a un color neutro si es necesario */
+    background-color: transparent; /* Mantenemos transparente */
+}
+
+/* Estilo para que el número de la campana se vea blanco sobre rojo */
+.header-actions .icon-button.has-notifications .notification-badge {
+    background-color: var(--color-error); /* Asegura que el badge tenga fondo rojo */
+    color: var(--color-white); /* Texto blanco para el número */
 }

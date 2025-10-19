@@ -18,12 +18,15 @@
 @import url('./components/_cards.css');
 @import url('./components/_agent-manager.css');
 @import url('./components/_input-stepper.css');
-
+@import url('./components/_agent-tasks-modal.css');
 
 /* 3. Layout */
 @import url('./layout/_header.css');
 @import url('./layout/_main-layout.css');
+@import url('./layout/_module-nav.css');
 @import url('./layout/_tabs.css');
+@import url('./layout/_dropdown-nav.css');
+@import url('./layout/_sidebar-nav.css');
 
 /* 4. Vistas */
 @import url('./views/_login.css');
@@ -41,8 +44,14 @@
 @import url('./views/_registro-view.css');
 @import url('./views/_croquis-view.css');
 @import url('./views/_cuadrante-view.css');
+@import url('./views/_identificaciones-view.css');
 @import url('./views/_planning-view.css');
-
+@import url('./views/_plantillas-view.css');
+@import url('./views/_assignment-modal.css');
+@import url('./views/_view-modal.css');
+@import url('./views/_tasks-view.css');
+@import url('./views/_cuadrante-grid.css');
+@import url('./views/_toast-calendar.css');
 /* 5. Utilidades */
 @import url('./utilities/_helpers.css');
 @import url('./utilities/_print.css');

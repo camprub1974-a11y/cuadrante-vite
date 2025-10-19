@@ -1,73 +1,183 @@
 /* css/views/_cuadrante-view.css */
 
+/* --- NUEVOS ESTILOS PARA EL TÍTULO PRINCIPAL --- */
+.view-header {
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.view-header .view-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.view-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.view-header .feather {
+  width: 28px;
+  height: 28px;
+  color: var(--color-primary);
+}
+
+/* --- ESTILOS CORREGIDOS Y MEJORADOS PARA LOS CONTROLES --- */
 .quadrant-controls {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap; /* Permite que los elementos se muevan a la siguiente línea en pantallas pequeñas */
-    gap: var(--space-3); /* Espacio entre los grupos de la izquierda y la derecha */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; 
+  gap: 1rem; 
 }
 
+/* Grupo izquierdo: Navegación y título del mes */
 .month-navigation {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Espacio reducido entre flechas y título */
 }
 
-.month-title-container {
-    display: flex;
-    gap: var(--space-1);
+#currentMonthTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  padding: 0 0.5rem; /* Espacio interno para que no se pegue a las flechas */
+  white-space: nowrap;
 }
 
-/* Ajustamos el ancho de los selectores de fecha */
-.month-selector { min-width: 150px; }
-.year-selector { min-width: 100px; }
-
+/* Grupo derecho: Selectores y botón de acción */
 .view-actions {
-    display: flex;
-    align-items: flex-end; /* Alinea la etiqueta "Ver Agente" con la base del selector */
-    flex-wrap: wrap;
-    gap: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
+/* ¡LA CLAVE! Contenedor para que los selectores estén en horizontal */
+.filter-group {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.75rem; /* Espacio entre cada selector */
+}
+
+/* Estilo compacto para los selectores */
+.selector.selector-compact,
+.filter-group .selector {
+  height: 40px;
+  min-width: 140px; /* Ancho mínimo para que no se vean apretados */
+  padding: 0 0.75rem;
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-form);
+  background-color: #fff;
+  font-size: 0.9rem;
+}
+
+.selector.selector-compact:hover,
+.filter-group .selector:hover {
+  border-color: var(--color-primary);
+}
+
+/* --- ESTILOS ANTERIORES (MANTENIDOS) --- */
 .info-banner {
-    width: 100%;
-    margin-top: var(--space-3);
-    padding: var(--space-2);
-    background-color: var(--color-background-inactive);
-    border-left: 4px solid var(--color-primary);
-    border-radius: 4px;
-    font-size: 0.9rem;
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-2);
+  background-color: var(--color-background-inactive);
+  border-left: 4px solid var(--color-primary);
+  border-radius: 4px;
+  font-size: 0.9rem;
 }
 
-/* Estilos para la lista de estadísticas en la sidebar */
 .stats-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .stats-list li {
-    display: flex;
-    justify-content: space-between;
-    padding: var(--space-1) 0;
-    font-size: 0.9rem;
-    border-bottom: 1px solid var(--color-border-subtle);
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-1) 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--color-border-subtle);
 }
 
 .stats-list li:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .stats-list li span {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .stats-total {
-    margin-top: var(--space-2);
-    padding-top: var(--space-2);
-    border-top: 2px solid var(--color-border-subtle);
-    display: flex;
-    justify-content: space-between;
-    font-size: 1rem;
+  margin-top: var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 2px solid var(--color-border-subtle);
+  display: flex;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+#edit-mode-toggle.active {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+  border-color: var(--color-primary);
+}
+
+.edit-mode-active .shift-cell {
+  cursor: pointer;
+}
+
+.edit-mode-active .shift-cell:hover .turno-icon {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px var(--color-primary);
+}
+
+.shift-cell.has-novedad {
+  background-color: #e6f7ff !important;
+}
+
+.shift-cell.has-novedad:hover {
+  background-color: #d9f2ff !important;
+}
+
+/* Contenedor del título principal de la vista */
+.view-header {
+  padding: 0 0 var(--space-3) 0; /* Espacio solo por debajo */
+  margin-bottom: var(--space-2);
+}
+
+.view-header .view-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.view-header h1 {
+  font-size: 1.5rem; /* 24px */
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.view-header .view-title .feather {
+  width: 28px;
+  height: 28px;
+  color: var(--color-primary);
+}
+
+/* --- ESTILOS ANTERIORES (Mantenidos) --- */
+
+/* Contenedor principal para todos los controles */
+.quadrant-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; 
+  gap: 1rem; 
 }

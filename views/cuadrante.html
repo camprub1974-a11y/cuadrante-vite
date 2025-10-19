@@ -1,48 +1,122 @@
 <div id="quadrant-view-content">
-
-    <div class="card">
-        <div class="card-body">
-            <div class="quadrant-controls">
-
-                <div class="month-navigation">
-                    <button id="prevMonthButton" class="icon-button" title="Mes Anterior">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    </button>
-                    <div class="month-title-container">
-                        <select id="month-select" class="selector month-selector"></select>
-                        <select id="year-select" class="selector year-selector"></select>
-                    </div>
-                    <button id="nextMonthButton" class="icon-button" title="Mes Siguiente">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                    </button>
-                </div>
-
-                <div class="view-actions">
-                    <div class="form-group">
-                        <label for="agent-select">Ver Agente</label>
-                        <select id="agent-select" class="selector"></select>
-                    </div>
-
-                    <button id="view-selector-btn" class="button button-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                        <span>Vistas</span>
-                    </button>
-                    
-                    <button id="management-selector-btn" class="button button-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                        <span>Gestión</span>
-                    </button>
-                </div>
-            </div>
-            <div id="seasonal-shift-note" class="info-banner hidden"></div>
-        </div>
+  <div class="view-header">
+    <div class="view-title">
+      <i data-feather="calendar"></i>
+      <h1>CUADRANTES DE SERVICIO</h1>
     </div>
+  </div>
 
-    <div id="schedule-view" class="view-content">
-        <div id="schedule-content">
-            <div class="schedule-desktop-view"></div>
-            <div class="schedule-mobile-view"></div>
+  <div class="card">
+    <div class="card-body">
+      <div class="quadrant-controls">
+        
+        <div class="month-navigation">
+          <button id="prevMonthButton" class="icon-button" title="Mes Anterior">
+            <i data-feather="chevron-left"></i>
+          </button>
+          
+          <h2 id="currentMonthTitle"></h2>
+
+          <button id="nextMonthButton" class="icon-button" title="Mes Siguiente">
+            <i data-feather="chevron-right"></i>
+          </button>
         </div>
-    </div>
 
+        <div class="view-actions">
+          <div class="filter-group">
+            <select id="year-select" class="selector selector-compact"></select>
+            <select id="month-select" class="selector selector-compact"></select>
+            <select id="agent-select" class="selector selector-compact"></select>
+          </div>
+          
+          <button id="management-selector-btn" class="button button-secondary">
+            <i data-feather="settings"></i>
+            <span>Gestión</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="seasonal-shift-note" class="info-banner hidden"></div>
+    </div>
+  </div>
+
+  <div id="schedule-view" class="view-content">
+    <div id="schedule-content"></div>
+  </div>
 </div>
+
+<div class="schedule-info-card">
+    <div class="info-card-header">
+        <i data-feather="info"></i>
+        <h4>Horarios de Turnos</h4>
+    </div>
+    <div class="info-card-content">
+        <ul>
+            <li>
+                <i data-feather="sunrise"></i>
+                <div>
+                    <strong>Turno de Mañana:</strong>
+                    <span>08:00 a 15:00 horas</span>
+                </div>
+            </li>
+            <li>
+                <i data-feather="sunset"></i>
+                <div>
+                    <strong>Turno de Tarde:</strong>
+                    <span>14:00 a 21:00 horas</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!-- Calendario -->
+<div id="calendar-container" style="height: 80vh;"></div>
+
+<!-- ========================================================================== -->
+<!-- LEYENDA DE COLORES DE TURNOS - NUEVA -->
+<!-- ========================================================================== -->
+<div class="calendar-legend">
+    <!-- Mañana -->
+    <div class="legend-item">
+        <span class="legend-color shift-m"></span>
+        <span class="legend-text">M = Mañana</span>
+    </div>
+
+    <!-- Tarde -->
+    <div class="legend-item">
+        <span class="legend-color shift-t"></span>
+        <span class="legend-text">T = Tarde</span>
+    </div>
+
+    <!-- Libre -->
+    <div class="legend-item">
+        <span class="legend-color shift-l"></span>
+        <span class="legend-text">L = Libre</span>
+    </div>
+
+    <!-- Vacaciones -->
+    <div class="legend-item">
+        <span class="legend-color shift-v"></span>
+        <span class="legend-text">V = Vacaciones</span>
+    </div>
+
+    <!-- Baja -->
+    <div class="legend-item">
+        <span class="legend-color shift-b"></span>
+        <span class="legend-text">B = Baja</span>
+    </div>
+
+    <!-- Otros / AP -->
+    <div class="legend-item">
+        <span class="legend-color shift-ap"></span>
+        <span class="legend-text">AP = Asuntos Propios</span>
+    </div>
+
+    <!-- Licencia -->
+    <div class="legend-item">
+        <span class="legend-color shift-lc"></span>
+        <span class="legend-text">Lc = Licencia</span>
+    </div>
+</div>
+<!-- FIN LEYENDA ============================================================= -->

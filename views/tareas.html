@@ -1,0 +1,56 @@
+<div id="tasks-view" class="view-container">
+  <header class="view-header">
+    <h1 class="view-title">
+      <i data-feather="check-square"></i>
+      <span>Gestión de Tareas</span>
+    </h1>
+  </header>
+  <div class="tasks-layout">
+    <div class="tasks-list-column">
+      <div class="card">
+        <div class="card-header task-filters" id="task-filters">
+          <button class="button filter-btn active" data-status="pendiente">Pendientes</button>
+          <button class="button filter-btn" data-status="finalizada">Finalizadas</button>
+          <button class="button filter-btn" data-status="all">Todas</button>
+        </div>
+        <div class="card-body" id="tasks-list-container">
+          </div>
+      </div>
+    </div>
+
+    <div class="task-resolution-column">
+      <div id="task-resolution-panel" class="card hidden">
+        <h3 class="card-header">
+          <i data-feather="check-square"></i><span>Resolver Tarea</span>
+        </h3>
+        <div class="card-body">
+          <p id="resolution-task-description" class="task-description-preview"></p>
+          <hr>
+          <div class="form-group">
+            <label for="resolution-comment" class="form-label">Añadir comentario de resolución:</label>
+            <textarea id="resolution-comment" class="form-control" rows="4"></textarea>
+          </div>
+          <button id="resolve-with-comment-btn" class="button button-primary resolution-btn">Guardar Comentario</button>
+          
+          <div class="separator"><span>O</span></div>
+
+          <label class="form-label">Crear documento asociado:</label>
+          <div class="button-group">
+            <button id="resolve-with-entrada-btn" class="button button-secondary resolution-btn">
+              <i data-feather="inbox"></i><span>Doc. Entrada</span>
+            </button>
+            <button id="resolve-with-salida-btn" class="button button-secondary resolution-btn">
+              <i data-feather="send"></i><span>Doc. Salida</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="task-resolution-placeholder" class="placeholder-card">
+        <i data-feather="edit-3"></i>
+        <h3>Selecciona una tarea</h3>
+        <p>Elige una tarea de la lista de pendientes para ver las opciones de resolución.</p>
+      </div>
+    </div>
+  </div>
+</div>

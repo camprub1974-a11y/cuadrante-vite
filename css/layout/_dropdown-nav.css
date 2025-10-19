@@ -1,0 +1,83 @@
+/* EN: css/layout/_dropdown-nav.css (o donde hayas puesto los estilos) */
+
+.module-tab-dropdown-container {
+  position: relative;
+}
+
+.dropdown-arrow {
+  width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Esta regla es la que GIRA LA FLECHA (y ya te funciona) */
+.module-tab-dropdown-container.open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  display: none; /* Oculto por defecto */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-large);
+  min-width: 240px;
+  z-index: 1000;
+  padding: var(--space-2) 0;
+  border: 1px solid var(--color-border-main);
+  animation: fadeIn 0.15s ease-out; /* Animación suave */
+}
+
+/* ✅ ESTA ES LA REGLA CLAVE QUE FALTABA O ERA INCORRECTA */
+/* Le dice al menú que se muestre cuando el contenedor tiene la clase .open */
+.module-tab-dropdown-container.open .dropdown-menu {
+  display: block !important;
+}
+
+/* Estilo de los elementos dentro del menú */
+.dropdown-menu .module-tab {
+  width: 100%;
+  border-bottom: none;
+  padding: var(--space-2) var(--space-3);
+  font-weight: 500;
+}
+
+.dropdown-menu .module-tab:hover {
+  background-color: var(--color-background-light);
+}
+
+/* Estilo para el elemento activo DENTRO del menú */
+.dropdown-menu .module-tab.active {
+  background-color: #eef2ff;
+  font-weight: 600;
+}
+
+/* Cuando un elemento del menú está activo, también resaltamos el botón "Gestión" */
+.module-tab-dropdown-container.has-active-child > #gestion-dropdown-btn {
+    color: var(--app-primary-blue);
+    border-bottom-color: var(--app-primary-blue);
+    font-weight: 600;
+}
+
+.module-tab-dropdown-container.has-active-child > #gestion-dropdown-btn i {
+    color: var(--app-primary-blue);
+}
+
+/* Animación de aparición */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container-fluid.overflow-visible {
+  overflow: visible !important;
+}

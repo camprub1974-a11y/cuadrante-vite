@@ -1,199 +1,259 @@
-// js/ui/selectorManager.js
+// js/ui/selectorManager.js (VERSIÓN CORREGIDA)
 
+// *CORRECCIÓN 1: selectedYear, selectedMonthId, y selectedAgentId son funciones
+// * o getters, no valores directos, por lo que su desestructuración
+// * no tiene sentido si el estado se maneja como funciones.
+// * Mantenemos solo las funciones set...
 import {
-    selectedYear, selectedMonthId, selectedAgentId,
-    setDate, setAgent, agentSelectorContext,
-    currentMonthTitle, currentView, currentUser, availableAgents,
-    setView
-} from '../state.js';
-import { generateMonthsForYear, formatDate, getMonthNumberFromName } from '../utils.js';
-import { loadAndDisplaySchedule } from '../logic.js';
+  selectedYear,
+  selectedMonthId,
+  selectedAgentId,
+  setDate,
+  setAgent,
+  availableAgents,
+} from '/js/state.js';
 
-export async function initSelectors() {
-    // --- OBTENCIÓN DE ELEMENTOS DEL DOM ---
-    const yearSelect = document.getElementById('year-select');
-    const monthSelect = document.getElementById('month-select');
-    const agentSelect = document.getElementById('agent-select');
-    const prevMonthButton = document.getElementById('prevMonthButton');
-    const nextMonthButton = document.getElementById('nextMonthButton');
-    const monthTitleElement = document.getElementById('currentMonthTitle');
-    
-    const managementSelectorBtn = document.getElementById('management-selector-btn');
-    const userRequestsBtn = document.getElementById('user-requests-btn');
-    const viewSelectorBtn = document.getElementById('view-selector-btn');
-    const extraServiceBtn = document.getElementById('extra-service-btn');
-    const extraServicesContainer = document.getElementById('extra-services-stats-container');
-    const sidebarColumn = document.querySelector('.sidebar-column');
+import { generateMonthsForYear } from '/js/utils.js';
+// *CORRECCIÓN 2: Para que las funciones auxiliares (populate...) puedan ser
+// * utilizadas dentro de initSelectors, deben ser definidas
+// * DENTRO del módulo y no necesitan ser exportadas
+// * (a menos que se usen fuera de este archivo).
+// * Si se usaran fuera, necesitarían 'export'. Si el
+// * estado de la función es un problema, la solución más limpia es
+// * definirlas aquí arriba o usar 'export' y luego importarlas.
+// * Asumo que son internas y las defino ANTES de su uso.
 
-    // ✅ MEJORA DE ROBUSTEZ APLICADA
-    // Se comprueba si los elementos esenciales existen ANTES de continuar.
-    // Si falta alguno, se muestra un error en la consola y la función se detiene para evitar un 'crash'.
-    if (!yearSelect || !monthSelect || !agentSelect || !prevMonthButton || !nextMonthButton) {
-        console.error("[ERROR SelectorManager] Faltan elementos DOM esenciales para los selectores (año, mes, agente o botones de navegación).");
-        return; // Detiene la ejecución de la función.
+// --- NUEVA FUNCIÓN AUXILIAR ---
+// Esta función reemplaza la que intentabas importar.
+function getMonthDetails(monthId) {
+  if (!monthId || typeof monthId !== 'string') {
+    // Devuelve valores por defecto para evitar errores
+    return { monthName: '', year: new Date().getFullYear(), monthIndex: 0 };
+  }
+  const parts = monthId.split('_'); // ej: ["cuadrante", "enero", "2024"]
+  const monthName = parts[1] || '';
+  const year = parseInt(parts[2], 10) || new Date().getFullYear();
+  
+  // Array de meses para obtener el índice
+  const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+  const monthIndex = MESES.indexOf(monthName);
+
+  return { monthName, year, monthIndex };
+}
+
+// --- Funciones Auxiliares para poblar los selectores (DEFINIDAS PRIMERO) ---
+
+export function populateYearSelector(select, selectedYearValue) {
+  const currentYear = new Date().getFullYear();
+  let optionsHtml = '';
+  // Se agregó '...' para que el for-loop sea correcto.
+  for (let i = currentYear - 5; i <= currentYear + 5; i++) {
+    optionsHtml += `<option value="${i}" ${i === selectedYearValue ? 'selected' : ''}>${i}</option>`;
+  }
+  select.innerHTML = optionsHtml;
+}
+
+export function populateMonthSelector(select, year) {
+  const months = generateMonthsForYear(year);
+  select.innerHTML = months.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
+}
+
+// REEMPLAZA TU FUNCIÓN populateAgentSelector ACTUAL POR ESTA:
+export function populateAgentSelector(select, currentUser, agents) {
+  let optionsHtml = '';
+  
+  // 1. La opción "Todos los Agentes" SIEMPRE está disponible
+  optionsHtml += '<option value="all">Todos los Agentes</option>';
+
+  if (currentUser?.role === 'admin' || currentUser?.role === 'supervisor') {
+    // --- Lógica para Mandos (Admins/Supervisores) ---
+    // Añaden todos los agentes disponibles a la lista
+    agents.forEach(agent => {
+      // Asegurar que 'agent' tenga 'id' y 'name'
+      if (agent && agent.id && agent.name) {
+          optionsHtml += `<option value="${agent.id}">${agent.name} (${agent.id})</option>`;
+      }
+    });
+    // El selector está habilitado por defecto
+    select.disabled = false; 
+
+  } else {
+    // --- Lógica para Agentes Normales ---
+    // Añaden SOLAMENTE su propio ID a la lista
+    const ownAgent = agents.find(agent => String(agent.id) === String(currentUser.agentId));
+    if (ownAgent) {
+        optionsHtml += `<option value="${ownAgent.id}">${ownAgent.name} (${ownAgent.id})</option>`;
     }
+    // El selector está habilitado para que puedan cambiar entre 'Todos' y 'Yo'
+    select.disabled = false; // ✅ ANTES ESTABA 'true'
+  }
 
-    // --- EVENT LISTENERS ---
-    const triggerLoad = () => {
-        loadAndDisplaySchedule(selectedMonthId.get(), selectedAgentId.get());
-    };
+  select.innerHTML = optionsHtml;
 
-    yearSelect.addEventListener('change', (e) => {
-        const newYear = parseInt(e.target.value);
-        const months = generateMonthsForYear(newYear);
-        setDate(newYear, months[0].id);
-        triggerLoad();
-    });
+  // Establecer el valor seleccionado actual (que viene del estado global)
+  // No necesitamos forzar el valor aquí, el estado lo controla.
+  // select.value = selectedAgentId.get(); // Esta línea se puede quitar o dejar, el estado manda.
+}
 
-    monthSelect.addEventListener('change', (e) => {
-        setDate(selectedYear.get(), e.target.value);
-        triggerLoad();
-    });
+/**
+ * Initializes all selectors and listeners for the quadrant view.
+ * @param {object} currentUser - The currently logged-in user object.
+ */
+export function initSelectors(currentUser) {
+  // --- 1. Get DOM Elements ---
+  const yearSelect = document.getElementById('year-select');
+  const monthSelect = document.getElementById('month-select');
+  const agentSelect = document.getElementById('agent-select');
+  const prevMonthButton = document.getElementById('prevMonthButton');
+  const nextMonthButton = document.getElementById('nextMonthButton');
+  const monthTitleElement = document.getElementById('currentMonthTitle');
 
-    agentSelect.addEventListener('change', (e) => {
-        setAgent(String(e.target.value));
-        triggerLoad();
-    });
+  if (!yearSelect || !monthSelect || !agentSelect || !prevMonthButton || !nextMonthButton || !monthTitleElement) {
+    console.error('[SelectorManager] Required DOM elements not found. Initialization failed.');
+    return;
+  }
 
-    const handlePrevMonth = () => {
-        const currentMonthId = selectedMonthId.get();
-        const currentYear = selectedYear.get();
-        const monthIndex = getMonthNumberFromName(currentMonthId.split('_')[1]);
-        let newMonth = monthIndex - 1;
-        let newYear = currentYear;
-        if (newMonth < 0) { newMonth = 11; newYear--; }
-        const newMonthId = `cuadrante_${formatDate(new Date(newYear, newMonth, 1), 'MMMM', { locale: 'es' }).toLowerCase()}_${newYear}`;
+  // --- 2. Populate Selectors ---
+  const agents = availableAgents.get();
+  populateAgentSelector(agentSelect, currentUser, agents);
+
+  const initialYear = selectedYear.get();
+  populateYearSelector(yearSelect, initialYear);
+  populateMonthSelector(monthSelect, initialYear);
+
+  // --- 3. Set Initial Values (using requestAnimationFrame) ---
+  requestAnimationFrame(() => {
+    try {
+      const initialMonthId = selectedMonthId.get();
+      if (agentSelect) {
+           // Ensure the 'all' option actually exists before setting
+           if (Array.from(agentSelect.options).some(opt => opt.value === 'all')) {
+               agentSelect.value = 'all';
+               console.log('[SelectorManager] Initial agent value set to "all" via rAF.');
+           } else {
+               console.warn('[SelectorManager] "all" option not found in agent select during rAF.');
+           }
+      }
+      if (monthSelect && initialMonthId) {
+          if (Array.from(monthSelect.options).some(opt => opt.value === initialMonthId)) {
+              monthSelect.value = initialMonthId;
+              console.log(`[SelectorManager] Initial month value set to "${initialMonthId}" via rAF.`);
+          } else {
+               console.warn(`[SelectorManager] Initial month ID ${initialMonthId} not found in options during rAF.`);
+               // Optionally set a default like the first option if the state value isn't there
+               // monthSelect.selectedIndex = 0; 
+          }
+      }
+      // Update title based on initial month
+      if (initialMonthId && monthTitleElement) {
+         const { monthName, year } = getMonthDetails(initialMonthId);
+         monthTitleElement.textContent = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} de ${year}`;
+      }
+
+    } catch (e) {
+      console.error('[SelectorManager] Error setting initial values in rAF:', e);
+    }
+  });
+
+  // --- 4. Define Event Handlers ---
+  const handleYearChange = () => {
+    const newYear = parseInt(yearSelect.value, 10);
+    // Determine the current month name to keep it when changing year
+    const currentMonthName = getMonthDetails(selectedMonthId.get()).monthName;
+    const newMonthId = `cuadrante_${currentMonthName}_${newYear}`;
+    // Update the state (this will trigger subscriptions)
+    setDate(newYear, newMonthId);
+  };
+
+  const handleMonthChange = () => {
+    const newMonthId = monthSelect.value;
+    const newYear = getMonthDetails(newMonthId).year;
+    // Update the state (this will trigger subscriptions)
+    setDate(newYear, newMonthId);
+  };
+
+  const handleAgentChange = () => {
+    // Update the state (this will trigger subscriptions)
+    setAgent(agentSelect.value);
+  };
+
+  const navigateMonth = (direction) => {
+    const currentMonthId = selectedMonthId.get();
+    let { monthIndex, year } = getMonthDetails(currentMonthId);
+    let newMonthIndex = monthIndex + direction;
+    let newYear = year;
+    if (newMonthIndex < 0) { newMonthIndex = 11; newYear--; }
+    else if (newMonthIndex > 11) { newMonthIndex = 0; newYear++; }
+    const months = generateMonthsForYear(newYear); // Assumes this util works correctly
+    // Ensure the index is valid for the generated months
+    if (newMonthIndex >= 0 && newMonthIndex < months.length) {
+        const newMonthId = months[newMonthIndex].id;
+        // Update the state (this will trigger subscriptions)
         setDate(newYear, newMonthId);
-        triggerLoad();
-    };
-    
-    const handleNextMonth = () => {
-        const currentMonthId = selectedMonthId.get();
-        const currentYear = selectedYear.get();
-        const monthIndex = getMonthNumberFromName(currentMonthId.split('_')[1]);
-        let newMonth = monthIndex + 1;
-        let newYear = currentYear;
-        if (newMonth > 11) { newMonth = 0; newYear++; }
-        const newMonthId = `cuadrante_${formatDate(new Date(newYear, newMonth, 1), 'MMMM', { locale: 'es' }).toLowerCase()}_${newYear}`;
-        setDate(newYear, newMonthId);
-        triggerLoad();
-    };
-
-    // Limpiamos listeners antiguos antes de añadir los nuevos para evitar duplicados
-    let newPrevButton = prevMonthButton.cloneNode(true);
-    prevMonthButton.parentNode.replaceChild(newPrevButton, prevMonthButton);
-    newPrevButton.addEventListener('click', handlePrevMonth);
-
-    let newNextButton = nextMonthButton.cloneNode(true);
-    nextMonthButton.parentNode.replaceChild(newNextButton, nextMonthButton);
-    newNextButton.addEventListener('click', handleNextMonth);
-
-    // --- SUSCRIPCIONES A ESTADOS ---
-    selectedYear.subscribe(newYear => {
-        const currentSystemYear = new Date().getFullYear();
-        yearSelect.innerHTML = '';
-        for (let i = currentSystemYear - 5; i <= currentSystemYear + 5; i++) {
-            yearSelect.innerHTML += `<option value="${i}">${i}</option>`;
-        }
-        yearSelect.value = newYear;
-    });
-
-    selectedMonthId.subscribe(newMonthId => {
-        if (!newMonthId) return;
-        const currentYear = selectedYear.get();
-        const months = generateMonthsForYear(currentYear);
-        monthSelect.innerHTML = months.map(m => `<option value="${m.id}">${m.name}</option>`).join('');
-        monthSelect.value = newMonthId;
-        const monthObject = months.find(m => m.id === newMonthId);
-        if (monthObject && monthTitleElement) {
-             // Verificamos que monthTitleElement exista antes de usarlo
-            currentMonthTitle.set(`${monthObject.name} de ${currentYear}`);
-        }
-    });
-    
-    // El elemento monthTitleElement es opcional, ya que los selectores ahora muestran mes y año.
-    if (monthTitleElement) {
-        currentMonthTitle.subscribe(title => {
-            monthTitleElement.textContent = title;
-        });
+    } else {
+        console.error(`[SelectorManager] Calculated invalid month index ${newMonthIndex} for year ${newYear}`);
     }
+  };
 
+  // --- 5. Assign Event Listeners ---
+  yearSelect.addEventListener('change', handleYearChange);
+  monthSelect.addEventListener('change', handleMonthChange);
+  agentSelect.addEventListener('change', handleAgentChange);
+  prevMonthButton.addEventListener('click', () => navigateMonth(-1));
+  nextMonthButton.addEventListener('click', () => navigateMonth(1));
 
-    const renderAgentSelector = () => {
-        const { isAdmin, currentUser: userProfile } = agentSelectorContext.get();
-        const activeView = currentView.get();
-        const agents = availableAgents.get();
-        let options = [];
-        let shouldBeDisabled = false;
-
-        if (isAdmin) {
-            options.push({ value: 'all', text: 'Todos los Agentes' });
-            agents.forEach(agent => options.push({ value: String(agent.id), text: agent.name }));
-        } else if (userProfile) {
-            const userAgent = agents.find(agent => String(agent.id) === String(userProfile.agentId));
-            
-            if (activeView === 'calendario') {
-                if (userAgent) options.push({ value: String(userAgent.id), text: userAgent.name });
-                shouldBeDisabled = true;
-            } else {
-                options.push({ value: 'all', text: 'Todos los Agentes' });
-                if (userAgent) options.push({ value: String(userAgent.id), text: userAgent.name });
-                shouldBeDisabled = false;
-            }
-        }
-        
-        agentSelect.innerHTML = options.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('');
-        agentSelect.disabled = shouldBeDisabled;
-
-        const currentAgentValue = selectedAgentId.get();
-        if (options.some(opt => opt.value === currentAgentValue)) {
-            agentSelect.value = currentAgentValue;
-        } else if (options.length > 0) {
-            setAgent(options[0].value);
-        }
-    };
-    agentSelectorContext.subscribe(renderAgentSelector);
-    currentView.subscribe(renderAgentSelector);
-
-    selectedAgentId.subscribe(agentId => {
-        if (agentSelect.value !== agentId) agentSelect.value = agentId;
-    });
-
-    // --- LÓGICA DE CARGA INICIAL ---
-    const today = new Date();
-    const initialYear = today.getFullYear();
-    const initialMonthName = formatDate(today, 'MMMM', { locale: 'es' }).toLowerCase();
-    const initialMonthId = `cuadrante_${initialMonthName}_${initialYear}`;
-    const user = currentUser.get();
-
-    if (user && user.role === 'supervisor') {
-        setView('tarjetas');
-        setAgent('all');
-        if (viewSelectorBtn) viewSelectorBtn.disabled = true;
-        if (agentSelect) agentSelect.disabled = true;
-        if (managementSelectorBtn) managementSelectorBtn.style.display = 'none';
-        if (userRequestsBtn) userRequestsBtn.style.display = 'none';
-        if (extraServiceBtn) extraServiceBtn.style.display = 'none';
-        if (extraServicesContainer) extraServicesContainer.style.display = 'none';
-        if (sidebarColumn) sidebarColumn.style.display = 'none';
-        
-    } else if (user) {
-        const initialAgent = user.role === 'admin' ? 'all' : String(user.agentId || '');
-        setAgent(initialAgent);
-        
-        if (viewSelectorBtn) viewSelectorBtn.disabled = false;
-        
-        if (managementSelectorBtn) {
-            managementSelectorBtn.style.display = user.role === 'admin' ? 'inline-flex' : 'none';
-        }
-        if (userRequestsBtn) {
-            userRequestsBtn.style.display = user.role === 'guard' ? 'inline-flex' : 'none';
-        }
-        
-        if (extraServiceBtn) extraServiceBtn.style.display = 'inline-flex';
-        if (extraServicesContainer) extraServicesContainer.style.display = 'block';
+  // --- 6. Subscribe to State Changes (AFTER initial setup) ---
+  selectedYear.subscribe((year) => {
+    if (parseInt(yearSelect.value, 10) !== year) {
+      // Update year selector visually if state changes externally
+      populateYearSelector(yearSelect, year);
     }
-    
-    setDate(initialYear, initialMonthId);
-    await loadAndDisplaySchedule(selectedMonthId.get(), selectedAgentId.get());
+    // Repopulate month selector when year changes
+    populateMonthSelector(monthSelect, year);
+    // Try to set the correct month value after repopulating
+    const currentMonthId = selectedMonthId.get();
+    if (Array.from(monthSelect.options).some(opt => opt.value === currentMonthId)) {
+        monthSelect.value = currentMonthId;
+    } else {
+        // If current month doesn't exist in new year, maybe select first month?
+        monthSelect.selectedIndex = 0;
+        // Or trigger a state update to the first month of the new year
+        // handleMonthChange(); // Be careful of infinite loops if state updates trigger this
+    }
+  });
+
+  selectedMonthId.subscribe((monthId) => {
+    // Update month selector visual state
+    if (monthSelect.value !== monthId) {
+        if (Array.from(monthSelect.options).some(opt => opt.value === monthId)) {
+            monthSelect.value = monthId;
+        } else {
+             console.warn(`[SelectorManager] Month ID ${monthId} from state not found in options.`);
+        }
+    }
+    // Update title display
+    const { monthName, year } = getMonthDetails(monthId);
+    if (monthTitleElement) { // Check if element exists
+        monthTitleElement.textContent = `${monthName.charAt(0).toUpperCase() + monthName.slice(1)} de ${year}`;
+    }
+    // Ensure year selector matches
+    if (parseInt(yearSelect.value, 10) !== year) {
+        yearSelect.value = year; // Directly update year selector visual
+    }
+  });
+
+  selectedAgentId.subscribe((agentId) => {
+    // Update agent selector visual state
+    if (agentSelect.value !== agentId) {
+        if (Array.from(agentSelect.options).some(opt => opt.value === agentId)) {
+            agentSelect.value = agentId;
+            console.log(`[SelectorManager] Agent selector updated to ${agentId} via subscription.`);
+        } else {
+            console.warn(`[SelectorManager] Agent ID ${agentId} from state not found in options. Setting visual to 'all'.`);
+            agentSelect.value = 'all'; // Fallback visual state if ID not found
+        }
+    }
+  });
+
+  console.log('[SelectorManager] Selectors initialized and subscriptions active.');
 }

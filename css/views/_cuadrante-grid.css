@@ -1,0 +1,85 @@
+/* css/views/_cuadrante-grid.css */
+
+/* 1. Variables de Color para los Turnos */
+:root {
+  --shift-m-bg: #5dce85;
+  --shift-t-bg: #4a7dc0;
+  --shift-n-bg: #e0e7ff;
+  --shift-l-bg: #f3f4f6;
+  --shift-v-bg: #c9c275;
+  --shift-p-bg: #fae8ff;
+  --shift-b-bg: #ffedd5;
+  --shift-ap-bg: #d1fae5;
+  --shift-lc-bg: #d6899d;
+}
+
+/* 2. Estructura Principal del Calendario (Grid) */
+.schedule-header,
+.schedule-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  width: 100%;
+}
+
+/* 3. Estilo de la Cabecera (Lunes, Martes, ...) */
+.schedule-header > div {
+  padding: var(--space-2);
+  font-weight: 600;
+  text-align: center;
+  background-color: #f8fafc;
+  border-bottom: 2px solid var(--color-border);
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+}
+
+/* 4. Estilo de cada Celda de Día */
+.day-cell {
+  border: 1px solid var(--color-border);
+  min-height: 120px;
+  padding: var(--space-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Estilo para los días que no pertenecen al mes actual */
+.day-cell.not-current-month {
+  background-color: #f9fafb;
+  opacity: 0.6;
+}
+
+.day-number {
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  align-self: flex-start;
+}
+
+/* 5. Contenedor de los Turnos dentro de cada Día */
+.shifts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* 6. Estilo de cada Etiqueta de Turno */
+.shift-tag {
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.shift-tag.shift-m { background-color: var(--shift-m-bg); }
+.shift-tag.shift-t { background-color: var(--shift-t-bg); }
+.shift-tag.shift-n { background-color: var(--shift-n-bg); }
+.shift-tag.shift-l { background-color: var(--shift-l-bg); }
+.shift-tag.shift-v { background-color: var(--shift-v-bg); }
+.shift-tag.shift-p { background-color: var(--shift-p-bg); }
+.shift-tag.shift-b { background-color: var(--shift-b-bg); }
+.shift-tag.shift-ap { background-color: var(--shift-ap-bg); }
+.shift-tag.shift-lc { background-color: var(--shift-lc-bg); }

@@ -5,25 +5,25 @@
   /* =================================================================== */
 
   /* --- Esquema de Colores --- */
-  --color-bg: #F6F7F9;
-  --color-bg-card: #FFFFFF;
-  --color-bg-header: #1F2D3D;
-  --color-bg-table-header: #F0F2F5;
-  --color-bg-table-row-alt: #FBFCFD;
+  --color-bg: #f6f7f9;
+  --color-bg-card: #ffffff;
+  --color-bg-header: #1f2d3d;
+  --color-bg-table-header: #f0f2f5;
+  --color-bg-table-row-alt: #fbfcfd;
 
-  --color-primary: #1B9CFC;
+  --color-primary: #1b9cfc;
   --color-primary-hover: #127dcf;
   --color-primary-active: #0e6cb4;
-  
-  --color-success: #3DD598;
-  --color-warning: #FF6B6B;
 
-  --color-text: #2E3A46;
-  --color-text-secondary: #6B7280;
-  --color-text-light: #FFFFFF;
-  
-  --color-border: #E2E5E9;
-  --color-border-form: #CED4DA;
+  --color-success: #3dd598;
+  --color-warning: #ff6b6b;
+
+  --color-text: #2e3a46;
+  --color-text-secondary: #6b7280;
+  --color-text-light: #ffffff;
+
+  --color-border: #e2e5e9;
+  --color-border-form: #ced4da;
 
   /* --- Tipografía --- */
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -46,7 +46,7 @@
   --border-radius-sm: 6px;
   --border-radius-md: 8px;
   --border-radius-lg: 12px;
-  --shadow-card: 0 2px 8px rgba(0,0,0,0.05);
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.05);
   --transition-fast: 0.2s ease-in-out;
 
   /* =================================================================== */

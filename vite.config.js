@@ -2,13 +2,25 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  // Asegúrate de que esta sección 'resolve' exista o añádela
   resolve: {
-    // Forzar a Vite a usar una única instancia de nanostores,
-    // útil si tienes dependencias que también usan nanostores.
-    dedupe: ['nanostores'] 
-  }
-  // Si tienes otras configuraciones de Vite (plugins, build, etc.), colócalas aquí
-  // plugins: [react()], // Ejemplo si usaras React
-  // build: { /* ... */ }
+    // Esto está bien, lo mantenemos.
+    dedupe: ['nanostores'],
+  },
+
+  // ✅ AÑADE ESTA SECCIÓN PARA CORREGIR EL ERROR
+  // Le decimos a Vite explícitamente que los archivos .js son JavaScript normal, no JSX.
+  esbuild: {
+    loader: 'js', // Usa el loader 'js' por defecto
+    include: /src\/.*\.js$/, // Incluye solo los archivos .js que necesiten un trato especial (si los hubiera)
+    exclude: [], // No excluye nada por ahora
+  },
+  
+  // Optimización para que el servidor de desarrollo entienda que no hay JSX en los .js
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: {
+        '.js': 'js',
+      },
+    },
+  },
 });

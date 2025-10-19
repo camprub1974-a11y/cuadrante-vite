@@ -1,38 +1,78 @@
 /* css/components/_shift-modal.css */
 .shift-edit-info {
-    text-align: center;
-    margin: 1rem 0;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color-light);
+  text-align: center;
+  margin: 1rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color-light);
 }
 .shift-edit-info p {
-    margin: 0.25rem 0;
-    color: var(--app-text-secondary);
+  margin: 0.25rem 0;
+  color: var(--app-text-secondary);
 }
 .shift-edit-info strong {
-    color: var(--app-text-primary);
+  color: var(--app-text-primary);
 }
 .shift-type-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 0.75rem;
-    margin: 1.5rem 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0;
 }
 .shift-type-btn {
-    padding: 12px 8px;
-    font-weight: 500;
-    border: 1px solid var(--border-color);
-    background-color: #f8fafc;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+  padding: 12px 8px;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  background-color: #f8fafc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 .shift-type-btn:hover {
-    background-color: var(--app-primary-blue);
-    color: white;
-    border-color: var(--app-primary-blue);
-    transform: translateY(-2px);
+  background-color: var(--app-primary-blue);
+  color: rgb(28, 4, 248);
+  border-color: var(--app-primary-blue);
+  transform: translateY(-2px);
 }
 #remove-shift-btn {
-    width: 100%;
+  width: 100%;
+  color: rgb(255, 255, 255);
+  background-color: color(srgb 0.11 0.61 0.99);
 }
+
+/* Soluciones para el modal de edición de turnos */
+
+/* 1. Limita el tamaño del modal para que no sea demasiado grande */
+#edit-shift-modal .modal-content {
+  max-width: 650px; /* Un buen ancho para varias columnas */
+}
+
+/* 2. Activa el scroll en el cuerpo del modal cuando sea necesario */
+#edit-shift-modal .modal-body {
+  /* Altura máxima calculada: 70% de la ventana menos el espacio para cabecera/pie */
+  max-height: calc(70vh - 100px);
+  overflow-y: auto; /* Muestra la barra de scroll vertical SOLO si es necesario */
+}
+
+/* 3. Organiza los botones en una rejilla (grid) responsive */
+#edit-shift-modal #shift-modal-buttons {
+  display: grid;
+  /* Crea columnas automáticas de al menos 160px de ancho */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem; /* Espacio consistente entre los botones */
+}
+
+/* 4. Asegura que los botones ocupen todo el espacio de su celda */
+#edit-shift-modal #shift-modal-buttons .button {
+  width: 100%;
+  justify-content: center; /* Centra el texto del botón */
+}
+
+/* FORZAR COMPORTAMIENTO DE VENTANA FLOTANTE */
+
+#edit-shift-modal {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
