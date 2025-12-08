@@ -1,58 +1,179 @@
-/* css/views/_extra-services.css (VERSIÓN LIMPIA Y CORREGIDA) */
-
-/* Estilos para los badges de servicios extraordinarios en las celdas del cuadrante */
-.extra-services-cell-info {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 2px; /* Espacio entre badges si hay varios */
-    margin-top: 5px; /* Pequeño margen superior para separarlo del turno principal */
-}
-
-.extra-service-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    color: white;
-    font-size: 0.7em;
-    font-weight: bold;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    text-transform: uppercase;
-}
-
-/* Colores para los tipos de servicios extraordinarios, usando las variables definidas en :root */
-.extra-service-diurno { background-color: var(--shift-M-bg); }
-.extra-service-nocturno { background-color: var(--shift-N-bg); }
-.extra-service-festivo { background-color: var(--shift-T-bg); }
-.extra-service-festivo_nocturno { background-color: var(--shift-B-bg); }
-
-/* Estilos específicos para la vista de servicios extraordinarios (FullCalendar) */
-#extra-services-calendar {
-    max-width: 100%;
-    margin: 0 auto;
-    font-family: var(--app-font-family);
-}
-
-/* Ajustes para los eventos de FullCalendar */
-.fc-event {
-    font-size: 0.8em;
-    padding: 2px 4px;
-    border-radius: 3px;
-    border: none !important;
-    cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.fc-event-title {
-    font-weight: 500;
-}
-
 /*
-  NOTA: Las reglas antiguas para #extra-services-admin-view .view-controls
-  y #extra-services-admin-view .filters-group han sido ELIMINADAS
-  para permitir que los estilos de css/components/_filters.css tomen el control.
-*/
+ * css/views/_extra-services.css
+ * REFACTORIZADO A MCST/BEM (Arquitectura Glass)
+ */
+
+/* 1. Layout Principal de la Vista */
+.extra-services-view__layout {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+.extra-services-view__main-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.extra-services-view__sidebar-column {
+  position: sticky;
+  top: var(--space-4);
+}
+
+/* 2. Filtros (Admin) */
+.extra-services-view__filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  align-items: end;
+}
+.extra-services-view__filter-grid .form-group {
+  margin-bottom: 0;
+}
+.extra-services-view__filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  /* Ajuste para que caiga bien en el grid */
+  grid-column: 1 / -1;
+  padding-top: var(--space-2);
+}
+@media (min-width: 960px) {
+  .extra-services-view__filter-actions {
+    grid-column: auto; /* Resetea en pantallas grandes */
+  }
+}
+
+/* 3. Paginación (Admin) */
+.extra-services-view__pagination {
+  border-top: 1px solid var(--glass-dark-border); 
+}
+.extra-services-view__pagination span {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-on-dark);
+}
+
+/* 4. Estadísticas (Sidebar Admin) */
+.extra-services-view__stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.extra-services-view__stats-card {
+  background: rgba(var(--rgb-green-neon), 0.05);
+  border: 1px solid rgba(var(--rgb-green-neon), 0.2);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  text-align: center;
+  margin-bottom: var(--space-4);
+  box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.1);
+}
+.extra-services-view__stats-card-label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-text-on-dark-muted);
+  margin-bottom: var(--space-1);
+}
+.extra-services-view__stats-card-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-accent-neon);
+  line-height: 1.2;
+  text-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.3);
+}
+
+/* 5. Vista Guardia */
+.extra-services-view__agent-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+/* Contenedores de Gráficos (reemplaza style inline) */
+.extra-services-view__chart-container {
+  position: relative;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+.extra-services-view__chart-container[data-height="250px"] {
+  height: 250px;
+}
+.extra-services-view__chart-container[data-height="220px"] {
+  height: 220px;
+}
+
+/* 6. Reglas específicas de FullCalendar (Glass) */
+#extra-services-calendar .fc-event {
+  font-size: 0.8em;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+  border: none !important;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Colores ya se aplican desde JS */
+}
+
+/* ============================================= */
+/* RESPONSIVE                                    */
+/* ============================================= */
+@media (max-width: 1024px) {
+  .extra-services-view__layout {
+    grid-template-columns: 1fr;
+  }
+  .extra-services-view__sidebar-column {
+    position: static;
+  }
+}
+@media (max-width: 768px) {
+  .extra-services-view__stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .extra-services-view__agent-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================= */
+/* FALLBACK MODO CLÁSICO                         */
+/* ============================================= */
+
+/* Layout */
+body.classic-mode .extra-services-view__pagination {
+  border-top: 1px solid var(--color-border-light);
+  background: var(--color-bg-card);
+}
+body.classic-mode .extra-services-view__pagination span {
+  color: var(--color-text-primary);
+}
+
+/* Stats Card */
+body.classic-mode .extra-services-view__stats-card {
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+  box-shadow: none;
+}
+body.classic-mode .extra-services-view__stats-card-label {
+  color: var(--color-text-secondary);
+}
+body.classic-mode .extra-services-view__stats-card-value {
+  color: var(--color-primary);
+  text-shadow: none;
+}
+
+/* Gráficos y Agente */
+body.classic-mode .extra-services-view__agent-stats-grid .stat-card {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
+}
+body.classic-mode .extra-services-view__agent-stats-grid .stat-card .stat-label {
+  color: var(--color-text-secondary);
+}
+body.classic-mode .extra-services-view__agent-stats-grid .stat-card .stat-value {
+  color: var(--color-text-primary);
+}

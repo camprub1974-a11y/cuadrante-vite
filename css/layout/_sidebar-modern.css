@@ -1,0 +1,269 @@
+/* =================================================================== */
+/* css/layout/_sidebar-modern.css (Refactorizado - Arquitectura Moderna) */
+/* =================================================================== */
+
+/* --- Bloque: Sidebar Overlay --- */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Estilo Moderno/Glass */
+  background-color: rgba(var(--rgb-black), 0.85);
+  backdrop-filter: var(--backdrop-blur-xl);
+  -webkit-backdrop-filter: var(--backdrop-blur-xl);
+  
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base) var(--ease-smooth);
+}
+
+/* Estado: Sidebar Abierto */
+body.sidebar-open .sidebar-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --- Bloque: Sidebars Principales (#management-sidebar y #agent-sidebar) --- */
+#management-sidebar,
+#agent-sidebar { 
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  height: 100%;
+  z-index: 1001;
+  
+  /* Estilo Moderno/Glass */
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-intense);
+  -webkit-backdrop-filter: var(--backdrop-blur-intense);
+  border-right: 1px solid var(--glass-dark-border-glow);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-glow-green-sm);
+  
+  transform: translateX(-100%);
+  transition: transform var(--transition-slow) var(--ease-smooth);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Modificador: Sombra (Glow) específica para Agente */
+#agent-sidebar {
+    box-shadow: 
+        var(--shadow-glass-card),
+        0 0 15px rgba(135, 206, 250, 0.4); /* Azulado */
+}
+
+/* Estado: Sidebar Abierto */
+body.sidebar-open #management-sidebar,
+body.sidebar-open #agent-sidebar {
+  transform: translateX(0);
+}
+
+/* --- Elemento: Sidebar Header (Común) --- */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-5);
+  flex-shrink: 0;
+
+  /* Estilo Moderno/Glass */
+  border-bottom: 1px solid rgba(var(--rgb-green-neon), 0.2);
+  background: rgba(var(--rgb-green-neon), 0.05);
+}
+
+/* --- Elemento: Sidebar Header Título (h3) --- */
+.sidebar-header h3 {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  /* Estilo Moderno/Glass */
+  color: var(--white);
+  text-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.3);
+}
+
+/* --- Elemento: Sidebar Header Botón (icon-button) --- */
+.sidebar-header .icon-button {
+  color: var(--color-text-on-dark-muted);
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+}
+.sidebar-header .icon-button:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+}
+
+/* --- Elemento: Sidebar Content (Contenido del Menú) --- */
+.sidebar-content {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  overflow-y: auto;
+  flex-grow: 1;
+  /* Scrollbar - Estilos heredados de _global.css */
+}
+
+/* --- Elemento: Sidebar Menu Link (.module-tab) --- */
+.sidebar-content .module-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3); 
+  width: 100%;
+  padding: var(--space-3);
+  font-weight: 500;
+  transition: all var(--transition-base) var(--ease-smooth);
+
+  /* 💡 MODIFICADO: Color de texto neón por defecto */
+  color: var(--color-accent-neon); 
+  
+  border-radius: var(--radius-lg); 
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+}
+
+/* 💡 AÑADIDO: Icono neón por defecto */
+.sidebar-content .module-tab i {
+    color: var(--color-accent-neon);
+    transition: color var(--transition-fast);
+}
+
+.sidebar-content .module-tab:hover {
+  background: rgba(var(--rgb-white), 0.1);
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.15);
+  
+  /* 💡 MODIFICADO: Texto hover a blanco para contraste */
+  color: var(--white); 
+}
+
+/* 💡 MODIFICADO: Icono hover se mantiene neón */
+.sidebar-content .module-tab:hover i {
+    color: var(--color-accent-neon);
+}
+
+/* Modificador: Link Activo (.module-tab.active) */
+.sidebar-content .module-tab.active {
+  /* Estilo Activo (COPIADO DE _module-nav.css) */
+  background: linear-gradient(135deg, var(--color-accent-neon) 0%, var(--green-600) 100%);
+  color: var(--gray-900) !important;
+  font-weight: var(--font-bold);
+  border-color: var(--color-accent-neon);
+  box-shadow: 
+    0 4px 12px rgba(var(--rgb-green-neon), 0.3),
+    0 0 20px rgba(var(--rgb-green-neon), 0.2);
+  transform: translateY(-2px);
+}
+.sidebar-content .module-tab.active i {
+  color: var(--gray-900) !important;
+}
+
+
+/* =================================================================== */
+/* --- Modo Clásico (Anulaciones) --- */
+/* =================================================================== */
+
+body.classic-mode .sidebar-overlay {
+  background-color: var(--modal-overlay-bg); 
+  backdrop-filter: blur(var(--modal-overlay-blur)); 
+}
+
+body.classic-mode #management-sidebar,
+body.classic-mode #agent-sidebar {
+  background-color: var(--color-bg-card);
+  backdrop-filter: none;
+  border-right: 1px solid var(--color-border);
+  box-shadow: var(--shadow-large); 
+}
+
+body.classic-mode .sidebar-header {
+  border-bottom: 1px solid var(--color-border-main);
+  background-color: var(--color-white);
+}
+
+body.classic-mode .sidebar-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  text-shadow: none;
+}
+
+body.classic-mode .sidebar-header .icon-button {
+  background: none;
+  border: none;
+  color: var(--color-text-dark);
+}
+
+body.classic-mode .sidebar-content {
+  padding: var(--space-2); 
+  gap: var(--space-1);
+}
+
+body.classic-mode .sidebar-content .module-tab {
+  /* 💡 MODIFICADO: Texto modo clásico */
+  color: var(--color-text-main);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border-color: transparent;
+  border-radius: var(--radius-lg);
+}
+
+/* 💡 AÑADIDO: Icono modo clásico */
+body.classic-mode .sidebar-content .module-tab i {
+    color: var(--color-text-main);
+}
+
+body.classic-mode .sidebar-content .module-tab:hover {
+  background-color: var(--color-background-muted); 
+  color: var(--color-text-dark);
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+body.classic-mode .sidebar-content .module-tab:hover i {
+    color: var(--color-text-dark);
+}
+
+body.classic-mode .sidebar-content .module-tab.active {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-inverted) !important;
+  border-color: var(--color-primary);
+  box-shadow: none;
+  transform: translateY(0);
+}
+
+body.classic-mode .sidebar-content .module-tab.active i {
+  color: var(--color-text-inverted) !important;
+}
+
+
+/* =================================================================== */
+/* --- Responsive --- */
+/* =================================================================== */
+
+@media (max-width: 768px) {
+  #management-sidebar,
+  #agent-sidebar {
+    width: 280px;
+  }
+  
+  .sidebar-header {
+    padding: var(--space-4);
+  }
+  
+  .sidebar-header h3 {
+    font-size: var(--text-lg);
+  }
+}

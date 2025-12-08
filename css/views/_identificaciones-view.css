@@ -1,0 +1,96 @@
+/* =================================================================== */
+/* css/views/_identificaciones-view.css (Refactorizado - Moderna) */
+/* =================================================================== */
+
+/* --- 1. Pestañas de Sub-navegación --- */
+/* (Estilos de _tabs.css) */
+#identificaciones-view-content .modal-tabs {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: 0; 
+  border-bottom: 2px solid var(--glass-dark-border);
+  padding: 0 var(--space-4); 
+}
+#identificaciones-view-content .tab-button {
+  padding: var(--space-3) var(--space-2); 
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-on-dark-muted);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin-bottom: -2px; 
+  display: flex; 
+  align-items: center;
+  gap: var(--space-2);
+}
+#identificaciones-view-content .tab-button:hover {
+  color: var(--white);
+}
+#identificaciones-view-content .tab-button.active {
+  color: var(--color-accent-neon);
+  border-bottom-color: var(--color-accent-neon);
+}
+#identificaciones-view-content .tab-button i {
+    width: 18px;
+    height: 18px;
+}
+
+/* --- 2. Contenido de las Pestañas --- */
+.sub-view {
+    padding: var(--space-4); 
+}
+.sub-view.hidden {
+    display: none;
+}
+
+/* --- 3. Barra de Filtro/Búsqueda --- */
+/* 💡 SOLUCIÓN DE ALINEACIÓN */
+.sub-view .filter-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center; /* <-- ESTA ES LA REGLA CLAVE */
+  gap: var(--space-3);
+  background: var(--glass-dark-bg-soft);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4);
+  /* Hereda .card.glass-panel */
+}
+
+.sub-view .filter-bar .form-group {
+  flex-grow: 1; 
+  margin-bottom: 0;
+}
+
+.sub-view .filter-bar .button {
+  flex-shrink: 0; 
+  height: 44px; /* Coincidir con altura de .selector */
+}
+
+/* --- 4. Contenedor de Tabla --- */
+.table-container {
+    background: var(--glass-dark-bg-soft);
+    border: 1px solid var(--glass-dark-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden; 
+}
+
+
+/* ============================================= */
+/* --- MODO CLÁSICO (Anulaciones) --- */
+/* ============================================= */
+
+/* Anulación del .filter-bar para modo clásico */
+body.classic-mode .sub-view .filter-bar {
+   background: var(--color-bg-hover);
+   border: 1px solid var(--color-border);
+   box-shadow: none;
+}
+
+/* Anulación del .table-container para modo clásico */
+body.classic-mode .table-container {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+}

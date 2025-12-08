@@ -1,34 +1,122 @@
-/* css/components/_messages.css */
+/* =================================================================== */
+/* css/components/_messages.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
+
 #app-messages-container {
-    position: fixed;
-    top: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10001;
-    width: 90%;
-    max-width: 400px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    pointer-events: none;
+  position: fixed;
+  top: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  width: 90%;
+  max-width: 450px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  pointer-events: none;
 }
 
 .app-message {
-    padding: 1rem;
-    border-radius: 8px;
-    box-shadow: var(--shadow-md);
-    color: white;
-    font-weight: 500;
-    opacity: 1;
-    transition: opacity 0.5s ease-out;
-    pointer-events: auto;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-xl);
+  
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  border: 1px solid rgba(var(--rgb-white), 0.2);
+  
+  box-shadow: var(--shadow-glass-card);
+  color: var(--white);
+  font-weight: var(--font-medium);
+  font-size: var(--text-sm);
+  
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  
+  opacity: 1;
+  transform: translateY(0);
+  transition: all var(--transition-base) var(--ease-smooth);
+  pointer-events: auto;
+  
+  animation: slideDown 0.3s var(--ease-smooth);
 }
 
-.app-message-info { background-color: #3b82f6; }
-.app-message-success { background-color: #16a34a; }
-.app-message-warning { background-color: #f59e0b; }
-.app-message-error { background-color: #dc2626; }
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Iconos según tipo */
+.app-message::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+}
+
+.app-message-info {
+  border-left: 4px solid var(--color-primary);
+  box-shadow: var(--shadow-glass-card), 0 0 20px rgba(var(--rgb-primary), 0.2);
+}
+
+.app-message-success {
+  border-left: 4px solid var(--color-accent-neon);
+  box-shadow: var(--shadow-glass-card), var(--shadow-glow-green-sm);
+}
+
+.app-message-warning {
+  border-left: 4px solid var(--color-warning);
+  box-shadow: var(--shadow-glass-card), 0 0 20px rgba(234, 179, 8, 0.2);
+}
+
+.app-message-error {
+  border-left: 4px solid var(--color-danger);
+  box-shadow: var(--shadow-glass-card), 0 0 20px rgba(239, 68, 68, 0.3);
+}
 
 .app-message.fade-out {
-    opacity: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #app-messages-container {
+    top: var(--space-4);
+    max-width: calc(100% - var(--space-8));
+  }
+  
+  .app-message {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+/* Modo Clásico */
+body.classic-mode .app-message {
+  backdrop-filter: none;
+  border: none;
+}
+
+body.classic-mode .app-message-info {
+  background-color: var(--color-primary);
+}
+
+body.classic-mode .app-message-success {
+  background-color: var(--color-success);
+}
+
+body.classic-mode .app-message-warning {
+  background-color: var(--color-warning);
+}
+
+body.classic-mode .app-message-error {
+  background-color: var(--color-danger);
 }

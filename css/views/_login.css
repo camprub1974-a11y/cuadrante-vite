@@ -1,153 +1,602 @@
-/* css/views/_login.css */
-.login-wrapper {
-    display: flex;
-    width: 100%;
-    height: 100%;
+/* =================================================================== */
+/* css/views/_login.css (Refactorizado MCST/BEM) - V2 Mejorado */
+/* =================================================================== */
+
+/* 1. CONTENEDOR PRINCIPAL */
+.login-view {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
-.login-left-panel {
-    width: 35%; 
-    background-color: var(--login-sidebar-bg); 
-    color: var(--login-sidebar-text); 
-    box-sizing: border-box; 
-    overflow: hidden;
-    display: grid;
-    grid-template-rows: 1fr 1fr; 
+/* Divider visual con gradiente y efecto neón */
+.login-view::after {
+  content: '';
+  position: absolute;
+  right: 50%;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-accent-neon),
+    transparent
+  );
+  box-shadow: 0 0 20px rgba(var(--rgb-green-neon), 0.5);
+  z-index: 10;
 }
 
-.login-left-content {
-    overflow: hidden;
+/* 2. PANEL IZQUIERDO (Marca) */
+.login-view__brand {
+  flex: 1;
+  background-image: url('/icons/sunset-image.jpg');
+  background-size: 110%;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-.personal-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+/* Overlay oscuro para legibilidad sobre imagen */
+.login-view__brand::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(var(--rgb-black), 0.4);
+  z-index: 1;
 }
 
-.login-bottom-info {
-    color: var(--login-sidebar-text); 
-    text-align: center;
-    width: 100%;
-    display: flex;
+/* Contenido del brand con animación sutil */
+.brand-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 80%;
+  padding: var(--space-8);
+  animation: brandFadeIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes brandFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.logo {
+  width: 180px;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2))
+          drop-shadow(0 0 10px rgba(var(--rgb-green-neon), 0.2));
+  transition: filter 0.3s ease;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3))
+          drop-shadow(0 0 15px rgba(var(--rgb-green-neon), 0.4));
+}
+
+.version-info {
+  color: var(--color-text-inverted);
+  text-align: center;
+  font-size: var(--text-sm);
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+}
+
+.version-info p {
+  margin: var(--space-1) 0;
+}
+
+/* 3. PANEL DERECHO (Formulario) */
+.login-view__form {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-8);
+  position: relative;
+  animation: formSlideIn 0.6s ease-out;
+}
+
+.glass-panel {
+  backdrop-filter: blur(10px);
+  background: rgba(var(--rgb-dark), 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-card);
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Elemento decorativo esquina superior derecha */
+.login-view__form::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 3px;
+  height: 40px;
+  background: var(--color-accent-neon);
+  box-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.5);
+  opacity: 0.6;
+  animation: decorativeFlicker 3s ease-in-out infinite;
+}
+
+@keyframes decorativeFlicker {
+  0%, 100% {
+    opacity: 0.6;
+    box-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.5);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(var(--rgb-green-neon), 0.8);
+  }
+}
+
+.form-container {
+  width: 100%;
+  max-width: 450px;
+  position: relative;
+  z-index: 2;
+  border: 2px solid var(--color-accent-neon);
+  border-radius: var(--radius-card);
+  padding: var(--space-8);
+  background: rgba(var(--rgb-green-neon), 0.05);
+  box-shadow: 0 0 20px rgba(var(--rgb-green-neon), 0.2),
+              inset 0 0 20px rgba(var(--rgb-green-neon), 0.05);
+}
+
+.form-container h1 {
+  margin-bottom: var(--space-4);
+  animation: titleSlideIn 0.6s ease-out 0.1s both;
+}
+
+@keyframes titleSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-container .subtitle {
+  margin-bottom: var(--space-6);
+  opacity: 0.9;
+  animation: subtitleSlideIn 0.6s ease-out 0.15s both;
+}
+
+@keyframes subtitleSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 4. ESTILOS DE FORM GROUPS */
+.form-group {
+  margin-bottom: var(--space-4);
+  animation: formGroupSlideIn 0.6s ease-out forwards;
+}
+
+.form-group:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.form-group:nth-child(2) {
+  animation-delay: 0.25s;
+}
+
+@keyframes formGroupSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group label {
+  display: block;
+  color: var(--color-text-on-dark-muted);
+  font-weight: 500;
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-2);
+  transition: color 0.3s ease;
+}
+
+.form-group:focus-within label {
+  color: var(--color-accent-neon);
+}
+
+/* 5. ESTILOS DE INPUTS CON ICONO */
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon .icon {
+  position: absolute;
+  left: var(--space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  stroke: var(--color-text-on-dark-muted);
+  transition: stroke 0.3s ease, filter 0.3s ease;
+  display: none;
+}
+
+.input-with-icon input {
+  padding-left: var(--space-3);
+  padding-right: var(--space-3);
+  width: 100%;
+  transition: all 0.3s ease;
+  border-color: rgba(var(--rgb-green-neon), 0.2);
+}
+
+.input-with-icon input:focus {
+  border-color: var(--color-accent-neon);
+  box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.3);
+  outline: none;
+}
+
+.input-with-icon input:focus ~ .icon {
+  stroke: var(--color-accent-neon);
+  filter: drop-shadow(0 0 4px rgba(var(--rgb-green-neon), 0.4));
+}
+
+/* 6. ENLACE "OLVIDÉ CONTRASEÑA" */
+.forgot-password {
+  display: inline-block;
+  font-size: var(--text-sm);
+  color: var(--color-accent-neon);
+  text-decoration: none;
+  margin-bottom: var(--space-4);
+  transition: all 0.3s ease;
+  position: relative;
+  animation: linkSlideIn 0.6s ease-out 0.3s both;
+}
+
+@keyframes linkSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.forgot-password::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--color-accent-neon);
+  transition: width 0.3s ease;
+}
+
+.forgot-password:hover::after {
+  width: 100%;
+}
+
+.forgot-password:hover {
+  color: var(--color-accent-neon);
+  opacity: 0.8;
+}
+
+/* 7. ESTILOS DE BOTÓN */
+.form-container .button {
+  width: 100%;
+  animation: buttonSlideIn 0.6s ease-out 0.35s both;
+}
+
+@keyframes buttonSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-container .button-primary {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(var(--rgb-green-neon), 0.2);
+}
+
+.form-container .button-primary:hover {
+  box-shadow: 0 8px 25px rgba(var(--rgb-green-neon), 0.5);
+  transform: translateY(-2px);
+}
+
+.form-container .button-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(var(--rgb-green-neon), 0.3);
+}
+
+/* Efecto ripple mejorado */
+.ripple-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* 8. RESPONSIVE - Tablet */
+@media (max-width: 1024px) {
+  .form-container {
+    max-width: 350px;
+  }
+
+  .login-view__form::before {
+    width: 2px;
+    height: 30px;
+  }
+}
+
+/* 9. RESPONSIVE - Mobile */
+@media (max-width: 768px) {
+  .login-view {
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 24px;
-}
+    height: auto;
+  }
 
-.login-bottom-info__text {
-    font-size: 1.5em;
-    margin: 0;
-    line-height: 1.4;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-.login-bottom-info__version,
-.login-bottom-info__update {
-    margin: 0;
-    line-height: 1.4;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-}
-
-.login-right-panel {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40px;
-    box-sizing: border-box;
-    background-color: var(--login-bg-color);
-}
-
-.login-form-card {
+  /* Divider vertical se convierte en horizontal */
+  .login-view::after {
+    right: 0;
+    bottom: 50%;
     width: 100%;
-    max-width: 400px;
-    padding: 24px;
-    background-color: var(--app-card-bg);
-    border-radius: 8px;
-    box-shadow: var(--shadow-md);
-    text-align: center;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      var(--color-accent-neon),
+      transparent
+    );
+    box-shadow: 0 0 20px rgba(var(--rgb-green-neon), 0.5);
+  }
+
+  .login-view__brand {
+    flex: none;
+    height: 30vh;
+    min-height: 200px;
+  }
+
+  .brand-content {
+    height: auto;
+    padding: var(--space-6);
+  }
+
+  .logo {
+    width: 120px;
+  }
+
+  .login-view__form {
+    flex: 1;
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    margin-top: -20px;
+    z-index: 2;
+    padding: var(--space-6);
+  }
+
+  .login-view__form::before {
+    top: 15px;
+    right: 15px;
+    width: 2px;
+    height: 25px;
+  }
+
+  .form-container {
+    max-width: 100%;
+  }
+
+  .form-container h1 {
+    font-size: var(--text-lg);
+  }
+
+  .form-container .subtitle {
+    font-size: var(--text-sm);
+  }
 }
 
-.login-main__title {
-    font-size: 2rem;
-    color: var(--login-text-color);
-    margin-bottom: 8px;
-    font-weight: 600;
-}
+/* 10. RESPONSIVE - Small Mobile */
+@media (max-width: 480px) {
+  .login-view {
+    height: auto;
+  }
 
-.login-main__subtitle {
-    font-size: 1em;
-    color: var(--login-subtitle-color);
-    margin-bottom: 24px;
-}
+  .login-view__brand {
+    height: 25vh;
+    min-height: 150px;
+  }
 
-.login-form .form-group {
-    margin-bottom: 16px;
-    text-align: left;
-}
+  .brand-content {
+    padding: var(--space-4);
+    height: 70%;
+  }
 
-.login-form .form-group label {
-    display: block;
-    font-size: 0.9em;
-    color: var(--login-text-color);
-    margin-bottom: 8px;
-    font-weight: 500;
-}
+  .logo {
+    width: 100px;
+  }
 
-.login-form input[type="email"],
-.login-form input[type="password"] {
+  .version-info {
+    font-size: var(--text-xs);
+  }
+
+  .login-view__form {
+    padding: var(--space-4);
+    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    margin-top: -15px;
+  }
+
+  .form-container {
     width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--login-input-border);
-    border-radius: 6px;
-    font-size: 1em;
-    color: var(--login-text-color);
-    box-sizing: border-box;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .form-group {
+    margin-bottom: var(--space-4);
+  }
+
+  .forgot-password {
+    font-size: var(--text-xs);
+  }
 }
 
-.login-form input[type="email"]:focus,
-.login-form input[type="password"]:focus {
-    outline: none;
-    border-color: var(--login-focus-border);
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+/* =================================================================== */
+/* 11. MODO CLÁSICO (Fallback) */
+/* =================================================================== */
+
+body.classic-mode .login-view::after {
+  display: none;
 }
 
-.login-form__forgot-password {
-    display: block;
-    text-align: right;
-    margin-top: -8px;
-    margin-bottom: 16px;
-    font-size: 0.9em;
+body.classic-mode .login-view__brand {
+  background-color: var(--color-bg-header);
 }
 
-.login-form__forgot-password a {
-    color: var(--login-link-color);
-    text-decoration: none;
-    transition: text-decoration 0.2s ease;
+body.classic-mode .login-view__brand::before {
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
-.login-form__forgot-password a:hover {
-    text-decoration: underline;
+body.classic-mode .login-view__form {
+  background: var(--color-bg-card);
+  backdrop-filter: none;
+  border-color: var(--color-border);
 }
 
-.login-form__button-primary {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--login-button-bg);
-    color: var(--login-sidebar-text);
-    border: none;
-    border-radius: 6px;
-    font-size: 1.1em;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: 16px;
+body.classic-mode .login-view__form::before {
+  display: none;
 }
 
-.login-form__button-primary:hover {
-    background-color: var(--login-button-hover-bg);
+body.classic-mode .form-container h1 {
+  color: var(--color-text-primary);
 }
+
+body.classic-mode .form-container .subtitle {
+  color: var(--color-text-secondary);
+}
+
+body.classic-mode .input-with-icon .icon {
+  stroke: var(--color-text-muted);
+}
+
+body.classic-mode .input-with-icon input {
+  border-color: var(--color-border);
+  background-color: var(--color-bg-input);
+}
+
+body.classic-mode .input-with-icon input:focus {
+  border-color: var(--color-text-brand);
+  box-shadow: 0 0 8px rgba(var(--rgb-blue), 0.2);
+}
+
+body.classic-mode .forgot-password {
+  color: var(--color-text-brand);
+}
+
+body.classic-mode .forgot-password::after {
+  background: var(--color-text-brand);
+}
+
+body.classic-mode .button-primary {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+body.classic-mode .button-primary:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-1px);
+}
+
+/* =================================================================== */
+/* 12. ACCESIBILIDAD */
+/* =================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .login-view__brand,
+  .login-view__form,
+  .brand-content,
+  .form-group,
+  .form-container h1,
+  .form-container .subtitle,
+  .forgot-password,
+  .form-container .button {
+    animation: none !important;
+  }
+
+  .logo,
+  .input-with-icon input,
+  .forgot-password,
+  .form-container .button-primary,
+  .input-with-icon .icon {
+    transition: none !important;
+  }
+}
+
+/* Focus visible para navegación por teclado */
+.form-group label:focus-visible,
+.input-with-icon input:focus-visible,
+.forgot-password:focus-visible,
+.button:focus-visible {
+  outline: 2px solid var(--color-accent-neon);
+  outline-offset: 2px;
+}
+
+/* =================================================================== */

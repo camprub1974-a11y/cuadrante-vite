@@ -1,0 +1,297 @@
+/*
+ * css/views/_document-editor.css
+ * REFACTORIZADO A MCST/BEM (Arquitectura Glass)
+ * (Alineado con el nuevo JS y HTML)
+ */
+
+/* 1. Layout Principal */
+.document-editor-view__layout {
+  display: grid;
+  grid-template-columns: 1fr; /* Mobile-first */
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+/* 2. Panel Izquierdo (Componentes) */
+.document-editor-view__panel {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass-card);
+  padding: var(--space-5);
+  height: fit-content;
+}
+.document-editor-view__panel-title {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--glass-dark-border-glow);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--white);
+  text-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.2);
+}
+.document-editor-view__sortable-list {
+  min-height: 150px;
+  max-height: 50vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+.document-editor-view__sortable-list .empty-state {
+  color: var(--color-text-on-dark-muted);
+  font-size: var(--text-sm);
+  padding: var(--space-4) 0;
+}
+
+/* 3. Ítem de Componente (Arrastrable) */
+.document-editor-view__component-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  background: rgba(var(--rgb-white), 0.05);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  color: var(--color-text-on-dark);
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+.document-editor-view__component-item.is-excluded {
+  opacity: 0.5;
+  background: rgba(var(--rgb-black), 0.1);
+}
+.document-editor-view__component-item:hover {
+  background: rgba(var(--rgb-white), 0.1);
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+}
+.document-editor-view__component-item.sortable-ghost {
+  background: rgba(var(--rgb-green-neon), 0.2);
+  border-color: var(--color-accent-neon);
+}
+.document-editor-view__drag-handle {
+  cursor: grab;
+  color: var(--color-text-on-dark-dimmed);
+  transition: color var(--transition-fast);
+}
+.document-editor-view__drag-handle:hover {
+  color: var(--white);
+}
+.document-editor-view__component-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  min-width: 0; /* Para truncado de texto */
+}
+.document-editor-view__component-checkbox {
+  /* Estilos de _forms.css */
+}
+.document-editor-view__component-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.document-editor-view__component-actions {
+  display: flex;
+}
+
+/* 4. Panel Derecho (Preview) */
+.document-editor-view__preview {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass-card);
+  padding: var(--space-5);
+  min-height: 80vh;
+}
+.document-editor-view__preview .empty-state {
+  color: var(--color-text-on-dark-muted);
+  text-align: center;
+  padding: var(--space-8) 0;
+}
+
+/* 5. Item de Preview */
+.document-editor-view__preview-item {
+  background: var(--white);
+  color: var(--black);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  box-shadow: var(--shadow-md);
+  page-break-inside: avoid;
+}
+.document-editor-view__preview-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--black);
+  margin-top: 0;
+  margin-bottom: var(--space-2);
+}
+.document-editor-view__preview-desc {
+  font-style: italic;
+  color: var(--gray-600);
+  margin-top: 0;
+  margin-bottom: var(--space-3);
+}
+.document-editor-view__preview-body {
+  padding-top: var(--space-3);
+  margin-top: var(--space-3);
+  border-top: 1px dashed var(--gray-200);
+}
+.document-editor-view__preview-data {
+  font-size: var(--text-sm);
+  margin: 0 0 var(--space-2) 0;
+}
+.document-editor-view__preview-data strong {
+  text-transform: capitalize;
+  color: var(--gray-700);
+}
+.document-editor-view__preview-actions {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--gray-200);
+}
+
+/* 6. Footer de Acciones */
+.document-editor-view__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass-card);
+}
+.document-editor-view__actions .button-success {
+  background: var(--color-success);
+  color: var(--white);
+  border-color: var(--green-600);
+}
+
+/* 7. Modal de Búsqueda (Adjuntar) */
+.document-editor-view__search-results {
+  max-height: 40vh;
+  overflow-y: auto;
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-lg);
+  background: rgba(var(--rgb-black), 0.2);
+}
+.document-editor-view__search-results .empty-state {
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--color-text-on-dark-muted);
+}
+.document-editor-view__search-results .empty-state.error {
+  color: var(--color-danger);
+}
+.document-editor-view__search-result {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-dark-border);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.document-editor-view__search-result:last-child {
+  border-bottom: none;
+}
+.document-editor-view__search-result:hover {
+  background: rgba(var(--rgb-green-neon), 0.1);
+}
+.document-editor-view__search-result strong {
+  font-size: var(--text-base);
+  color: var(--white);
+}
+.document-editor-view__search-result p {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
+  margin: 0;
+}
+.document-editor-view__search-result small {
+  font-size: var(--text-xs);
+  color: var(--color-text-on-dark-dimmed);
+}
+
+/* 8. Layout Desktop */
+@media (min-width: 1024px) {
+  .document-editor-view__layout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .document-editor-view__panel {
+    flex: 0 0 320px;
+    position: sticky;
+    top: var(--space-4);
+  }
+  .document-editor-view__preview {
+    flex: 1;
+    min-width: 0;
+    /* No es sticky, permite scroll largo */
+  }
+}
+
+/* ============================================= */
+/* FALLBACK MODO CLÁSICO                         */
+/* ============================================= */
+body.classic-mode .document-editor-view__panel,
+body.classic-mode .document-editor-view__preview,
+body.classic-mode .document-editor-view__actions {
+  background: var(--color-bg-card);
+  backdrop-filter: none;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-primary);
+}
+body.classic-mode .document-editor-view__panel-title {
+  border-bottom-color: var(--color-border);
+  color: var(--color-text-primary);
+  text-shadow: none;
+}
+body.classic-mode .document-editor-view__sortable-list {
+  background: var(--color-bg-app);
+  border-radius: var(--radius-md);
+}
+body.classic-mode .document-editor-view__component-item {
+  background: var(--white);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+body.classic-mode .document-editor-view__component-item:hover,
+body.classic-mode .document-editor-view__component-item.is-grabbing {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+body.classic-mode .document-editor-view__drag-handle {
+  color: var(--color-text-muted);
+}
+body.classic-mode .document-editor-view__preview-item {
+  border: 1px solid var(--color-border);
+}
+body.classic-mode .document-editor-view__search-results {
+  border-color: var(--color-border);
+  background: var(--color-bg-app);
+}
+body.classic-mode .document-editor-view__search-result {
+  border-bottom-color: var(--color-border);
+}
+body.classic-mode .document-editor-view__search-result:hover {
+  background: var(--color-bg-hover);
+}
+body.classic-mode .document-editor-view__search-result strong {
+  color: var(--color-text-primary);
+}
+body.classic-mode .document-editor-view__search-result p {
+  color: var(--color-text-secondary);
+}
+
+/* 🎨 CORRECCIÓN: Añadir margen al form-group del modal de búsqueda */
+#modal-adjuntar-registro .modal-body .form-group {
+  margin-bottom: var(--space-4);
+}

@@ -1,0 +1,422 @@
+/*
+ * css/views/_tasks-view.css
+ * REFACTORIZADO A MCST/BEM (Arquitectura Glass)
+ */
+
+/* 1. Layout Principal */
+.tasks-view__layout {
+    display: grid;
+    grid-template-columns: 1fr; /* Mobile-first */
+    gap: var(--space-5);
+    align-items: start;
+}
+
+@media (min-width: 1024px) {
+    .tasks-view__layout {
+        grid-template-columns: 1fr 1fr; /* Dos columnas en desktop */
+    }
+}
+
+/* 2. Panel de Filtros Superior */
+.tasks-view__filters-header {
+    display: flex;
+    flex-direction: column; /* Mobile-first */
+    gap: var(--space-3);
+}
+.tasks-view__filter-buttons {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+.tasks-view__filter-buttons .button {
+    flex-grow: 1; /* Botones se estiran en móvil */
+}
+
+/* * 🎨 ESTILO ACTIVO (REQ 3)
+ * Sobreescribe .button-secondary cuando .active está presente
+ */
+.tasks-view__filter-buttons .button.active {
+    background: var(--gradient-green-glow);
+    color: var(--gray-900);
+    border-color: transparent;
+    font-weight: var(--font-bold);
+    box-shadow: var(--shadow-neon-green);
+}
+
+.tasks-view__agent-filter {
+    min-width: 220px;
+}
+
+@media (min-width: 768px) {
+    .tasks-view__filters-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .tasks-view__filter-buttons .button {
+        flex-grow: 0;
+    }
+}
+
+/* 3. Columna Lista de Tareas */
+.tasks-view__list-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding: var(--space-2);
+    background: rgba(var(--rgb-black), 0.1);
+    border-radius: var(--radius-lg);
+}
+
+/* 4. Item de Tarea (Card) */
+.tasks-view__task-item {
+    display: grid;
+    grid-template-columns: 48px 1fr 40px; /* Icono | Contenido | Chevron */
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+    cursor: pointer;
+    /* Hereda estilos .card (glass, border, shadow) */
+}
+.tasks-view__task-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--glass-dark-border-glow);
+    box-shadow: var(--shadow-glass-card), var(--shadow-glow-green-sm);
+}
+
+/* 5. Elementos del Item de Tarea */
+.tasks-view__task-status-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-base) ease;
+}
+.tasks-view__task-status-icon svg {
+    width: 28px;
+    height: 28px;
+    stroke-width: 2.5;
+}
+
+.tasks-view__task-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0; /* Evita desbordamiento de texto */
+}
+
+.tasks-view__task-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    font-size: var(--text-xs);
+    color: var(--color-text-on-dark-muted);
+    font-weight: var(--font-medium);
+}
+.tasks-view__task-meta > span { /* Contenedor de fecha y agente */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+.tasks-view__task-meta i { 
+    width: 14px; 
+    height: 14px; 
+}
+
+.tasks-view__task-assignee {
+    background: rgba(var(--rgb-white), 0.1);
+    color: var(--color-text-on-dark-muted);
+    border-radius: var(--radius-full);
+    padding: var(--space-1) var(--space-2);
+    font-weight: 600;
+}
+
+.tasks-view__task-title {
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.4;
+    margin: 0;
+    font-size: var(--text-base);
+    /* Truncado de 2 líneas */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.tasks-view__task-completion {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    margin-top: var(--space-1);
+}
+.tasks-view__task-completion i { 
+    width: 14px; 
+    height: 14px; 
+}
+
+.tasks-view__task-chevron {
+    color: var(--color-text-on-dark-dimmed);
+}
+.tasks-view__task-item:hover .tasks-view__task-chevron {
+    color: var(--color-accent-neon);
+}
+
+/* 6. Modificadores de Estado del Item */
+.tasks-view__task-item--pending .tasks-view__task-status-icon {
+    background: rgba(var(--rgb-blue-400), 0.1);
+    color: var(--blue-400);
+    border: 1px solid rgba(var(--rgb-blue-400), 0.2);
+}
+.tasks-view__task-item--pending .tasks-view__task-assignee {
+    background: rgba(var(--rgb-blue-400), 0.1);
+    color: var(--blue-400);
+}
+
+.tasks-view__task-item--completed {
+    background: rgba(var(--rgb-slate-800), 0.5); /* Más oscuro */
+    border-color: rgba(var(--rgb-white), 0.05);
+}
+.tasks-view__task-item--completed:hover {
+    border-color: var(--glass-dark-border);
+    box-shadow: var(--shadow-glass-card);
+}
+.tasks-view__task-item--completed .tasks-view__task-status-icon {
+    background: rgba(var(--rgb-green), 0.15);
+    color: var(--color-success);
+    border: 1px solid rgba(var(--rgb-green), 0.2);
+}
+.tasks-view__task-item--completed .tasks-view__task-title {
+    color: var(--color-text-on-dark-muted);
+    text-decoration: line-through;
+}
+.tasks-view__task-item--completed .tasks-view__task-completion {
+    color: var(--color-success);
+}
+.tasks-view__task-item--completed .tasks-view__task-chevron {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* 7. Columna de Resolución (Detalle) */
+.tasks-view__detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.tasks-view__task-description {
+    font-size: var(--text-base);
+    color: var(--color-text-on-dark);
+    line-height: 1.6;
+    padding: var(--space-2) 0;
+}
+.tasks-view__hr {
+    border: 0;
+    height: 1px;
+    background: var(--glass-dark-border);
+    margin: var(--space-4) 0;
+}
+.tasks-view__separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--color-text-on-dark-muted);
+    margin: var(--space-4) 0;
+}
+.tasks-view__separator::before,
+.tasks-view__separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--glass-dark-border);
+}
+.tasks-view__separator span {
+    padding: 0 var(--space-2);
+}
+.tasks-view__doc-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+.tasks-view__resolve-btn {
+    width: 100%;
+    justify-content: center; /* Centra icono y texto */
+}
+
+/* 8. Placeholder de Resolución */
+.tasks-view__placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+    border: 2px dashed var(--glass-dark-border);
+    border-radius: var(--radius-2xl);
+    color: var(--color-text-on-dark-muted);
+    text-align: center;
+    height: 100%;
+    min-height: 300px;
+    background: rgba(var(--rgb-slate-800), 0.3);
+}
+.tasks-view__placeholder i {
+    width: 48px;
+    height: 48px;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-on-dark-dimmed);
+}
+.tasks-view__placeholder h3 {
+    margin: 0 0 var(--space-2) 0;
+    color: var(--color-text-on-dark);
+}
+.tasks-view__placeholder p {
+    color: var(--color-text-on-dark-muted);
+    margin: 0;
+}
+
+/* 9. Estilo para el Empty State de la lista (JS) */
+.tasks-view__list-container .empty-state {
+    padding: 3rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.tasks-view__list-container .empty-state i {
+    width: 48px;
+    height: 48px;
+    color: var(--color-text-on-dark-dimmed);
+}
+.tasks-view__list-container .empty-state h4 {
+    margin-top: 1rem;
+    color: var(--color-text-on-dark);
+}
+.tasks-view__list-container .empty-state p {
+    color: var(--color-text-on-dark-muted);
+}
+
+
+/* 🌟 10. ESTILOS DE PAGINACIÓN AÑADIDOS 🌟 */
+.tasks-view__pagination-controls {
+    border-top: 1px solid var(--glass-dark-border);
+}
+.tasks-view__pagination-controls span {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text-on-dark);
+}
+
+
+/* ============================================= */
+/* FALLBACK MODO CLÁSICO                         */
+/* ============================================= */
+
+/* Filtros */
+body.classic-mode .tasks-view__filter-buttons .button.active {
+    background: var(--color-primary);
+    color: var(--white);
+    border-color: var(--color-primary-dark);
+    box-shadow: var(--shadow-md);
+}
+
+/* Lista */
+body.classic-mode .tasks-view__list-container {
+    background: var(--color-bg-app);
+}
+body.classic-mode .tasks-view__list-container .empty-state {
+    color: var(--color-text-secondary);
+}
+body.classic-mode .tasks-view__list-container .empty-state i {
+    color: var(--color-text-muted);
+}
+body.classic-mode .tasks-view__list-container .empty-state h4 {
+    color: var(--color-text-primary);
+}
+
+/* Item de Tarea */
+body.classic-mode .tasks-view__task-item {
+    border-color: var(--color-border);
+}
+body.classic-mode .tasks-view__task-item:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-md);
+}
+body.classic-mode .tasks-view__task-meta {
+    color: var(--color-text-secondary);
+}
+body.classic-mode .tasks-view__task-assignee {
+    background: var(--color-primary-light);
+    color: var(--color-primary-dark);
+}
+body.classic-mode .tasks-view__task-title {
+    color: var(--color-text-primary);
+}
+body.classic-mode .tasks-view__task-chevron {
+    color: var(--color-text-muted);
+}
+body.classic-mode .tasks-view__task-item:hover .tasks-view__task-chevron {
+    color: var(--color-primary);
+}
+
+/* Modificadores de Estado (Clásico) */
+body.classic-mode .tasks-view__task-item--pending .tasks-view__task-status-icon {
+    background: var(--color-primary-light);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+}
+
+body.classic-mode .tasks-view__task-item--completed {
+    background: var(--color-bg-hover);
+    border-color: var(--color-border);
+}
+body.classic-mode .tasks-view__task-item--completed .tasks-view__task-status-icon {
+    background: var(--color-success-light);
+    color: var(--color-success-dark);
+    border: 1px solid var(--color-success);
+}
+body.classic-mode .tasks-view__task-item--completed .tasks-view__task-title {
+    color: var(--color-text-secondary);
+}
+body.classic-mode .tasks-view__task-item--completed .tasks-view__task-completion {
+    color: var(--color-success-dark);
+}
+
+/* Panel de Resolución */
+body.classic-mode .tasks-view__task-description {
+    color: var(--color-text-primary);
+}
+body.classic-mode .tasks-view__hr,
+body.classic-mode .tasks-view__separator::before,
+body.classic-mode .tasks-view__separator::after {
+    background: var(--color-border);
+}
+body.classic-mode .tasks-view__separator {
+    color: var(--color-text-secondary);
+}
+
+/* Placeholder */
+body.classic-mode .tasks-view__placeholder {
+    background: var(--color-bg-app);
+    border-color: var(--color-border);
+    color: var(--color-text-secondary);
+}
+body.classic-mode .tasks-view__placeholder i {
+    color: var(--color-text-muted);
+}
+body.classic-mode .tasks-view__placeholder h3 {
+    color: var(--color-text-primary);
+}
+
+/* 🌟 AÑADIR FALLBACK PARA PAGINACIÓN 🌟 */
+body.classic-mode .tasks-view__pagination-controls {
+    border-top: 1px solid var(--color-border-light);
+    background: var(--color-bg-card); /* Asegura fondo clásico */
+}
+body.classic-mode .tasks-view__pagination-controls span {
+    color: var(--color-text-primary);
+}

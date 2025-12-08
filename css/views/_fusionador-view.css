@@ -1,0 +1,212 @@
+/*
+ * css/views/_fusionador-view.css
+ * REFACTORIZADO A MCST/BEM (Arquitectura Glass)
+ */
+
+/* 1. Layout General */
+.fusionador-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.fusionador-view__card {
+  margin-bottom: var(--space-4);
+}
+.fusionador-view__step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-neon);
+  color: var(--gray-900);
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  margin-right: var(--space-2);
+}
+
+/* 2. Buscador (Paso 1) */
+.fusionador-view__search-results {
+  max-height: 40vh;
+  overflow-y: auto;
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-lg);
+  background: rgba(var(--rgb-black), 0.2);
+  margin-top: var(--space-4);
+}
+.fusionador-view__search-results .empty-state {
+  padding: var(--space-6);
+  text-align: center;
+  color: var(--color-text-on-dark-muted);
+}
+.fusionador-view__search-result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-dark-border);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.fusionador-view__search-result:last-child {
+  border-bottom: none;
+}
+.fusionador-view__search-result:hover {
+  background: rgba(var(--rgb-green-neon), 0.1);
+}
+.fusionador-view__search-result i {
+  color: var(--color-accent-neon);
+}
+.fusionador-view__search-info strong {
+  font-size: var(--text-base);
+  color: var(--white);
+}
+.fusionador-view__search-info p {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
+  margin: 0;
+}
+
+/* 3. Botones Añadir (Paso 2) */
+.fusionador-view__add-buttons {
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    align-items: center; /* <-- 💡 SOLUCIÓN: Añadir esta línea */
+    align-self: center;
+}
+
+/* 4. Lista de Fusión (Paso 3) */
+.fusionador-view__sortable-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(var(--rgb-black), 0.2);
+  border-radius: var(--radius-lg);
+  min-height: 150px;
+}
+.fusionador-view__item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  background: rgba(var(--rgb-white), 0.05);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-dark-border);
+  color: var(--color-text-on-dark);
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+.fusionador-view__item:hover {
+  background: rgba(var(--rgb-white), 0.1);
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+}
+.fusionador-view__item.base-document {
+  background: rgba(var(--rgb-green-neon), 0.05);
+  border-color: rgba(var(--rgb-green-neon), 0.2);
+}
+.fusionador-view__item-handle {
+  cursor: grab;
+  color: var(--color-text-on-dark-dimmed);
+}
+.fusionador-view__item:active {
+  cursor: grabbing;
+}
+.fusionador-view__item-content {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+.fusionador-view__item-icon {
+  width: 24px;
+  height: 24px;
+}
+.fusionador-view__item-icon.type-base { color: var(--color-accent-neon); }
+.fusionador-view__item-icon.type-portada { color: var(--blue-400); }
+.fusionador-view__item-icon.type-acta { color: var(--yellow-500); }
+
+.fusionador-view__item-info strong {
+  color: var(--white);
+  font-weight: var(--font-semibold);
+}
+.fusionador-view__item-info small {
+  color: var(--color-text-on-dark-muted);
+  font-size: var(--text-xs);
+  display: block;
+}
+.fusionador-view__item-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+.fusionador-view__btn-preview:hover {
+  color: var(--color-accent-neon);
+}
+
+/* 5. Footer de Acciones */
+.fusionador-view__actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4);
+}
+.fusionador-view__status-text {
+  font-style: italic;
+  color: var(--color-text-on-dark-muted);
+}
+
+/* ============================================= */
+/* FALLBACK MODO CLÁSICO                         */
+/* ============================================= */
+body.classic-mode .fusionador-view__step-number {
+  background: var(--color-primary);
+  color: var(--white);
+}
+body.classic-mode .fusionador-view__search-results {
+  border-color: var(--color-border);
+  background: var(--color-bg-app);
+}
+body.classic-mode .fusionador-view__search-result {
+  border-bottom-color: var(--color-border);
+}
+body.classic-mode .fusionador-view__search-result:hover {
+  background: var(--color-bg-hover);
+}
+body.classic-mode .fusionador-view__search-result i {
+  color: var(--color-primary);
+}
+body.classic-mode .fusionador-view__search-info strong {
+  color: var(--color-text-primary);
+}
+body.classic-mode .fusionador-view__search-info p {
+  color: var(--color-text-secondary);
+}
+body.classic-mode .fusionador-view__sortable-list {
+  background: var(--color-bg-app);
+}
+body.classic-mode .fusionador-view__item {
+  background: var(--white);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+body.classic-mode .fusionador-view__item:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+}
+body.classic-mode .fusionador-view__item-handle {
+  color: var(--color-text-muted);
+}
+body.classic-mode .fusionador-view__item-info strong {
+  color: var(--color-text-primary);
+}
+body.classic-mode .fusionador-view__item-info small {
+  color: var(--color-text-secondary);
+}
+body.classic-mode .fusionador-view__actions {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+}
+body.classic-mode .fusionador-view__status-text {
+  color: var(--color-text-secondary);
+}

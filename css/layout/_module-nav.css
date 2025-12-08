@@ -1,0 +1,143 @@
+/* =================================================================== */
+/* css/layout/_module-nav.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
+
+.module-nav {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  border-bottom: 1px solid var(--glass-dark-border);
+  box-shadow: var(--shadow-glass-card);
+  
+  padding: var(--space-3) 0;
+  position: sticky;
+  top: 64px;
+  z-index: 999;
+}
+
+.module-nav > .container-fluid {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-3);
+  justify-content: flex-start;
+  overflow-x: auto;
+  padding: 0 var(--space-5);
+  
+  scrollbar-width: none;
+  /* 🎨 AÑADIR ESTAS LÍNEAS */
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+.module-nav .container-fluid::-webkit-scrollbar {
+  display: none;
+}
+
+/* Tabs con efecto glass */
+.module-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-on-dark);
+  font-weight: var(--font-medium);
+  box-shadow: none;
+  
+  transition: all var(--transition-base) var(--ease-smooth);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.module-tab i {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-on-dark-muted);
+  transition: color var(--transition-fast);
+}
+
+.module-tab:hover {
+  background: rgba(var(--rgb-white), 0.1);
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.15);
+  color: var(--white);
+}
+
+.module-tab:hover i {
+  color: var(--color-accent-neon);
+}
+
+/* Tab activo con gradiente verde */
+.module-tab.active {
+  background: linear-gradient(135deg, var(--color-accent-neon) 0%, var(--green-600) 100%);
+  color: var(--gray-900) !important;
+  font-weight: var(--font-bold);
+  border-color: var(--color-accent-neon);
+  box-shadow: 
+    0 4px 12px rgba(var(--rgb-green-neon), 0.3),
+    0 0 20px rgba(var(--rgb-green-neon), 0.2);
+  transform: translateY(-2px);
+}
+
+.module-tab.active i {
+  color: var(--gray-900) !important;
+}
+
+/* Botón hamburguesa */
+#open-sidebar-btn {
+  /* Hereda de .module-tab */
+}
+
+#open-sidebar-btn:hover {
+  border-color: var(--color-accent-neon);
+  box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.2);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .module-nav {
+    top: 56px;
+    padding: var(--space-2) 0;
+  }
+  
+  .module-nav > .container-fluid {
+    padding: 0 var(--space-3);
+    gap: var(--space-2);
+  }
+  
+  .module-tab {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+  
+  .module-tab i {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+/* Modo Clásico */
+body.classic-mode .module-nav {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  border-bottom-color: var(--glass-border-color);
+}
+
+body.classic-mode .module-tab {
+  background: rgba(var(--rgb-white), 0.1);
+  border-color: rgba(var(--rgb-white), 0.2);
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .module-tab.active {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  color: var(--color-text-inverted) !important;
+  border-color: var(--color-primary);
+}

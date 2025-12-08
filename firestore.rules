@@ -2,34 +2,32 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // --- FUNCIONES DE AYUDA PARA ROLES ---
+
+    // --- FUNCIONES DE AYUDA ---
     function isSignedIn() {
       return request.auth != null;
     }
-
     function isAdmin() {
       return isSignedIn() && request.auth.token.role == "admin";
     }
-
     function isSupervisor() {
       return isSignedIn() && request.auth.token.role == "supervisor";
     }
-
     function isMando() {
       return isAdmin() || isSupervisor();
     }
-
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
-
-    function isAgentOwner(agentId) {
-      return isSignedIn() && request.auth.token.agentId == agentId;
+    function isCreator() {
+      return request.auth.uid == request.resource.data.createdByUid;
     }
+    
+    // --- COLECCIONES PRINCIPALES ---
 
-    // --- REGLAS PARA COLECCIONES ---
     match /users/{userId} {
-      allow read, write: if isMando() || isOwner(userId);
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin();
     }
 
     match /agents/{agentId} {
@@ -46,109 +44,202 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Órdenes de Servicio
+    match /serviceOrders/{orderId} {
+      allow read: if isSignedIn();
+      allow write: if isMando();
+    }
+
+    // Registros
+    match /registros/{registroId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isCreator();
+      allow update: if isAdmin() || resource.data.createdByUid == request.auth.uid;
+      allow delete: if isAdmin();
+
+      match /componentes/{componenteId} {
+        allow read: if isSignedIn(); 
+        allow create: if isSignedIn();
+        allow update: if isSignedIn() && (
+          get(/databases/$(database)/documents/registros/$(registroId)).data.createdByUid == request.auth.uid ||
+          isMando()
+        );
+        allow delete: if isAdmin() || get(/databases/$(database)/documents/registros/$(registroId)).data.createdByUid == request.auth.uid;
+      }
+    }
+    
+    // Documentos
+    match /documentos/{documentoId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && 
+                      request.resource.data.usuario_creador == request.auth.uid &&
+                      request.resource.data.agente_creador == request.auth.token.agentId;
+      allow update: if isSignedIn() && (
+                        resource.data.usuario_creador == request.auth.uid ||
+                        isMando()
+                      );
+      allow delete: if isAdmin();
+    }
+    
+    // Identificaciones
+    match /personas/{personaId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isCreator();
+      allow update: if false; 
+      allow delete: if isAdmin();
+    }
+
+    match /vehiculos/{vehiculoId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isCreator();
+      allow update: if false; 
+      allow delete: if isAdmin();
+    }
+
+    match /establecimientos/{establecimientoId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isCreator();
+      allow update: if false; 
+      allow delete: if isAdmin();
+    }
+
+    // Plantillas
+    match /documentTemplates/{templateId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    
+    match /defaultOrderTemplates/{templateId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+    
+    // Croquis
+    match /sketches/{sketchId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin() || resource.data.createdByUid == request.auth.uid;
+    }
+    
+    // Tareas
+    match /tareas/{taskId} {
+      allow read: if isMando() || (request.auth.token.agentId != null && resource.data.assignedAgentId == request.auth.token.agentId);
+      allow update: if isMando() || (request.auth.token.agentId == resource.data.assignedAgentId && resource.data.status == 'pendiente');
+      allow create: if isMando();
+      allow delete: if isMando();
+    }
+
+    // Novedades
+    match /novedades/{novedadId} {
+      allow read: if isMando() || request.auth.token.agentId == resource.data.createdByAgentId;
+      allow create: if isSignedIn() && request.auth.token.agentId == request.resource.data.createdByAgentId;
+      allow update: if isMando();
+      allow delete: if isMando();
+    }
+    
+    // Otras colecciones
     match /permissionTypes/{typeId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
-
     match /markedDates/{dateId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }
-
     match /solicitudes/{solicitudId} {
       allow read: if isMando() || isOwner(resource.data.userId);
       allow create: if isOwner(request.resource.data.userId);
       allow update, delete: if isAdmin();
     }
-
     match /solicitudes_cambio_turno/{changeId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn();
-      allow update: if isAdmin() || isAgentOwner(resource.data.targetAgentId);
+      allow update: if isMando() || request.auth.token.agentId == resource.data.targetAgentId;
       allow delete: if isAdmin();
     }
-
     match /extraordinaryServices/{serviceId} {
-      function isValidService(data) {
-        return data.agentId is string &&
-               data.date is timestamp &&
-               data.hours is number &&
-               data.type is string;
-      }
-      
-      allow read: if isMando() || isAgentOwner(resource.data.agentId);
-      allow create: if isAgentOwner(request.resource.data.agentId) && isValidService(request.resource.data);
-      allow update: if (isMando() || isAgentOwner(resource.data.agentId)) && isValidService(request.resource.data);
-      allow delete: if isAdmin() || isAgentOwner(resource.data.agentId);
+      allow read: if isMando() || request.auth.token.agentId == resource.data.agentId;
+      allow create, update: if request.auth.token.agentId == request.resource.data.agentId;
+      allow delete: if isAdmin() || request.auth.token.agentId == resource.data.agentId;
+    }
+    
+    // Borradores Planificación
+    match /planning_drafts/{document=**} {
+      allow read, write: if isMando();
     }
 
-    match /serviceOrders/{orderId} {
-      allow read: if isMando() || (request.auth.token.agentId in resource.data.assigned_agents);
+    // Vados
+    match /vados/{vadoId} {
+      allow read: if isSignedIn();
+      allow create, update: if isMando();
+      allow delete: if isAdmin();
+      
+      // Inspecciones (Subcolección de Vados)
+      match /inspecciones/{inspeccionId} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn();
+        allow update, delete: if isMando();
+      }
+    }
+
+    // ============================================================
+    // ✅ REGLAS DE DOTACIONES (CORREGIDAS Y SACADAS FUERA)
+    // ============================================================
+    
+    // Dotaciones de armas
+    match /dotaciones_armas/{docId} {
+      // Admin/Supervisor: Control total
+      // Agente: Solo lectura de las suyas
+      allow read: if isMando() || (request.auth.token.agentId != null && resource.data.agenteId == request.auth.token.agentId);
       allow write: if isMando();
     }
 
+    // Dotaciones de vestuario
+    match /dotaciones_vestuario/{docId} {
+      allow read: if isMando() || (request.auth.token.agentId != null && resource.data.agenteId == request.auth.token.agentId);
+      allow write: if isMando();
+    }
+
+    // Dotaciones de equipamiento
+    match /dotaciones_equipamiento/{docId} {
+      allow read: if isMando() || (request.auth.token.agentId != null && resource.data.agenteId == request.auth.token.agentId);
+      allow write: if isMando();
+    }
+
+    // Revistas de armas
+    match /revistas_armas/{docId} {
+      allow read: if isSignedIn(); // Todos pueden ver registros
+      allow create: if isSignedIn(); // Agentes pueden registrar su revista
+      allow update, delete: if isMando();
+    }
+
+    // Prácticas de tiro
+    match /practicas_tiro/{docId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if isMando();
+    }
+
+    // Partes de Servicio
     match /serviceReports/{reportId} {
-      function isAssignedToReport() {
-        return request.auth.token.agentId in resource.data.assigned_agents;
+      function isAssignedToOrder() {
+        let orderId = resource.data.order_id;
+        let orderDoc = get(/databases/$(database)/documents/serviceOrders/$(orderId));
+        return request.auth.token.agentId in orderDoc.data.assigned_agents;
       }
 
-      allow read: if isMando() || isAssignedToReport() || (request.auth.token.agentId in get(/databases/$(database)/documents/serviceOrders/$(resource.data.order_id)).data.assigned_agents);
-      allow create: if request.auth.token.agentId in get(/databases/$(database)/documents/serviceOrders/$(request.resource.data.order_id)).data.assigned_agents;
-      allow update: if (isMando() || isAssignedToReport()) && (resource.data.status != 'validated' && resource.data.status != 'closed');
+      allow read: if isMando() || isAssignedToOrder();
+      allow create: if isSignedIn();
+      allow update: if (isMando() || isAssignedToOrder()) && resource.data.status != 'validated';
       allow delete: if isMando();
 
-      match /reportEntries/{entryId} {
-        function isAssignedToParentReport() {
-          return request.auth.token.agentId in get(/databases/$(database)/documents/serviceReports/$(reportId)).data.assigned_agents;
-        }
-        allow read, write: if isMando() || isAssignedToParentReport();
-      }
-
-      match /requerimientos/{requerimientoId} {
-        function isAssignedToParentReport() {
-          return request.auth.token.agentId in get(/databases/$(database)/documents/serviceReports/$(reportId)).data.assigned_agents;
-        }
-        allow read, write: if isMando() || isAssignedToParentReport();
+      match /requerimientos/{reqId} {
+        allow read, write: if isMando() || (
+            request.auth.token.agentId in get(/databases/$(database)/documents/serviceOrders/$(
+              get(/databases/$(database)/documents/serviceReports/$(reportId)).data.order_id
+            )).data.assigned_agents
+          );
       }
     }
 
-    // REGLA PARA EL MÓDULO DE REGISTRO ELECTRÓNICO
-    match /registros/{registroId} {
-      allow read: if isSignedIn();
-      allow write: if false; // La escritura se gestiona vía Cloud Functions
-    }
-    
-    // REGLA PARA LAS PLANTILLAS DE DOCUMENTOS
-    match /documentTemplates/{templateId} {
-      allow read, write: if isAdmin();
-    }
-  }
-}
-
-service firebase.storage {
-  match /b/{bucket}/o {
-    // Regla para permitir la lectura pública o a usuarios autenticados de los assets
-    match /croquis_assets/{allPaths=**} {
-      allow read: if true;
-    }
-    
-    match /logo-ayto.png {
-      allow read: if true;
-    }
-
-    // REGLA AÑADIDA PARA LA CARPETA DE CROQUIS
-    // Permite la escritura (subida) de archivos en la carpeta 'sketches'
-    match /sketches/{fileName} {
-      // Condición: Solo un usuario autenticado puede subir un archivo.
-      allow write: if request.auth != null
-                   // Y el archivo debe ser una imagen (jpeg o png)
-                   && request.resource.contentType.matches('image/(jpeg|png)')
-                   // Y el tamaño debe ser menor a 5MB para evitar abusos.
-                   && request.resource.size < 5 * 1024 * 1024;
-
-      // Permite la lectura a cualquier usuario autenticado para poder ver los croquis guardados.
-      allow read: if request.auth != null;
-    }
-  }
+  } 
 }

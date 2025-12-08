@@ -1,78 +1,359 @@
-/* css/components/_buttons.css */
+/* =================================================================== */
+/* css/components/_buttons.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
+/* --- 1. ESTILO BASE .button --- */
 .button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-1);
+    gap: var(--space-2);
     height: 40px;
-    padding: 0 var(--space-2); /* 16px horizontal */
-    border-radius: var(--border-radius-md); /* 8px */
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-lg);
     font-family: var(--font-primary);
-    font-size: var(--text-sm); /* 14px */
-    font-weight: 600; /* SemiBold */
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
     cursor: pointer;
-    transition: all var(--transition-fast);
+    transition: all var(--transition-base) var(--ease-smooth);
     text-decoration: none;
     white-space: nowrap;
     border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
 }
 
-.button:focus {
-    outline: 2px solid var(--color-primary);
+/* * Asegura que tanto el icono como el texto 
+ * tengan la misma altura de línea y alineación.
+*/
+.button i,
+.button svg,
+.button span {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+.button i,
+.button svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+    color: inherit;
+    transition: transform var(--transition-fast);
+    flex-shrink: 0;
+}
+
+
+.button:focus-visible {
+    outline: 2px solid var(--color-accent-neon);
     outline-offset: 2px;
 }
 
-/* Variante Primaria */
-.button-primary {
-    background-color: var(--color-primary);
-    color: var(--color-text-light);
-}
-.button-primary:hover {
-    background-color: var(--color-primary-hover);
+.button:hover i,
+.button:hover svg {
+    transform: scale(1.1);
 }
 
-/* Variante Secundaria */
-.button-secondary {
-    background-color: transparent;
-    border-color: var(--color-primary);
-    color: var(--color-primary);
-}
-.button-secondary:hover {
-    background-color: rgba(27, 156, 252, 0.1);
-}
-
-/* Variante Terciaria (o de Texto) */
-.button-tertiary {
-    background-color: transparent;
-    color: var(--color-primary);
-}
-.button-tertiary:hover {
-    background-color: var(--color-background-hover);
+/* Efecto ripple */
+.button.ripple-effect::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: inherit;
+    background: rgba(var(--rgb-white), 0.3);
+    opacity: 0;
+    pointer-events: none;
 }
 
-/* Botones de Icono (para menús kebab, etc.) */
-.icon-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    background: none;
+.button.ripple-effect:active::after {
+    animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+    to {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+/* --- 2. BOTÓN PRIMARIO (Gradiente Verde Neón) --- */
+.button-primary,
+.btn-gradient,
+.btn-gradient-primary {
+    background: linear-gradient(135deg, var(--color-accent-neon) 0%, var(--green-600) 100%);
+    color: var(--gray-900) !important;
     border: none;
-    border-radius: 50%;
-    color: #1b9cfc;
-    cursor: pointer;
-    transition: all var(--transition-fast);
+    font-weight: var(--font-bold);
+    box-shadow:
+        0 4px 12px rgba(var(--rgb-green-neon), 0.3),
+        0 0 20px rgba(var(--rgb-green-neon), 0.2);
 }
 
-.icon-button:hover {
-    background-color: var(--color-background-hover);
-    color: var(--color-text);
+.button-primary:hover,
+.btn-gradient:hover,
+.btn-gradient-primary:hover {
+    background: linear-gradient(135deg, var(--green-400) 0%, var(--green-500) 100%);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 20px rgba(var(--rgb-green-neon), 0.4),
+        0 0 30px rgba(var(--rgb-green-neon), 0.3);
 }
 
+.button-primary:active,
+.btn-gradient:active {
+    transform: translateY(0);
+}
+
+/* --- 3. BOTÓN SECUNDARIO (Glass Oscuro) --- */
+.button-secondary {
+    background: rgba(var(--rgb-white), 0.05);
+    backdrop-filter: var(--backdrop-blur-md);
+    -webkit-backdrop-filter: var(--backdrop-blur-md);
+    border: 1px solid rgba(var(--rgb-white), 0.1);
+    color: var(--white);
+    box-shadow: var(--shadow-glass-card);
+}
+
+.button-secondary:hover:not(:disabled) {
+    background: rgba(var(--rgb-white), 0.1);
+    border-color: rgba(var(--rgb-green-neon), 0.3);
+    transform: translateY(-2px);
+    box-shadow:
+        var(--shadow-glass-card),
+        0 0 12px rgba(var(--rgb-green-neon), 0.2);
+}
+
+.button-secondary:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.button-secondary:disabled {
+    background: rgba(var(--rgb-white), 0.02);
+    color: var(--color-text-on-dark-dimmed);
+    border-color: rgba(var(--rgb-white), 0.05);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* --- 4. BOTÓN SUCCESS (Verde) --- */
+/* 💡 NOTA: Tu código HTML usa 'button-success', pero tu CSS define
+   'btn-gradient-success'. He añadido 'button-success' para consistencia. */
+.button-success,
+.btn-gradient-success {
+    background: linear-gradient(135deg, var(--green-400) 0%, var(--green-600) 100%);
+    color: var(--gray-900) !important;
+    border: none;
+    font-weight: var(--font-bold);
+    box-shadow: 0 4px 12px rgba(var(--rgb-green), 0.3);
+}
+
+.button-success:hover,
+.btn-gradient-success:hover {
+    background: linear-gradient(135deg, var(--green-500) 0%, var(--green-700) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(var(--rgb-green), 0.4);
+}
+
+/* --- 5. BOTÓN DANGER (Rojo con Glow) --- */
+.button-danger {
+    background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger-hover) 100%);
+    color: var(--white);
+    border: none;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.button-danger:hover {
+    background: linear-gradient(135deg, #f87171 0%, var(--color-danger) 100%);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 20px rgba(239, 68, 68, 0.4),
+        0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+.button-danger:active {
+    transform: translateY(0);
+}
+
+/* --- 6. BOTÓN TERCIARIO (Transparente) --- */
+.button-tertiary {
+    background: transparent;
+    border: none;
+    color: var(--color-text-on-dark-muted);
+    height: auto;
+    padding: var(--space-2) var(--space-3);
+    font-weight: var(--font-medium);
+    box-shadow: none;
+}
+
+.button-tertiary:hover {
+    background: rgba(var(--rgb-white), 0.05);
+    color: var(--white);
+    transform: none;
+}
+
+/* ============================================= */
+/* --- 💡 7. BOTÓN ICONO (CORREGIDO) --- */
+/* ============================================= */
+.icon-button,
+.button-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    padding: 0; /* 💡 Anula el padding de .button */
+    gap: 0;     /* 💡 Anula el gap de .button */
+    border-radius: var(--radius-full);
+    background: rgba(var(--rgb-white), 0.05);
+    border: 1px solid rgba(var(--rgb-white), 0.1);
+    color: var(--color-text-on-dark-muted);
+    box-shadow: none;
+    /* El centrado (align/justify) se hereda de .button */
+}
+
+.icon-button:hover,
+.button-icon:hover {
+    background: rgba(var(--rgb-green-neon), 0.1);
+    border-color: var(--color-accent-neon);
+    color: var(--color-accent-neon);
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.3);
+}
+
+.icon-button:active,
+.button-icon:active {
+    transform: scale(0.95);
+}
+
+.icon-button i,
 .icon-button svg {
+    /* 💡 CORRECCIÓN: 'margin: auto' eliminado */
+    /* El centrado lo hace el 'display:flex' del padre */
     width: 20px;
     height: 20px;
+}
+/* ============================================= */
+/* --- 💡 FIN DE LA CORRECCIÓN 💡 --- */
+/* ============================================= */
+
+
+/* --- 8. BOTÓN OUTLINE --- */
+.button-outline {
+    background: transparent;
+    border: 2px solid rgba(var(--rgb-white), 0.2);
+    color: var(--white);
+}
+
+.button-outline:hover {
+    background: rgba(var(--rgb-white), 0.05);
+    border-color: var(--color-accent-neon);
+    color: var(--color-accent-neon);
+    box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.2);
+}
+
+/* --- 9. TAMAÑOS --- */
+.button-sm {
+    height: 32px;
+    padding: 0 var(--space-3);
+    font-size: var(--text-xs);
+}
+
+.button-lg {
+    height: 48px;
+    padding: 0 var(--space-6);
+    font-size: var(--text-base);
+}
+
+/* ============================================= */
+/* --- 💡 INICIO DE LA CORRECCIÓN 💡 --- */
+/* ============================================= */
+
+.icon-button.button-sm {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    padding: 0; /* 👈 AÑADIDO: Anula el padding de .button-sm */
+}
+
+.icon-button.button-sm i,
+.icon-button.button-sm svg {
+    width: 16px; 
+    height: 16px;
+}
+/* ============================================= */
+/* --- 💡 FIN DE LA CORRECCIÓN 💡 --- */
+/* ============================================= */
+
+.icon-button.button-lg {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+}
+
+/* --- 10. ESTADOS ESPECIALES --- */
+.button.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.button.loading::before {
+    content: '';
+    width: 16px;
+    height: 16px;
+    margin-right: var(--space-2);
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-radius: var(--radius-full);
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* --- 11. GRUPOS DE BOTONES --- */
+.button-group {
+    display: inline-flex;
+    gap: var(--space-2);
+}
+
+/* 💡 CORRECCIÓN: Grupos de botones con bordes redondeados */
+.button-group.rounded .button:first-child {
+    border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+
+.button-group.rounded .button:last-child {
+    border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+.button-group.rounded .button:not(:first-child):not(:last-child) {
+    border-radius: 0;
+}
+
+
+/* --- 12. MODO CLÁSICO --- */
+body.classic-mode .button-primary,
+body.classic-mode .button-success { /* 💡 Agrupado */
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    box-shadow: 0 4px 12px rgba(var(--rgb-primary), 0.3);
+}
+
+body.classic-mode .button-secondary {
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+    backdrop-filter: none;
+}
+
+body.classic-mode .icon-button {
+    color: var(--color-text-secondary);
+    background: var(--color-bg-card);
+    border-color: var(--color-border);
+}
+body.classic-mode .icon-button:hover {
+    color: var(--color-primary);
+    background: var(--color-bg-hover);
+    border-color: var(--color-primary);
 }

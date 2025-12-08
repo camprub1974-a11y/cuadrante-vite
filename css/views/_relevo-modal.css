@@ -1,0 +1,105 @@
+/* ================================== */
+/* CSS PARA MODAL DE RELEVO (NUEVO) */
+/* (Guardar en: css/views/_relevo-modal.css) */
+/* ================================== */
+
+/* Estilo para el header de advertencia */
+.relevo-modal__header--urgent {
+  background-color: var(--color-warning-dark);
+}
+
+.relevo-modal__title {
+  color: var(--white);
+}
+
+.relevo-modal__footer {
+  justify-content: center;
+}
+
+.relevo-modal__ack-btn {
+  min-width: 50%;
+  /* Efecto de innovación para el botón principal */
+  transform: scale(1.05);
+  box-shadow: var(--shadow-glow-green-sm); /* Usar token de glow */
+}
+
+.relevo-modal__ack-btn:hover {
+  transform: scale(1.08);
+}
+
+.relevo-modal__body {
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Estilos para la lista de novedades (BEM) */
+.novedad-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: rgba(var(--rgb-white), 0.05); /* Modo Glass */
+  border: 1px solid var(--glass-dark-border);
+}
+
+.novedad-item.urgent {
+  background: rgba(var(--rgb-red-500), 0.1);
+  border-color: var(--color-danger);
+}
+
+.novedad-icon {
+  color: var(--color-primary-light);
+}
+
+.novedad-item.urgent .novedad-icon {
+  color: var(--color-danger);
+}
+
+.novedad-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-2);
+}
+
+.novedad-author {
+  font-weight: 600;
+  color: var(--white);
+}
+
+.novedad-time {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
+}
+
+.novedad-content p {
+  margin: 0;
+  color: var(--color-text-on-dark-muted);
+}
+
+/* --- Fallback Modo Clásico --- */
+body.classic-mode .novedad-item {
+  background: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+}
+body.classic-mode .novedad-item.urgent {
+  background: var(--color-danger-light);
+  border-color: var(--color-danger);
+}
+body.classic-mode .novedad-icon {
+  color: var(--color-primary);
+}
+body.classic-mode .novedad-item.urgent .novedad-icon {
+  color: var(--color-danger);
+}
+body.classic-mode .novedad-author {
+  color: var(--color-text-primary);
+}
+body.classic-mode .novedad-time {
+  color: var(--color-text-muted);
+}
+body.classic-mode .novedad-content p {
+  color: var(--color-text-secondary);
+}

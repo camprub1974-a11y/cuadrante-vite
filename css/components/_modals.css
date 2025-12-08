@@ -1,112 +1,482 @@
-/* css/components/_modals.css (Versión corregida según la guía) */
+/* =================================================================== */
+/* css/components/_modals.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
-/* El overlay que cubre toda la pantalla */
-.modal { 
-    position: fixed; 
-    z-index: 9999; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0, 0, 0, 0.5); /* Fondo negro semitransparente, según la guía */
-    overflow-y: auto;
-    display: flex;
-    justify-content: center; 
-    align-items: center; 
-    padding: var(--space-4);
-    
-    /* Lógica de visibilidad */
-    opacity: 0; 
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+/* ===================================================================
+   1. OVERLAY (Fondo Oscuro con Blur)
+   =================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9990;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  /* 🎨 MODIFICADO: Overlay más oscuro con blur intenso */
+  background-color: rgba(var(--rgb-black), 0.8);
+  backdrop-filter: var(--backdrop-blur-xl);
+  -webkit-backdrop-filter: var(--backdrop-blur-xl);
+  
+  opacity: 1;
+  visibility: visible;
+  transition: 
+    opacity var(--transition-base) var(--ease-smooth),
+    visibility var(--transition-base) var(--ease-smooth),
+    backdrop-filter var(--transition-base) var(--ease-smooth);
+  pointer-events: auto;
 }
 
-.modal:not(.hidden) { 
-    visibility: visible;
-    opacity: 1;
+.modal-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
 }
 
-/* El contenedor principal del modal */
-.modal-content { 
-    background-color: var(--color-bg-card); /* Fondo blanco */
-    border-radius: var(--border-radius-lg); /* 12px */
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1); /* Sombra específica de la guía */
-    width: 100%; 
-    max-width: 600px;
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-
-    /* Animación de entrada */
-    transform: scale(0.95);
-    transition: transform 0.2s ease;
+/* ===================================================================
+   2. CONTENIDO DEL MODAL (Layout + Efecto Glass)
+   =================================================================== */
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 600px; /* Tamaño 'medium' por defecto */
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  z-index: 9999;
+  
+  /* 🎨 NUEVO: Efecto glass oscuro por defecto */
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--glass-dark-border);
+  box-shadow: var(--shadow-glass-card);
+  
+  /* 🎨 MODIFICADO: Texto claro en fondo oscuro */
+  color: var(--color-text-on-dark);
+  
+  /* Animación de entrada */
+  transition: 
+    transform var(--transition-slow) var(--ease-bounce),
+    opacity var(--transition-base) var(--ease-smooth);
 }
 
-.modal:not(.hidden) .modal-content {
-    transform: scale(1);
+/* Estado de entrada/salida */
+.modal-overlay.hidden .modal-content {
+  transform: scale(0.9) translateY(-20px);
+  opacity: 0;
+}
+
+/* 🌟 NUEVO: Variante con borde brillante (glow) */
+.modal-content.glow {
+  border-color: var(--glass-dark-border-glow);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-glow-green-sm);
+}
+
+/* 🌟 NUEVO: Modal premium (más transparente y con glow intenso) */
+.modal-content.premium {
+  background: var(--glass-darker-bg);
+  backdrop-filter: var(--backdrop-blur-intense);
+  -webkit-backdrop-filter: var(--backdrop-blur-intense);
+  border: 2px solid var(--glass-dark-border-glow);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-neon-green);
 }
 
 /* Modificadores de tamaño */
-.modal-content.large { max-width: 800px; }
-.modal-content.small { max-width: 450px; }
+.modal-content.small { 
+  max-width: 450px; 
+}
 
-/* Cabecera del Modal */
+.modal-content.large { 
+  max-width: 800px; 
+}
+
+.modal-content.extra-large { 
+  max-width: 1200px; 
+}
+
+.modal-content.extra-large-fluid {
+  max-width: 95vw;
+  max-height: 95vh;
+  height: 95vh;
+}
+
+/* ===================================================================
+   3. SECCIONES (Header, Body, Footer)
+   =================================================================== */
+
+/* --- Modal Header --- */
 .modal-header {
-    background-color: var(--color-header-bg); /* #1F2D3D */
-    color: var(--color-text-light);
-    padding: var(--space-2) var(--space-3); /* 16px vertical, 24px horizontal */
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-6);
+  gap: var(--space-4);
+  
+  /* 🎨 MODIFICADO: Header semi-transparente con borde sutil */
+  background: rgba(var(--rgb-white), 0.05);
+  border-bottom: 1px solid rgba(var(--rgb-white), 0.1);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+}
+
+/* 🌟 NUEVO: Header con acento verde */
+.modal-header.accent {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--rgb-green-neon), 0.1) 0%,
+    rgba(var(--rgb-green), 0.05) 100%
+  );
+  border-bottom-color: rgba(var(--rgb-green-neon), 0.3);
 }
 
 .modal-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    font-family: var(--font-primary);
-    font-weight: 600; /* SemiBold */
-    font-size: var(--text-lg); /* 18px */
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
 }
 
-/* Cuerpo del Modal */
+.modal-title i { 
+  width: 24px; 
+  height: 24px;
+  color: var(--color-accent-neon);
+  filter: drop-shadow(0 0 4px rgba(var(--rgb-green-neon), 0.4));
+}
+
+/* 🌟 NUEVO: Subtítulo opcional */
+.modal-subtitle {
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  color: var(--color-text-on-dark-muted);
+  margin-top: var(--space-1);
+  display: block;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+/* --- Modal Body --- */
 .modal-body {
-    padding: var(--space-3); /* 24px */
-    overflow-y: auto;
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+  
+  /* Scrollbar personalizado */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--rgb-white), 0.2) transparent;
 }
 
-/* Pie de página del Modal */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(var(--rgb-black), 0.2);
+  border-radius: var(--radius-full);
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(var(--rgb-white), 0.2);
+  border-radius: var(--radius-full);
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--rgb-white), 0.3);
+}
+
+.modal-body.no-padding {
+  padding: 0;
+}
+
+/* Espaciado entre elementos del body */
+.modal-body > * + * {
+  margin-top: var(--space-4);
+}
+
+/* --- Modal Footer --- */
 .modal-footer {
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--space-2);
-    padding: var(--space-3); /* 24px */
-    border-top: 1px solid var(--color-border);
-    background-color: var(--color-bg);
-    flex-shrink: 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: var(--space-4) var(--space-6);
+  gap: var(--space-3);
+  
+  /* 🎨 MODIFICADO: Footer con fondo sutil */
+  background: rgba(var(--rgb-black), 0.2);
+  border-top: 1px solid rgba(var(--rgb-white), 0.1);
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
 }
 
-/* Botón de guardar con altura especial */
-.modal-footer .button-save {
-    height: 44px;
+/* ===================================================================
+   4. BOTÓN DE CIERRE
+   =================================================================== */
+.modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  flex-shrink: 0;
+  padding: 0;
+  cursor: pointer;
+  
+  /* 🎨 MODIFICADO: Estilo moderno con hover rojo */
+  border-radius: var(--radius-full);
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  color: var(--color-text-on-dark-muted);
+  
+  transition: all var(--transition-fast) var(--ease-smooth);
 }
 
-/* Secciones específicas del informe */
-.tasks-section {
-    margin-top: var(--space-4); /* 32px */
-    padding: var(--space-2) 0;  /* 16px */
-    border-top: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
+.modal-close i { 
+  width: 20px; 
+  height: 20px; 
+  stroke-width: 2.5; 
 }
 
-.task-input-group {
-    display: flex;
-    gap: var(--space-2); /* 16px */
-    margin-top: var(--space-2);
+.modal-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+  transform: rotate(90deg);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
 }
 
-.no-tasks {
-    color: var(--color-text-secondary);
-    font-style: italic;
+.modal-close:active {
+  transform: rotate(90deg) scale(0.95);
+}
+
+/* ===================================================================
+   5. COMPONENTES INTERNOS DEL MODAL
+   =================================================================== */
+
+/* --- Input Stepper --- */
+.input-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.input-stepper input[type='number'] {
+  text-align: center;
+  font-weight: var(--font-semibold);
+  color: var(--white);
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  border-right: none;
+  border-left: none;
+  border-radius: 0;
+  padding: var(--space-2) var(--space-3);
+  min-width: 60px;
+  
+  /* Ocultar flechas del input number */
+  -moz-appearance: textfield;
+}
+
+.input-stepper input::-webkit-outer-spin-button,
+.input-stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.stepper-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  background: rgba(var(--rgb-white), 0.05);
+  color: var(--color-text-on-dark-muted);
+  font-size: 1.25rem;
+  font-weight: var(--font-normal);
+  cursor: pointer;
+  transition: all var(--transition-fast) var(--ease-smooth);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepper-btn:hover {
+  background: rgba(var(--rgb-green-neon), 0.1);
+  color: var(--color-accent-neon);
+  border-color: var(--color-accent-neon);
+}
+
+.stepper-btn:active {
+  transform: scale(0.95);
+}
+
+.stepper-btn.stepper-minus { 
+  border-radius: var(--radius-md) 0 0 var(--radius-md); 
+}
+
+.stepper-btn.stepper-plus { 
+  border-radius: 0 var(--radius-md) var(--radius-md) 0; 
+}
+
+/* --- Grid de Resumen --- */
+.form-grid.resumen-compacto {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4) var(--space-5);
+}
+
+.apartado-titulo {
+  grid-column: 1 / -1;
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--color-accent-neon);
+  margin-top: var(--space-4);
+  margin-bottom: 0;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid rgba(var(--rgb-white), 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ===================================================================
+   6. ESTADOS Y ANIMACIONES
+   =================================================================== */
+
+/* Efecto de pulsación en el overlay */
+@keyframes pulseOverlay {
+  0%, 100% {
+    background-color: rgba(var(--rgb-black), 0.8);
+  }
+  50% {
+    background-color: rgba(var(--rgb-black), 0.85);
+  }
+}
+
+.modal-overlay.pulse {
+  animation: pulseOverlay 0.3s ease-in-out;
+}
+
+/* Shake animation para errores */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.modal-content.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* ===================================================================
+   7. RESPONSIVE
+   =================================================================== */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    max-height: 95vh;
+    border-radius: var(--radius-xl);
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .modal-body {
+    padding: var(--space-4);
+  }
+
+  .modal-title {
+    font-size: var(--text-lg);
+  }
+
+  .form-grid.resumen-compacto {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  .modal-content.extra-large,
+  .modal-content.extra-large-fluid {
+    max-width: 95vw;
+    width: 95vw;
+  }
+}
+
+/* ===================================================================
+   8. VARIANTES ESPECIALES
+   =================================================================== */
+
+/* 🌟 NUEVO: Modal de confirmación pequeño */
+.modal-content.confirm {
+  max-width: 400px;
+  text-align: center;
+}
+
+.modal-content.confirm .modal-body {
+  padding: var(--space-8);
+}
+
+.modal-content.confirm .modal-footer {
+  justify-content: center;
+}
+
+/* 🌟 NUEVO: Modal fullscreen para dispositivos móviles */
+@media (max-width: 768px) {
+  .modal-content.fullscreen-mobile {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+
+  .modal-content.fullscreen-mobile .modal-header {
+    border-radius: 0;
+  }
+
+  .modal-content.fullscreen-mobile .modal-footer {
+    border-radius: 0;
+  }
+}
+
+/* ===================================================================
+   9. MODO CLÁSICO (Compatibilidad)
+   =================================================================== */
+body.classic-mode .modal-content {
+  background: var(--color-bg-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .modal-header {
+  background-color: var(--color-bg-header);
+  border-bottom-color: var(--color-border);
+}
+
+body.classic-mode .modal-footer {
+  background-color: var(--color-bg-inactive);
+  border-top-color: var(--color-border);
+}
+
+body.classic-mode .modal-overlay {
+  background-color: var(--modal-overlay-bg);
+  backdrop-filter: blur(var(--modal-overlay-blur));
 }

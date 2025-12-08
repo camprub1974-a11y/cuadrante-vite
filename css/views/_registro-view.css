@@ -1,103 +1,203 @@
-/* Estilos específicos para la vista de Registro Electrónico */
+/*
+ * css/views/_registro-view.css
+ * REFACTORIZADO A MCST/BEM (Arquitectura Glass)
+ */
 
-/* --- Estilos para la nueva barra de filtros del Registro --- */
-#registro-filters-card .view-controls {
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+/* 1. Pestañas de Navegación (Entrada/Salida) */
+.registro-view__tabs {
+  display: flex;
+  border-bottom: 1px solid var(--glass-dark-border);
+  padding-left: var(--space-4);
+  /* background: rgba(var(--rgb-slate-800), 0.5); */ /* Opcional: fondo más oscuro para pestañas */
+}
+.registro-view__tab {
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  background-color: transparent;
+  color: var(--color-text-on-dark-muted);
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: all var(--transition-base) var(--ease-smooth);
+  font-size: var(--text-sm);
+}
+.registro-view__tab:hover {
+  color: var(--white);
+}
+.registro-view__tab.active {
+  color: var(--color-accent-neon);
+  border-bottom-color: var(--color-accent-neon);
+  text-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.3);
 }
 
-/* --- Corrección de diseño para que la tabla ocupe el espacio --- */
-/* Le decimos a la vista de registro que crezca y ocupe el espacio vertical disponible */
-#registro-view.view-content {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; /* ¡Esta es la clave! */
+/* 2. Contenedor del Formulario Inline */
+.registro-view__form-container {
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--glass-dark-border);
+  background: rgba(var(--rgb-black), 0.2);
+}
+.registro-view__form-container h3 {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  font-size: 1.25rem;
+  color: var(--white);
+  font-weight: var(--font-semibold);
+}
+.registro-view__form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.registro-view__form-footer {
+  padding: var(--space-4) 0 0 0;
+  background-color: transparent;
+  border-top: none;
+  justify-content: flex-end; /* Alinea botones a la derecha */
 }
 
-#registro-view > .card {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    height: 100%;
+/* 3. Contenedores de Tabla y Paginación */
+.registro-view__table-container {
+  padding: var(--space-4); /* Añade padding que antes estaba inline */
+}
+.registro-view__table-container .empty-state {
+  padding: var(--space-8);
+  color: var(--color-text-on-dark-muted);
+}
+.registro-view__pagination-controls {
+  border-top: 1px solid var(--glass-dark-border);
+}
+.registro-view__pagination-controls span {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-on-dark);
 }
 
-#registros-list-container {
-    flex-grow: 1; /* El contenedor de la tabla también debe crecer */
-    overflow-y: auto; /* Añade scroll si el contenido es muy largo */
+/* 4. Enlace de registro vinculado (en la tabla) */
+.linked-record {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.linked-record:hover {
+  color: var(--color-accent-neon);
 }
 
-/* ✅ REGLA FINAL Y CORRECTA PARA ALINEAR A LA IZQUIERDA */
-.data-table .actions-cell {
-    display: flex;
-    justify-content: flex-start; /* Alinear el contenido al inicio (izquierda) */
-    align-items: center;       /* Centrar los iconos verticalmente en la celda */
-    gap: 0.5rem;               /* Mantener el espacio entre los iconos */
+/* ============================================= */
+/* FALLBACK MODO CLÁSICO                         */
+/* ============================================= */
+
+body.classic-mode .registro-view__tabs {
+  border-bottom-color: var(--color-border);
+}
+body.classic-mode .registro-view__tab {
+  color: var(--color-text-secondary);
+}
+body.classic-mode .registro-view__tab:hover {
+  color: var(--color-text-primary);
+}
+body.classic-mode .registro-view__tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  text-shadow: none;
+}
+body.classic-mode .registro-view__form-container {
+  background-color: var(--color-bg-hover);
+  border-bottom-color: var(--color-border);
+}
+body.classic-mode .registro-view__form-container h3 {
+  color: var(--color-text-primary);
+}
+body.classic-mode .registro-view__pagination-controls {
+  border-top-color: var(--color-border-light);
+}
+body.classic-mode .registro-view__pagination-controls span {
+  color: var(--color-text-primary);
+}
+body.classic-mode .registro-view__table-container .empty-state {
+  color: var(--color-text-secondary);
+}
+body.classic-mode .linked-record {
+  color: var(--color-primary-dark);
+}
+body.classic-mode .linked-record:hover {
+  color: var(--color-primary);
 }
 
-/* ✅ REGLAS ESPECÍFICAS PARA LOS ICONOS DE LA TABLA DE REGISTRO */
+/* ============================================= */
+/* 3. SUB-PESTAÑAS (Borradores, Completados)     */
+/* ============================================= */
 
-/* Usamos el ID de la vista (#registro-view) para aumentar la especificidad */
-#registro-view .data-table .actions-cell .material-icons {
-    color: #E53E3E; /* Rojo moderno */
-    transition: color 0.2s ease;
+/* El contenedor de las nuevas sub-pestañas */
+.sub-tabs-container {
+  display: flex;
+  flex-wrap: wrap; /* Para que se adapte en móviles */
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  /* Un fondo sutil y un borde para separarlo de la tabla */
+  background: rgba(var(--rgb-slate-900), 0.2);
+  border-bottom: 1px solid var(--glass-dark-border);
 }
 
-#registro-view .data-table .actions-cell button:hover .material-icons {
-    color: #C53030; /* Rojo más oscuro al pasar el ratón */
+/* * El estilo para cada botón de sub-pestaña
+ * (Borradores, Completados, Fallidos)
+ */
+.sub-tab-link {
+  /* Usamos la base de .button pero más pequeño */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 32px; /* Más pequeño que un botón normal (40px) */
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-md); /* Más sutil que --radius-lg */
+  font-family: var(--font-primary);
+  font-size: var(--text-xs); /* Texto más pequeño */
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--transition-base) var(--ease-smooth);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  
+  /* Color: igual que las pestañas principales inactivas */
+  background-color: transparent;
+  color: var(--color-text-on-dark-muted);
 }
 
-/* NUEVOS ESTILOS PARA EL FAB (Floating Action Button) */
-.fab-button {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    height: 3.5rem;
-    width: 3.5rem;
-    border-radius: 50%;
-    box-shadow: var(--shadow-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Iconos dentro de las sub-pestañas */
+.sub-tab-link i,
+.sub-tab-link svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+    color: inherit;
+    flex-shrink: 0;
 }
 
-.fab-button:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-lg);
+/* --- ESTADOS HOVER Y ACTIVE --- */
+
+.sub-tab-link:hover {
+  color: var(--white);
+  background-color: var(--glass-dark-bg); /* Fondo sutil al pasar el ratón */
 }
 
-.fab-button .material-icons {
-    font-size: 1.5rem;
-    color: white;
-}
+/* El estado ACTIVO usa el color neón (el más importante) */
+.sub-tab-link.active {
+  /* ============================================ */
+  /* 💡 MODIFICACIÓN: Cambiar el color del texto   */
+  /* ============================================ */
+  
+  /* --- ANTES --- */
+  /* color: var(--color-bg-dark); */ 
+  
+  /* --- DESPUÉS (Usando tu token de _tokens.css) --- */
+  color: var(--black);
 
-/* NUEVOS ESTILOS PARA EL ESTADO VACÍO */
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 3rem;
-    color: var(--app-text-secondary);
-}
-
-.empty-state .empty-state-icon {
-    font-size: 5rem;
-    color: var(--app-primary-blue-lighter);
-    margin-bottom: 1rem;
-}
-
-.empty-state h4 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: 500;
-}
-
-.empty-state p {
-    max-width: 400px;
-    margin: 0.5rem 0 1.5rem;
-    line-height: 1.5;
+  /* ============================================ */
+  
+  background-color: var(--color-accent-neon);
+  text-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.3);
+  border-color: transparent;
 }

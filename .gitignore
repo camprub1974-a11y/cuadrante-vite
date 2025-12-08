@@ -1,25 +1,63 @@
-# Dependencias
+# --- Dependencias ---
 node_modules/
+# NOTA: En React/Vite SIEMPRE se debe versionar package-lock.json o yarn.lock
+# para asegurar consistencia en producción. No los ignores.
 
-# Archivos de compilación (si usas 'npm run build')
+# --- Build y Dist (Vite/React) ---
 dist/
+dist-ssr/
+build/
 .vite/
+*.tsbuildinfo
 
-# Logs
+# --- Variables de Entorno y Secretos (CRÍTICO) ---
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+# Archivos específicos detectados antes
+extensions/*.env
+
+# --- Firebase & Serverless ---
+.firebase/
+firebase-debug.log*
+firestore-debug.log*
+ui-debug.log*
+# Claves de cuentas de servicio (CRÍTICO)
+serviceAccountKey.json
+**/key.json
+*.p12
+
+# --- Logs del Sistema y Debug ---
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
 
-# Archivos de entorno - ¡MUY IMPORTANTE!
-.env
-.env.local
-.env.*.local
+# --- Testing (Vitest / Jest / Cypress) ---
+coverage/
+cypress/screenshots/
+cypress/videos/
+*.lcov
+.nyc_output/
+playwright-report/
+test-results/
 
-# Archivos de sistema operativo
+# --- Editor e IDE (Ruido Local) ---
+.idea/
+.vscode/
+*.swp
+*.swo
 .DS_Store
 Thumbs.db
+ehthumbs.db
+.history/
 
-# Ignorar claves de servicio de Firebase
-serviceAccountKey.json
-
+# --- Archivos temporales del sistema operativo ---
+.bash_history
+.bash_profile
+.bashrc
+.profile

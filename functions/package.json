@@ -7,9 +7,6 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    
-    "//": "INICIO DE LA MODIFICACIÓN: Añadir script post-instalación",
-    "postinstall": "npx puppeteer browsers install chrome",
     "//": "FIN DE LA MODIFICACIÓN"
   },
   "engines": {
@@ -19,15 +16,19 @@
   "type": "module",
   "dependencies": {
     "@google-cloud/storage": "^7.16.0",
-    "axios": "^1.10.0",
+    "@sparticuz/chromium": "^141.0.0",
+    "axios": "^1.13.1",
     "cors": "^2.8.5",
     "date-fns": "^3.0.0",
-    "date-fns-tz": "^3.0.0",
-    "firebase-admin": "^13.4.0",
-    "firebase-functions": "^6.4.0",
+    "date-fns-tz": "^3.2.0",
+    "firebase-admin": "^13.5.0",
+    "firebase-functions": "^7.0.1",
+    "handlebars": "^4.7.8",
     "nodemailer": "^6.9.13",
+    "pdf-lib": "^1.17.1",
     "pdfkit": "^0.15.2",
-    "puppeteer": "^24.16.2"
+    "puppeteer-core": "^24.32.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "firebase-functions-test": "^3.1.0"

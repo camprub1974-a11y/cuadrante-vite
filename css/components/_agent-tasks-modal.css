@@ -1,0 +1,500 @@
+/* =================================================================== */
+/* css/components/_agent-tasks-modal.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
+
+/* ===================================================================
+   1. TARJETA DE TAREA (TASK CARD)
+   =================================================================== */
+.task-card {
+  /* 🎨 MODIFICADO: Efecto glass oscuro */
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  
+  border-radius: var(--radius-card);
+  border: 1px solid var(--glass-dark-border);
+  box-shadow: var(--shadow-glass-card);
+  
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+  
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  
+  /* Transiciones suaves */
+  transition: all var(--transition-base) var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover effect */
+.task-card:hover {
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-glow-green-sm);
+  transform: translateY(-2px);
+}
+
+/* 🌟 NUEVO: Barra de estado lateral */
+.task-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--color-text-muted);
+  transition: all var(--transition-base) var(--ease-smooth);
+}
+
+/* Estados de prioridad con colores en la barra lateral */
+.task-card.priority-high::before {
+  background: linear-gradient(
+    to bottom,
+    var(--color-danger),
+    rgba(239, 68, 68, 0.5)
+  );
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.task-card.priority-medium::before {
+  background: linear-gradient(
+    to bottom,
+    var(--color-warning),
+    rgba(234, 179, 8, 0.5)
+  );
+}
+
+.task-card.priority-low::before {
+  background: linear-gradient(
+    to bottom,
+    var(--color-success),
+    rgba(var(--rgb-green), 0.5)
+  );
+}
+
+/* 🌟 NUEVO: Estado completado */
+.task-card.completed {
+  opacity: 0.7;
+  background: rgba(var(--rgb-slate-800), 0.5);
+}
+
+.task-card.completed::before {
+  background: var(--color-text-dimmed);
+}
+
+.task-card.completed .task-card-body {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* 🌟 NUEVO: Estado urgente con animación */
+.task-card.urgent {
+  animation: pulseUrgent 2s ease-in-out infinite;
+}
+
+@keyframes pulseUrgent {
+  0%, 100% {
+    border-color: var(--color-danger);
+    box-shadow: 
+      var(--shadow-glass-card),
+      0 0 0 0 rgba(239, 68, 68, 0.4);
+  }
+  50% {
+    border-color: rgba(239, 68, 68, 0.6);
+    box-shadow: 
+      var(--shadow-glass-card),
+      0 0 0 6px rgba(239, 68, 68, 0);
+  }
+}
+
+/* ===================================================================
+   2. HEADER DE LA TARJETA
+   =================================================================== */
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* 🌟 NUEVO: Título de la tarea */
+.task-card-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--white);
+  margin: 0;
+  flex: 1;
+  line-height: 1.4;
+}
+
+.task-card-title i {
+  color: var(--color-accent-neon);
+  margin-right: var(--space-2);
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+/* Meta información (fecha, agente, etc.) */
+.task-card-header .task-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--color-text-on-dark-muted);
+  
+  /* 🎨 MODIFICADO: Badge con efecto glass */
+  background: rgba(var(--rgb-white), 0.05);
+  backdrop-filter: var(--backdrop-blur-sm);
+  -webkit-backdrop-filter: var(--backdrop-blur-sm);
+  
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+
+.task-meta:hover {
+  background: rgba(var(--rgb-white), 0.1);
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+}
+
+.task-meta i {
+  width: 12px;
+  height: 12px;
+  color: var(--color-accent-neon);
+}
+
+/* 🌟 NUEVO: Variantes de meta badges */
+.task-meta.meta-urgent {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.task-meta.meta-due-soon {
+  background: rgba(234, 179, 8, 0.15);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.task-meta.meta-completed {
+  background: rgba(var(--rgb-green), 0.15);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+/* ===================================================================
+   3. BODY DE LA TARJETA
+   =================================================================== */
+.task-card-body {
+  flex: 1;
+}
+
+.task-card-body p {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--color-text-on-dark);
+}
+
+/* 🌟 NUEVO: Descripción truncada con expand */
+.task-card-body .task-description {
+  position: relative;
+  max-height: 60px;
+  overflow: hidden;
+  transition: max-height var(--transition-base) var(--ease-smooth);
+}
+
+.task-card-body .task-description.expanded {
+  max-height: 500px;
+}
+
+.task-card-body .task-description-toggle {
+  display: inline-block;
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-accent-neon);
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.task-card-body .task-description-toggle:hover {
+  color: var(--color-accent-neon-hover);
+}
+
+/* 🌟 NUEVO: Lista de detalles */
+.task-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(var(--rgb-white), 0.05);
+}
+
+.task-detail-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-on-dark-muted);
+}
+
+.task-detail-item i {
+  width: 14px;
+  height: 14px;
+  color: var(--color-accent-neon);
+  flex-shrink: 0;
+}
+
+.task-detail-item strong {
+  color: var(--white);
+  font-weight: var(--font-medium);
+}
+
+/* ===================================================================
+   4. FOOTER DE LA TARJETA
+   =================================================================== */
+.task-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(var(--rgb-white), 0.05);
+  flex-wrap: wrap;
+}
+
+/* Grupo de botones */
+.task-card-footer .task-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+/* 🌟 NUEVO: Indicador de asignación */
+.task-assignee {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-on-dark-muted);
+}
+
+.task-assignee-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-neon);
+  color: var(--gray-900);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--font-bold);
+  font-size: 10px;
+  text-transform: uppercase;
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.3);
+}
+
+/* 🌟 NUEVO: Tags/Etiquetas */
+.task-tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.task-tag {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  font-size: 10px;
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-sm);
+  background: rgba(var(--rgb-white), 0.05);
+  color: var(--color-text-on-dark-muted);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+}
+
+/* ===================================================================
+   5. LISTA DE TAREAS (CONTAINER)
+   =================================================================== */
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-height: 600px;
+  overflow-y: auto;
+  padding-right: var(--space-2);
+  
+  /* Scrollbar personalizado */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--rgb-white), 0.2) transparent;
+}
+
+.tasks-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tasks-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tasks-list::-webkit-scrollbar-thumb {
+  background: rgba(var(--rgb-white), 0.2);
+  border-radius: var(--radius-full);
+}
+
+.tasks-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--rgb-white), 0.3);
+}
+
+/* 🌟 NUEVO: Estado vacío */
+.tasks-empty {
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  color: var(--color-text-on-dark-muted);
+}
+
+.tasks-empty i {
+  width: 48px;
+  height: 48px;
+  color: var(--color-text-on-dark-dimmed);
+  margin-bottom: var(--space-4);
+  opacity: 0.5;
+}
+
+.tasks-empty h3 {
+  font-size: var(--text-lg);
+  color: var(--color-text-on-dark-muted);
+  margin-bottom: var(--space-2);
+}
+
+.tasks-empty p {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-dimmed);
+}
+
+/* ===================================================================
+   6. FILTROS Y CONTROLES
+   =================================================================== */
+.tasks-filters {
+  display: flex;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  border-radius: var(--radius-full);
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  color: var(--color-text-on-dark-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+
+.filter-chip:hover {
+  background: rgba(var(--rgb-white), 0.1);
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+  color: var(--white);
+}
+
+.filter-chip.active {
+  background: rgba(var(--rgb-green-neon), 0.15);
+  border-color: var(--color-accent-neon);
+  color: var(--color-accent-neon);
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.2);
+}
+
+/* ===================================================================
+   7. ANIMACIONES DE ENTRADA
+   =================================================================== */
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-card.animate-in {
+  animation: slideInUp 0.3s var(--ease-smooth) forwards;
+}
+
+/* Delay para múltiples tarjetas */
+.task-card:nth-child(1) { animation-delay: 0s; }
+.task-card:nth-child(2) { animation-delay: 0.05s; }
+.task-card:nth-child(3) { animation-delay: 0.1s; }
+.task-card:nth-child(4) { animation-delay: 0.15s; }
+.task-card:nth-child(5) { animation-delay: 0.2s; }
+
+/* ===================================================================
+   8. RESPONSIVE
+   =================================================================== */
+@media (max-width: 768px) {
+  .task-card {
+    padding: var(--space-4);
+  }
+
+  .task-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-card-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .task-card-footer .task-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .task-card-footer .task-actions button {
+    flex: 1;
+  }
+
+  .tasks-list {
+    max-height: 400px;
+  }
+}
+
+/* ===================================================================
+   9. MODO CLÁSICO (Compatibilidad)
+   =================================================================== */
+body.classic-mode .task-card {
+  background-color: var(--color-bg-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: var(--color-border);
+}
+
+body.classic-mode .task-card-title {
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .task-card-body p {
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .task-card-header .task-meta {
+  background-color: var(--color-bg-inactive);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}

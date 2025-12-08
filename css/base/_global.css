@@ -1,33 +1,282 @@
-/* css/base/_global.css */
+/* =================================================================== */
+/* css/base/_global.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
-html {
-    box-sizing: border-box;
-}
-
-*, *::before, *::after {
-    box-sizing: inherit;
-}
-
+/* --- Reset y Box Model --- */
+html,
 body {
-    margin: 0;
-    background-color: var(--color-bg); 
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Contenedor principal de la aplicación, se asegura de ocupar el espacio restante */
-#app-container, #app-content {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
-/* Mantenemos el contenedor de la vista principal */
+/* --- Body: Configuración Base --- */
+body {
+  font-family: var(--font-primary);
+  font-weight: var(--font-normal);
+  
+  /* 🎨 NUEVO: Fondo moderno con gradiente y patrón de puntos */
+  background: 
+    var(--pattern-dots),
+    var(--gradient-primary);
+  background-size: 
+    var(--pattern-dots-size),
+    100% 100%;
+  background-position: 
+    0 0,
+    center;
+  background-attachment: fixed; /* El fondo no hace scroll */
+  
+  /* Texto claro sobre fondo oscuro */
+  color: var(--color-text-on-dark);
+  
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  
+  /* Suaviza las transiciones de color */
+  transition: background var(--transition-slow) var(--ease-smooth);
+}
+
+/* 🌟 NUEVO: Variante con animación sutil del patrón de puntos */
+body.animated-background {
+  animation: patternMove 60s linear infinite;
+}
+
+@keyframes patternMove {
+  0% {
+    background-position: 0 0, center;
+  }
+  100% {
+    background-position: var(--pattern-dots-size) var(--pattern-dots-size), center;
+  }
+}
+
+/* --- Contenedores Principales --- */
+#auth-container {
+  display: flex;
+  flex-grow: 1;
+  /* Asegura que el contenedor de autenticación también tenga el fondo */
+  min-height: 100vh;
+}
+
+#app-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  /* Padding mínimo para que el contenido no toque los bordes */
+  padding: var(--space-4);
+  gap: var(--space-4);
+}
+
+/* --- Container General --- */
 .container {
-    width: 100%;
-    max-width: 1600px; 
-    margin: 0 auto;
-    padding: var(--space-4); /* 32px */
-    flex-grow: 1;
+  max-width: 1600px;
+  margin: var(--space-4) auto;
+  padding: 0 var(--space-4);
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+}
+
+/* 🌟 NUEVO: Variante de contenedor con backdrop blur */
+.container.glass {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--glass-dark-border);
+  box-shadow: var(--shadow-glass-card);
+  padding: var(--space-6);
+}
+
+/* --- Scrollbar Personalizado (Estilo Moderno) --- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(var(--rgb-slate-800), 0.3);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--rgb-white), 0.2);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background var(--transition-fast);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--rgb-white), 0.3);
+  background-clip: padding-box;
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(30, 41, 59, 0.3);
+}
+
+/* --- Selection (Texto Seleccionado) --- */
+::selection {
+  background: rgba(var(--rgb-green-neon), 0.3);
+  color: var(--white);
+}
+
+::-moz-selection {
+  background: rgba(var(--rgb-green-neon), 0.3);
+  color: var(--white);
+}
+
+/* --- Focus Visible (Accesibilidad) --- */
+*:focus-visible {
+  outline: 2px solid var(--color-accent-neon);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Eliminar outline en clicks de mouse (solo teclado) */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* --- Smooth Scroll --- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Links Globales --- */
+a {
+  color: var(--color-accent-neon);
+  text-decoration: none;
+  transition: color var(--transition-fast) var(--ease-smooth);
+}
+
+a:hover {
+  color: var(--color-accent-neon-hover);
+  text-decoration: underline;
+}
+
+/* --- Imágenes Responsivas --- */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* --- Deshabilitado --- */
+[disabled],
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* =================================================================== */
+/* MODO CLÁSICO (Opcional: Para mantener compatibilidad) */
+/* =================================================================== */
+/* 
+  Si quieres un "toggle" para volver al fondo claro original,
+  añade la clase .classic-mode al body
+*/
+body.classic-mode {
+  background: var(--color-bg-app); /* Fondo gris claro original */
+  color: var(--color-text-primary); /* Texto oscuro */
+  animation: none; /* Sin animación */
+}
+
+body.classic-mode ::selection {
+  background: var(--color-primary-light);
+  color: var(--color-text-primary);
+}
+
+body.classic-mode a {
+  color: var(--color-text-brand);
+}
+
+body.classic-mode a:hover {
+  color: var(--color-primary-hover);
+}
+
+/* =================================================================== */
+/* RESPONSIVE ADJUSTMENTS */
+/* =================================================================== */
+@media (max-width: 768px) {
+  #app-content {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .container {
+    margin: var(--space-2) auto;
+    padding: 0 var(--space-2);
+  }
+
+  .container.glass {
+    padding: var(--space-4);
+  }
+}
+
+/* =================================================================== */
+/* UTILITIES: Clases de ayuda rápidas */
+/* =================================================================== */
+
+/* Glassmorphism rápido */
+.glass-panel {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--glass-dark-border);
+  box-shadow: var(--shadow-glass-card);
+  padding: var(--space-4);
+}
+
+/* Panel con glow verde */
+.glass-panel.glow {
+  border-color: var(--glass-dark-border-glow);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-glow-green-sm);
+}
+
+/* Texto con glow */
+.text-glow {
+  text-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.6);
+}
+
+/* Separador sutil */
+.divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(var(--rgb-white), 0.1) 50%,
+    transparent
+  );
+  margin: var(--space-4) 0;
+}
+
+/* Ocultar en móvil */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+/* Ocultar en escritorio */
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
 }

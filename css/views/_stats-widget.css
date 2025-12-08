@@ -1,59 +1,158 @@
-/* css/views/_stats-widget.css */
+/* =================================================================== */
+/* css/views/_stats-widget.css (Refactorizado MCST - Versión Minimalista) */
+/* =================================================================== */
 
-/* Aplica a cualquier h4 dentro de una tarjeta en la barra lateral */
-.sidebar-column .card h4 {
-    margin-top: 0;
-    margin-bottom: 0.75rem; /* Espacio debajo del título */
-    padding-bottom: 0.75rem; /* Espacio para que la línea no esté pegada al texto */
-    border-bottom: 1px solid var(--border-color-light); /* La línea separadora */
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-/* Contenedor para el menú desplegable */
-.stats-controls {
-    margin-bottom: 1.5rem; /* Espacio entre el selector y el contenido de las estadísticas */
-}
-
-.stats-range-selector {
-    width: 100%; /* Hace que el selector ocupe todo el ancho disponible */
-}
-
-/* Estilos para el contenedor de las estadísticas (grid) */
-#stats-container {
+/* 1. Título del Widget (Corregido) */
+.stats-widget__title {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    
+    /* 🎨 MEJORA: Color de texto moderno y glow */
+    color: var(--white); 
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    text-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.2);
 }
 
-.stats-info-grid {
+.stats-widget__title i {
+    width: 18px;
+    height: 18px;
+    color: var(--color-accent-neon);
+    filter: drop-shadow(0 0 8px rgba(var(--rgb-green-neon), 0.5));
+}
+
+/* 2. Grid Contenedor */
+.stats-widget__grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 columnas */
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
 }
 
-.stat-item {
-    padding: 1rem;
-    background-color: #f8fafc;
-    border: 1px solid var(--border-color-light);
-    border-radius: 8px;
+/* 3. Items de Estadísticas (Minimalista) */
+.stats-widget__item {
+    padding: var(--space-2);
+    border-radius: var(--radius-lg);
     text-align: center;
+    transition: all var(--transition-fast) var(--ease-smooth);
+    
+    /* 🎨 MEJORA: Estilo Glass, no sólido */
+    background: rgba(var(--rgb-white), 0.05);
+    border: 1px solid rgba(var(--rgb-white), 0.1);
+    color: var(--color-text-on-dark);
 }
 
-.stat-item .value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--app-primary-blue);
+.stats-widget__item:hover {
+    /* 🎨 MEJORA: Hover con glow sutil */
+    transform: translateY(-2px);
+    background: rgba(var(--rgb-white), 0.1);
+    border-color: rgba(var(--rgb-green-neon), 0.2);
+    box-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.1);
 }
 
-.stat-item .label {
-    font-size: 0.85rem;
-    color: var(--app-text-secondary);
+.stats-widget__item .value {
+    font-size: 1.25rem;
+    font-weight: var(--font-bold);
+    
+    /* 🎨 MEJORA: El valor numérico hereda el color, que luego será sobrescrito por el [data-shift-type] */
+    color: inherit; 
+    margin-bottom: 2px;
 }
 
-/* Responsive para el grid de stats */
+.stats-widget__item .label {
+    font-size: var(--text-xs);
+    opacity: 0.7; /* Más sutil */
+    color: inherit;
+}
+
+/* ============================================= */
+/* MODIFICADORES DE COLOR (Minimalista) */
+/* =Realzamos el NÚMERO, no el fondo */
+/* ============================================= */
+/* Usamos los tokens de turno de _tokens.css */
+
+.stats-widget__item[data-shift-type="M"] .value {
+    color: var(--shift-M-bg);
+}
+
+.stats-widget__item[data-shift-type="T"] .value {
+    color: var(--shift-A-bg); /* Asumiendo A es Tarde */
+}
+
+.stats-widget__item[data-shift-type="N"] .value {
+    color: var(--shift-N-bg);
+}
+
+.stats-widget__item[data-shift-type="L"] .value {
+    color: var(--shift-L-text); /* El gris de 'Libre' */
+}
+
+.stats-widget__item[data-shift-type="V"] .value,
+.stats-widget__item[data-shift-type="P"] .value,
+.stats-widget__item[data-shift-type="AP"] .value,
+.stats-widget__item[data-shift-type="Lc"] .value,
+.stats-widget__item[data-shift-type="PR"] .value {
+    /* Color de permisos/vacaciones, si tienes un token global para ello. Usamos un color por defecto si no */
+    color: var(--color-warning, #ffc107);
+}
+
+
+/* ============================================= */
+/* RESPONSIVE (Mantenemos la simplificación) */
+/* ============================================= */
 @media (max-width: 1200px) {
-    .stats-info-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 columnas en pantallas más pequeñas */
+    .stats-widget__grid {
+        grid-template-columns: repeat(2, 1fr);
     }
+}
+/* Se omite el resto de media queries que no se incluyeron en la sugerencia. */
+
+
+/* =================================================================== */
+/* 5. MODO CLÁSICO (Fallback) */
+/* =================================================================== */
+
+body.classic-mode .stats-widget__title {
+    color: var(--color-text-primary);
+    text-shadow: none;
+}
+body.classic-mode .stats-widget__title i {
+    color: var(--color-primary);
+    filter: none;
+}
+body.classic-mode .stats-widget__item {
+    background: var(--color-bg-hover);
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+}
+body.classic-mode .stats-widget__item:hover {
+    transform: none;
+    box-shadow: none;
+    background: var(--color-bg-card);
+}
+body.classic-mode .stats-widget__item .value {
+    color: var(--color-primary); /* Números en azul clásico por defecto */
+}
+
+/* Colores de turno para modo clásico */
+body.classic-mode .stats-widget__item[data-shift-type="M"] .value {
+    color: var(--shift-M-text); /* Color de texto oscuro */
+}
+body.classic-mode .stats-widget__item[data-shift-type="T"] .value {
+    color: var(--shift-A-text);
+}
+body.classic-mode .stats-widget__item[data-shift-type="N"] .value {
+    color: var(--shift-N-text);
+}
+body.classic-mode .stats-widget__item[data-shift-type="L"] .value {
+    color: var(--shift-L-text);
+}
+/* Se aplica el mismo color para el resto de permisos en Modo Clásico */
+body.classic-mode .stats-widget__item[data-shift-type="V"] .value,
+body.classic-mode .stats-widget__item[data-shift-type="P"] .value,
+body.classic-mode .stats-widget__item[data-shift-type="AP"] .value,
+body.classic-mode .stats-widget__item[data-shift-type="Lc"] .value,
+body.classic-mode .stats-widget__item[data-shift-type="PR"] .value {
+    color: var(--color-danger, #dc3545);
 }

@@ -1,0 +1,164 @@
+/* =================================================================== */
+/* css/layout/_dropdown-nav.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
+
+.module-tab-dropdown-container {
+  position: relative;
+}
+
+/* Flecha del dropdown */
+.dropdown-arrow {
+  width: 16px;
+  height: 16px;
+  margin-left: var(--space-1);
+  transition: transform var(--transition-base) var(--ease-smooth);
+}
+
+.module-tab-dropdown-container.open .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* Menú dropdown glass oscuro */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  z-index: 1000;
+  min-width: 260px;
+  padding: var(--space-2) 0;
+  
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-xl);
+  -webkit-backdrop-filter: var(--backdrop-blur-xl);
+  
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--glass-dark-border);
+  box-shadow: 
+    var(--shadow-glass-card),
+    0 0 20px rgba(var(--rgb-green-neon), 0.1);
+  
+  animation: dropdownIn 0.2s var(--ease-smooth);
+}
+
+.module-tab-dropdown-container.open .dropdown-menu {
+  display: block !important;
+}
+
+@keyframes dropdownIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(-10px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
+/* Items del menú */
+.dropdown-menu .module-tab {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  margin: 0 var(--space-2);
+  width: calc(100% - var(--space-4));
+  padding: var(--space-3) var(--space-4);
+  
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-on-dark);
+  box-shadow: none;
+  font-weight: var(--font-medium);
+}
+
+.dropdown-menu .module-tab:hover {
+  background: rgba(var(--rgb-white), 0.08);
+  border-color: rgba(var(--rgb-green-neon), 0.2);
+  color: var(--white);
+  transform: translateX(4px);
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.1);
+}
+
+.dropdown-menu .module-tab:hover i {
+  color: var(--color-accent-neon);
+}
+
+.dropdown-menu .module-tab.active {
+  background: rgba(var(--rgb-green-neon), 0.15);
+  border-color: var(--color-accent-neon);
+  color: var(--color-accent-neon);
+  font-weight: var(--font-semibold);
+  transform: translateX(4px);
+  box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.2);
+}
+
+.dropdown-menu .module-tab.active i {
+  color: var(--color-accent-neon);
+}
+
+/* Botón padre activo cuando hay hijo activo */
+.module-tab-dropdown-container.has-active-child > #gestion-dropdown-btn {
+  background: linear-gradient(135deg, var(--color-accent-neon) 0%, var(--green-600) 100%);
+  color: var(--gray-900) !important;
+  font-weight: var(--font-bold);
+  border-color: var(--color-accent-neon);
+  box-shadow: 
+    0 4px 12px rgba(var(--rgb-green-neon), 0.3),
+    0 0 20px rgba(var(--rgb-green-neon), 0.2);
+}
+
+.module-tab-dropdown-container.has-active-child > #gestion-dropdown-btn i {
+  color: var(--gray-900) !important;
+}
+
+/* Separador entre items */
+.dropdown-menu .dropdown-divider {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(var(--rgb-white), 0.1),
+    transparent
+  );
+  margin: var(--space-2) 0;
+}
+
+/* Overflow visible en container */
+.container-fluid.overflow-visible {
+  overflow: visible !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dropdown-menu {
+    min-width: 220px;
+    left: auto;
+    right: 0;
+  }
+  
+  .dropdown-menu .module-tab {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+}
+
+/* Modo Clásico */
+body.classic-mode .dropdown-menu {
+  background: var(--color-bg-card);
+  backdrop-filter: none;
+  border-color: var(--color-border);
+}
+
+body.classic-mode .dropdown-menu .module-tab {
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .dropdown-menu .module-tab:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-primary);
+}
+
+body.classic-mode .dropdown-menu .module-tab.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}

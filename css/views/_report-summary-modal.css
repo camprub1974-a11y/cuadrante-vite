@@ -1,0 +1,80 @@
+/* css/views/_report-summary-modal.css */
+
+.report-summary-modal__body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.report-summary-modal__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.stepper-group .form-label {
+  font-weight: 500;
+  color: var(--color-text-on-dark-muted);
+  margin-bottom: var(--space-2);
+}
+body.classic-mode .stepper-group .form-label {
+  color: var(--color-text-secondary);
+}
+
+/* Estilos para el Input Stepper (copiado de _forms.css) */
+.input-stepper {
+  display: flex;
+  align-items: center;
+}
+
+.input-stepper .form-control {
+  text-align: center;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  box-shadow: none;
+  min-width: 60px;
+  flex-grow: 1;
+}
+
+.input-stepper .stepper-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
+  line-height: 1;
+  font-weight: 600;
+  padding: 0;
+  border: 1px solid var(--glass-dark-border);
+  background: var(--glass-dark-bg-soft);
+  color: var(--color-text-on-dark);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+body.classic-mode .input-stepper .stepper-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.input-stepper .stepper-btn:hover {
+  background: var(--glass-light-bg-hover);
+  color: var(--white);
+  border-color: var(--glass-dark-border-glow);
+}
+body.classic-mode .input-stepper .stepper-btn:hover {
+  background: var(--color-bg-card);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.input-stepper .stepper-minus {
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+}
+.input-stepper .stepper-plus {
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+}

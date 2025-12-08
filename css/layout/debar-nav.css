@@ -1,0 +1,97 @@
+/* EN: css/layout/_sidebar-nav.css (VERSIÓN MEJORADA) */
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(9, 30, 66, 0.54); /* Un overlay ligeramente más oscuro */
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.management-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 280px;
+  height: 100%;
+  background-color: rgba(228, 219, 219, 0.93); 
+  box-shadow: var(--shadow-large);
+  z-index: 1001;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ESTADO ACTIVO: Cuando el panel está abierto */
+body.sidebar-open .sidebar-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+body.sidebar-open .management-sidebar {
+  transform: translateX(0);
+}
+
+/* --- ESTILOS MEJORADOS PARA EL INTERIOR DEL PANEL --- */
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-border-main);
+  background-color: var(--color-white); /* Fondo blanco para la cabecera */
+  flex-shrink: 0;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+}
+
+.sidebar-content {
+  padding: var(--space-2); /* Reducimos el padding para que los elementos se ajusten mejor */
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1); /* Espacio entre los elementos del menú */
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+/* Estilo de los enlaces del menú (reutilizamos y adaptamos .module-tab) */
+.sidebar-content .module-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3); /* Más espacio entre icono y texto */
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-weight: 500;
+  color: var(--color-text-main);
+  border-radius: var(--border-radius-md);
+  border: none; /* Quitamos el borde inferior que no aplica aquí */
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.sidebar-content .module-tab:hover {
+  background-color: var(--color-background-muted); /* Un gris más oscuro al pasar el ratón */
+  color: var(--color-text-dark);
+}
+
+/* Estilo para la pestaña ACTIVA dentro del panel */
+.sidebar-content .module-tab.active {
+  background-color: #eef2ff; /* Fondo azul claro */
+  font-weight: 600;
+  color: var(--app-primary-blue);
+}
+
+.sidebar-content .module-tab.active i {
+  color: var(--app-primary-blue);
+}

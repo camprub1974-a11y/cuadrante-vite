@@ -1,51 +1,90 @@
-/* css/components/_input-stepper.css */
+/* =================================================================== */
+/* css/components/_input-stepper.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
 .input-stepper {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0;
 }
 
-.input-stepper input[type="number"] {
-    text-align: center;
-    font-weight: 500;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 8px;
-    width: 100%;
-    /* Ocultar las flechas por defecto del navegador */
-    -moz-appearance: textfield;
+.input-stepper input[type='number'] {
+  text-align: center;
+  font-weight: var(--font-semibold);
+  color: var(--white);
+  
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  border-left: none;
+  border-right: none;
+  
+  padding: var(--space-2) var(--space-3);
+  min-width: 60px;
+  height: 40px;
+  
+  -moz-appearance: textfield;
 }
 
-.input-stepper input[type="number"]::-webkit-outer-spin-button,
-.input-stepper input[type="number"]::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.input-stepper input::-webkit-outer-spin-button,
+.input-stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .stepper-btn {
-    width: 36px;
-    height: 36px;
-    border: 1px solid var(--border-color);
-    background-color: #f8fafc;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--app-text-secondary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    transition: all 0.2s ease;
+  width: 40px;
+  height: 40px;
+  
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  border-radius: var(--radius-md);
+  
+  cursor: pointer;
+  font-size: 1.25rem;
+  font-weight: var(--font-normal);
+  color: var(--color-text-on-dark-muted);
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  transition: all var(--transition-fast) var(--ease-smooth);
 }
 
 .stepper-btn:hover {
-    background-color: #eef2f9;
-    color: var(--app-primary-blue);
-    border-color: var(--app-primary-blue);
+  background: rgba(var(--rgb-green-neon), 0.1);
+  border-color: var(--color-accent-neon);
+  color: var(--color-accent-neon);
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.2);
 }
 
 .stepper-btn:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
+}
+
+.stepper-btn.stepper-minus {
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+.stepper-btn.stepper-plus {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+/* Modo Clásico */
+body.classic-mode .input-stepper input {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .stepper-btn {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+
+body.classic-mode .stepper-btn:hover {
+  background: var(--color-bg-inactive);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
 }

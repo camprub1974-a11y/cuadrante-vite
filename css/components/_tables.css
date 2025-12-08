@@ -1,49 +1,618 @@
-/* css/components/_tables.css */
+/* =================================================================== */
+/* css/components/_tables.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
 .table-container {
   width: 100%;
-  overflow-x: auto; /* Permite scroll horizontal en tablas anchas */
+  overflow-x: auto;
+  
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  
+  border: 1px solid var(--glass-dark-border);
+  /* 🎨 CORRECCIÓN: Usar token de card para consistencia */
+  border-radius: var(--radius-2xl); 
+  box-shadow: var(--shadow-glass-card);
+  
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--rgb-white), 0.2) transparent;
+}
+
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: rgba(var(--rgb-black), 0.2);
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: rgba(var(--rgb-white), 0.2);
+  border-radius: var(--radius-full);
 }
 
 .data-table {
-    width: 100%;
-    border-collapse: collapse;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .data-table thead.sticky-header {
-    position: sticky;
-    top: 0;
-    z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.data-table thead {
+  background: rgba(var(--rgb-slate-800), 0.9);
+  backdrop-filter: var(--backdrop-blur-md);
+  -webkit-backdrop-filter: var(--backdrop-blur-md);
 }
 
 .data-table th {
-    background-color: var(--color-bg-table-header); /* #F0F2F5 */
-    padding: 12px var(--space-2); /* 12px vertical, 16px horizontal */
-    text-align: left;
-    font-size: var(--text-sm); /* 14px */
-    font-weight: 400; /* Regular */
-    color: var(--color-text-secondary);
-    border-bottom: 1px solid var(--color-border); /* #E2E5E9 */
+  background: transparent;
+  color: var(--color-text-on-dark-muted);
+  padding: var(--space-4) var(--space-5);
+  text-align: left;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid rgba(var(--rgb-green-neon), 0.3);
 }
 
 .data-table td {
-    padding: 12px var(--space-2); /* 12px vertical, 16px horizontal */
-    border-bottom: 1px solid var(--color-border);
-    color: var(--color-text);
-    font-size: var(--text-sm); /* 14px */
-    line-height: var(--leading-tight);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid rgba(var(--rgb-white), 0.05);
+  color: var(--white);
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast) var(--ease-smooth);
+  vertical-align: middle; /* 🎨 AÑADIDO: Mejor alineación */
 }
 
-/* Filas alternas */
+.data-table tbody tr {
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+
 .data-table tbody tr:nth-child(even) {
-    background-color: var(--color-bg-table-row-alt); /* #FBFCFD */
+  background: rgba(var(--rgb-white), 0.02);
 }
 
 .data-table tbody tr:hover {
-    background-color: var(--color-background-hover);
+  background: rgba(var(--rgb-green-neon), 0.08);
+}
+
+.data-table tbody tr:hover td {
+  border-bottom-color: rgba(var(--rgb-green-neon), 0.2);
 }
 
 .data-table tbody tr:last-child td {
-    border-bottom: none;
+  border-bottom: none;
 }
 
+.data-table td.actions-cell {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Paginación (Si no está en _cards.css) */
+/* 🎨 NOTA: Esto debería ser manejado por .card-footer en _cards.css */
+.pagination-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid rgba(var(--rgb-white), 0.1);
+  background: rgba(var(--rgb-black), 0.2);
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl); /* 🎨 CORRECCIÓN: Token */
+}
+
+.pagination-controls span {
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .data-table th,
+  .data-table td {
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--text-xs);
+  }
+  
+  .pagination-controls {
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+}
+
+/* Modo Clásico */
+body.classic-mode .table-container {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+  backdrop-filter: none;
+}
+
+body.classic-mode .data-table thead {
+  background: var(--color-bg-inactive);
+}
+
+body.classic-mode .data-table th {
+  color: var(--color-text-secondary);
+  border-bottom-color: var(--color-border);
+}
+
+body.classic-mode .data-table td {
+  color: var(--color-text-primary);
+  border-bottom-color: var(--color-border);
+}
+
+body.classic-mode .data-table tbody tr:hover {
+  background: var(--color-primary-light);
+}
+
+/* ============================================= */
+/* 🌟 NUEVO: COMPONENTE STATUS PILL (Genérico)    */
+/* ============================================= */
+
+/* --- 1. Base (Modo Moderno/Glass) --- */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2); /* 8px */
+  padding: var(--space-1) var(--space-3); /* 4px 12px */
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs); /* 12px */
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  line-height: 1.2;
+
+  /* Estilo Glass por defecto (sutil) */
+  background: rgba(var(--rgb-white), 0.05);
+  color: var(--color-text-on-dark-muted);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  transition: all var(--transition-base) ease;
+}
+
+/* El punto de color */
+.status-pill::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-text-on-dark-muted); /* Color por defecto */
+}
+
+/* --- 2. Modificadores de Estado (Glass) --- */
+
+/* Borrador (Draft) - Gris */
+.status-draft {
+  background: rgba(var(--rgb-slate-400), 0.1);
+  color: var(--color-text-on-dark-muted);
+  border-color: rgba(var(--rgb-slate-400), 0.2);
+}
+.status-draft::before {
+  background-color: var(--color-text-on-dark-muted);
+}
+
+/* Asignada (Assigned) - Amarillo */
+.status-assigned {
+  background: rgba(var(--rgb-yellow-500), 0.1);
+  color: var(--color-warning);
+  border-color: rgba(var(--rgb-yellow-500), 0.2);
+  /* Sombra sutil para destacar */
+  box-shadow: 0 0 8px rgba(var(--rgb-yellow-500), 0.1);
+}
+.status-assigned::before {
+  background-color: var(--color-warning);
+}
+
+/* En Progreso (In Progress) - Azul */
+.status-in_progress {
+  background: rgba(var(--rgb-blue-400), 0.15);
+  color: var(--color-info);
+  border-color: rgba(var(--rgb-blue-400), 0.2);
+  box-shadow: 0 0 8px rgba(var(--rgb-blue-400), 0.1);
+}
+.status-in_progress::before {
+  background-color: var(--color-info);
+}
+
+/* Completada (Completed) - Verde */
+.status-completed {
+  background: rgba(var(--rgb-green), 0.15);
+  color: var(--color-success);
+  border-color: rgba(var(--rgb-green), 0.2);
+  box-shadow: 0 0 8px rgba(var(--rgb-green), 0.1);
+}
+.status-completed::before {
+  background-color: var(--color-success);
+}
+
+/* --- 3. Fallback (Modo Clásico) --- */
+
+body.classic-mode .status-pill {
+  border: 1px solid transparent; /* Reset border */
+  color: var(--white); /* Texto blanco por defecto en modo clásico */
+}
+
+body.classic-mode .status-draft {
+  background-color: var(--color-bg-muted); /* Gris sólido */
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+body.classic-mode .status-draft::before {
+  background-color: var(--color-text-muted);
+}
+
+body.classic-mode .status-assigned {
+  background-color: var(--color-warning-light); /* Amarillo sólido */
+  color: var(--color-warning-dark);
+  border-color: var(--color-warning);
+}
+body.classic-mode .status-assigned::before {
+  background-color: var(--color-warning-dark);
+}
+
+body.classic-mode .status-in_progress {
+  background-color: var(--color-info-light); /* Azul sólido */
+  color: var(--color-info-dark);
+  border-color: var(--color-info);
+}
+body.classic-mode .status-in_progress::before {
+  background-color: var(--color-info-dark);
+}
+
+body.classic-mode .status-completed {
+  background-color: var(--color-success-light); /* Verde sólido */
+  color: var(--color-success-dark);
+  border-color: var(--color-success);
+}
+body.classic-mode .status-completed::before {
+  background-color: var(--color-success-dark);
+}
+
+/* ============================================= */
+/* 🌟 CORREGIDO: COMPONENTE TYPE PILL (H. Extra)  */
+/* ============================================= */
+
+/* --- 1. Base (Modo Moderno/Glass) --- */
+.type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md); 
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+
+  /* 🎨 FIX: Usando un token que SÍ existe */
+  background: rgba(var(--rgb-slate-700), 0.1); 
+  color: var(--color-text-on-dark-muted);
+  border: 1px solid rgba(var(--rgb-slate-700), 0.2);
+}
+
+/* ============================================= */
+/* 🌟 CORREGIDO: COMPONENTE TYPE PILL (H. Extra)  */
+/* ============================================= */
+
+/* --- 1. Base (Modo Moderno/Glass) --- */
+.type-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md); 
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+
+  /* 🎨 FIX: Usando un token que SÍ existe */
+  background: rgba(var(--rgb-slate-700), 0.1); 
+  color: var(--color-text-on-dark-muted);
+  border: 1px solid rgba(var(--rgb-slate-700), 0.2);
+}
+
+/* --- 2. Modificadores de Tipo (Glass) --- */
+/* (Las clases AHORA coinciden con las claves de 'EVENT_COLORS') */
+
+/* Clave: 'diurno' -> Verde (Acento de la app) */
+.type-diurno {
+  background: rgba(var(--rgb-green-neon), 0.1);
+  color: var(--color-accent-neon);
+  border-color: rgba(var(--rgb-green-neon), 0.2);
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.1);
+}
+
+/* 🎨 TU PETICIÓN: Clave: 'nocturno' -> Azul */
+.type-nocturno {
+  background: rgba(var(--rgb-primary), 0.15); /* Token --rgb-primary SÍ existe */
+  color: var(--color-primary);             /* Token --color-primary SÍ existe */
+  border-color: rgba(var(--rgb-primary), 0.2);
+  box-shadow: 0 0 8px rgba(var(--rgb-primary), 0.1);
+}
+
+/* Clave: 'festivo' -> Amarillo */
+.type-festivo {
+  /* 🎨 FIX: --rgb-yellow-500 no existe. Usamos el hex --yellow-500 (#f59e0b) -> rgb(245, 158, 11) */
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning); /* Token --color-warning SÍ existe */
+  border-color: rgba(245, 158, 11, 0.2);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.1);
+}
+
+/* Clave: 'festivo_nocturno' -> Rojo */
+.type-festivo_nocturno {
+  /* 🎨 FIX: --rgb-red-500 no existe. Usamos el hex --red-500 (#ef4444) -> rgb(239, 68, 68) */
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--color-danger); /* Token --color-danger SÍ existe */
+  border-color: rgba(239, 68, 68, 0.2);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.1);
+}
+
+/* Clave: 'AP' (Asuntos Propios) -> Púrpura/Gris */
+/* (No estaba en EVENT_COLORS, pero lo cubrimos por si acaso) */
+.type-AP {
+  background: rgba(var(--rgb-slate-700), 0.15);
+  color: var(--color-text-on-dark-muted);
+  border-color: rgba(var(--rgb-slate-700), 0.2);
+}
+
+
+/* --- 3. Fallback (Modo Clásico) --- */
+
+body.classic-mode .type-pill {
+  border: 1px solid transparent;
+  color: var(--white);
+}
+
+/* 🎨 FIX: Mapeo a tokens clásicos que SÍ existen */
+body.classic-mode .type-diurno {
+  background-color: var(--color-success-light);
+  color: var(--color-success); /* Usamos el verde normal */
+  border-color: var(--color-success);
+}
+
+body.classic-mode .type-nocturno {
+  background-color: var(--color-primary-light); /* Azul */
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+body.classic-mode .type-festivo {
+  background-color: var(--color-warning-light); /* Amarillo */
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+}
+
+body.classic-mode .type-festivo_nocturno {
+  background-color: var(--color-danger-light); /* Rojo */
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+body.classic-mode .type-AP {
+  background-color: var(--color-bg-inactive); /* Gris */
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+/* ============================================= */
+/* 🌟 NUEVO: COMPONENTE TYPE PILL (Plantillas)    */
+/* ============================================= */
+/* (Usamos la misma clase .type-pill, solo añadimos modificadores) */
+
+/* Clave: 'informe' (Azul) */
+.type-informe {
+  background: rgba(var(--rgb-primary), 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(var(--rgb-primary), 0.2);
+}
+body.classic-mode .type-informe {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+/* Clave: 'acta' (Verde) */
+.type-acta {
+  background: rgba(var(--rgb-green), 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(var(--rgb-green), 0.2);
+}
+body.classic-mode .type-acta {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+  border-color: var(--color-success);
+}
+
+/* Clave: 'portada' (Gris) */
+.type-portada {
+  background: rgba(var(--rgb-slate-700), 0.1);
+  color: var(--color-text-on-dark-muted);
+  border: 1px solid rgba(var(--rgb-slate-700), 0.2);
+}
+body.classic-mode .type-portada {
+  background-color: var(--color-bg-muted);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+}
+
+/* Clave: 'atestado' (Rojo) */
+.type-atestado {
+  background: rgba(239, 68, 68, 0.15); /* rgb(var(--red-500)) */
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+body.classic-mode .type-atestado {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger-dark);
+  border-color: var(--color-danger);
+}
+
+/* Clave: 'oficio' (Amarillo) */
+.type-oficio {
+  background: rgba(245, 158, 11, 0.1); /* rgb(var(--yellow-500)) */
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+body.classic-mode .type-oficio {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+  border-color: var(--color-warning);
+}
+
+/* Clave: 'estadillo' (Verde Neón) */
+.type-estadillo {
+  background: rgba(var(--rgb-green-neon), 0.1);
+  color: var(--color-accent-neon);
+  border: 1px solid rgba(var(--rgb-green-neon), 0.2);
+}
+body.classic-mode .type-estadillo {
+  background-color: var(--green-100);
+  color: var(--green-700);
+  border-color: var(--green-500);
+}
+
+/* ============================================= */
+/* 🌟 NUEVO: MODIFICADORES DE ESTADO (Registro) */
+/* ============================================= */
+/* (Usamos la misma clase base .type-pill) */
+
+/* Clave: 'pendiente' (Amarillo) */
+.type-pill.status-pendiente {
+  background: rgba(245, 158, 11, 0.1); /* rgb(var(--yellow-500)) */
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+body.classic-mode .type-pill.status-pendiente {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+  border-color: var(--color-warning);
+}
+
+/* Clave: 'finalizado' (Verde) */
+.type-pill.status-finalizado {
+  background: rgba(var(--rgb-green), 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(var(--rgb-green), 0.2);
+}
+body.classic-mode .type-pill.status-finalizado {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+  border-color: var(--color-success);
+}
+
+/* Clave: 'revisado' y 'recepcionado' (Azul) */
+.type-pill.status-revisado,
+.type-pill.status-recepcionado {
+  background: rgba(var(--rgb-primary), 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(var(--rgb-primary), 0.2);
+}
+body.classic-mode .type-pill.status-revisado,
+body.classic-mode .type-pill.status-recepcionado {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+}
+
+/* Clave: 'finalizado_rs' (Verde Neón) */
+.type-pill.status-finalizado_rs {
+  background: rgba(var(--rgb-green-neon), 0.1);
+  color: var(--color-accent-neon);
+  border: 1px solid rgba(var(--rgb-green-neon), 0.2);
+}
+body.classic-mode .type-pill.status-finalizado_rs {
+  background-color: var(--green-100);
+  color: var(--green-700);
+  border-color: var(--green-500);
+}
+
+/* Clave: 'default' (Gris) */
+.type-pill.status-default {
+  background: rgba(var(--rgb-slate-700), 0.1);
+  color: var(--color-text-on-dark-muted);
+  border: 1px solid rgba(var(--rgb-slate-700), 0.2);
+}
+body.classic-mode .type-pill.status-default {
+  background-color: var(--color-bg-inactive);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+/* ============================================= */
+/* 🌟 NUEVO: MODIFICADORES DE ESTADO (Partes)   */
+/* ============================================= */
+/* (Usamos la misma clase base .status-pill que ya existe) */
+
+/* Clave: 'pending_review' (Amarillo) */
+.status-pill.status-pending_review {
+  background: rgba(245, 158, 11, 0.1); /* rgb(var(--yellow-500)) */
+  color: var(--color-warning);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+body.classic-mode .status-pill.status-pending_review {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+  border-color: var(--color-warning);
+}
+
+/* Clave: 'open' (Azul) */
+.status-pill.status-open {
+  background: rgba(var(--rgb-primary), 0.15);
+  color: var(--color-primary);
+  border: 1px solid rgba(var(--rgb-primary), 0.2);
+}
+body.classic-mode .status-pill.status-open {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-dark);
+  border-color: var(--color-primary);
+}
+
+/* Clave: 'validated' (Verde) */
+.status-pill.status-validated {
+  background: rgba(var(--rgb-green), 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(var(--rgb-green), 0.2);
+}
+body.classic-mode .status-pill.status-validated {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+  border-color: var(--color-success);
+}
+
+/* Clave: 'returned' (Rojo) */
+.status-pill.status-returned {
+  background: rgba(239, 68, 68, 0.15); /* rgb(var(--red-500)) */
+  color: var(--color-danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+body.classic-mode .status-pill.status-returned {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger-dark);
+  border-color: var(--color-danger);
+}
+
+/* Clave: 'closed' (Gris) */
+.status-pill.status-closed {
+  background: rgba(var(--rgb-slate-700), 0.1);
+  color: var(--color-text-on-dark-muted);
+  border: 1px solid rgba(var(--rgb-slate-700), 0.2);
+}
+body.classic-mode .status-pill.status-closed {
+  background-color: var(--color-bg-inactive);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}

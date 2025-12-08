@@ -1,39 +1,88 @@
-/* css/components/_notification-badge.css */
-.notification-bell-container {
-    position: relative;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-}
+/* =================================================================== */
+/* css/components/_notification-badge.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
 .notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--danger-color);
-    color: white;
-    font-size: 10px;
-    font-weight: bold;
-    padding: 2px 6px;
-    border-radius: 10px;
-    min-width: 12px;
-    text-align: center;
-    line-height: 1;
-    border: 2px solid var(--app-primary-blue);
+  min-width: 22px;
+  height: 22px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-full);
+  
+  background: linear-gradient(135deg, #f87171 0%, var(--color-danger) 100%);
+  color: var(--white);
+  border: 2px solid var(--slate-800);
+  
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  
+  font-size: 10px;
+  font-weight: var(--font-bold);
+  line-height: 1;
+  text-align: center;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  box-shadow: 
+    0 2px 8px rgba(239, 68, 68, 0.4),
+    0 0 12px rgba(239, 68, 68, 0.3);
+  
+  transition: all var(--transition-fast) var(--ease-smooth);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% {
     transform: scale(1);
-    transform-origin: center;
-    transition: transform 0.2s ease, opacity 0.2s ease;
+    box-shadow: 
+      0 2px 8px rgba(239, 68, 68, 0.4),
+      0 0 12px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 
+      0 4px 12px rgba(239, 68, 68, 0.5),
+      0 0 20px rgba(239, 68, 68, 0.4);
+  }
 }
 
-.notification-badge:not(.hidden) {
-    animation: pop-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+.notification-badge.hidden {
+  opacity: 0;
+  transform: scale(0);
+  pointer-events: none;
 }
 
-@keyframes pop-in {
-    0% { transform: scale(0); opacity: 0; }
-    80% { transform: scale(1.1); opacity: 1; }
-    100% { transform: scale(1); }
+/* Icono con badge */
+.icon-button {
+  position: relative;
+}
+
+.icon-button.has-notifications .feather-bell,
+.icon-button.has-notifications i[data-feather="bell"] {
+  color: var(--color-danger);
+  animation: bellRing 0.6s ease-in-out;
+}
+
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0); }
+  10%, 30%, 50%, 70%, 90% { transform: rotate(-8deg); }
+  20%, 40%, 60%, 80% { transform: rotate(8deg); }
+}
+
+/* Variante verde para notificaciones positivas */
+.notification-badge.success {
+  background: linear-gradient(135deg, var(--green-400) 0%, var(--green-600) 100%);
+  box-shadow: 
+    0 2px 8px rgba(var(--rgb-green), 0.4),
+    0 0 12px rgba(var(--rgb-green-neon), 0.3);
+}
+
+/* Modo Clásico */
+body.classic-mode .notification-badge {
+  background: var(--color-danger);
+  border: 2px solid var(--white);
+  box-shadow: var(--shadow-sm);
+  animation: none;
 }

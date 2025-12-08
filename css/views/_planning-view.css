@@ -1,70 +1,186 @@
-/* css/views/_planning-view.css */
-
 /*
- * Estilos para los botones de acción en la tabla de órdenes de servicio.
- * Los selectores se han hecho más específicos para evitar conflictos.
+ * css/views/_planning-view.css
+ * REFACTORIZADO V2 (Alineado con _cards.css)
+ *
+ * Este archivo confía en:
+ * - _cards.css (para .card, .card-header, .card-body, .card-footer)
+ * - _tables.css (para .data-table)
+ * - _forms.css (para .input, .selector)
+ * - _buttons.css (para .button)
  */
-#planning-view-content .data-table .actions-cell {
-    display: flex; /* Esto fuerza la alineación flexible */
-    justify-content: flex-start; /* Alinea los elementos a la izquierda como en la vista de Registro */
-    align-items: center;
-    gap: 0.5rem; /* Espacio entre los iconos */
+
+/* 1. Header Específico */
+/* Override: El .card-header por defecto es sutil, esta vista usa uno azul. */
+.planning-view__header.card .card-header {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--rgb-blue-400), 0.9) 0%,
+    rgba(var(--rgb-blue-600), 0.85) 100%
+  );
+  backdrop-filter: var(--backdrop-blur-md);
+  border-bottom: 1px solid rgba(var(--rgb-blue-400), 0.5);
+  box-shadow: var(--shadow-lg);
+}
+/* NOTA: El h2 y el icono ya son estilizados globalmente por _cards.css */
+
+.planning-view__header-actions {
+  display: flex;
+  gap: var(--space-md);
 }
 
-/* Regla para los iconos de Material Icons dentro de los botones de acción */
-#planning-view-content .data-table .actions-cell .icon-button .material-icons {
-    color: #E53E3E !important; /* Añadimos !important para forzar la aplicación */
-    font-size: 1.25rem;
-    transition: color 0.2s ease;
+/* 2. Botón de IA Específico */
+.planning-view__ai-btn {
+  /* Estilo Neón Glass */
+  background: rgba(var(--rgb-green-neon), 0.1);
+  border: 1px solid var(--glass-neon-border);
+  color: var(--green-neon);
+  backdrop-filter: var(--backdrop-blur-sm);
+  box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.3);
 }
 
-/* Colores de hover para cada botón */
-#planning-view-content .data-table .actions-cell .icon-button[data-action="edit"]:hover .material-icons {
-    color: #C53030 !important; /* Rojo más oscuro para el hover, como en Registro */
+.planning-view__ai-btn:hover {
+  background: rgba(var(--rgb-green-neon), 0.2);
+  color: var(--white);
+  border-color: var(--green-neon);
+  box-shadow: 0 0 20px rgba(var(--rgb-green-neon), 0.5);
+  transform: translateY(-2px);
 }
 
-#planning-view-content .data-table .actions-cell .icon-button[data-action="assign"]:hover .material-icons {
-    color: var(--success-color) !important; /* Usar la variable para la consistencia del color */
+/* 3. Grid de Filtros */
+.planning-view__filter-grid {
+  display: grid;
+  gap: var(--space-md);
+  grid-template-columns: repeat(3, 1fr) auto;
+  align-items: end;
+  /* El padding lo da .card-body */
 }
 
-#planning-view-content .data-table .actions-cell .icon-button[data-action="delete"]:hover .material-icons {
-    color: var(--danger-color) !important; /* Usar la variable para la consistencia del color */
+/* Anulación de espaciado del componente .form-group */
+.planning-view__filter-grid .form-group {
+  margin-bottom: 0;
 }
 
-/* --- Estilos para la píldora de estado en la tabla --- */
-.status-pill {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
-    white-space: nowrap;
+/* Iconos en las etiquetas de los filtros */
+.planning-view__filter-grid .form-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.planning-view__filter-grid .form-group label svg {
+  width: 14px;
+  height: 14px;
+  color: var(--color-primary-light); /* Token del modo moderno */
 }
 
-/* Colores de las píldoras de estado */
-.status-draft {
-    background-color: #e2e8f0;
-    color: #4a5568;
+.planning-view__filter-actions {
+  display: flex;
+  gap: var(--space-sm);
+  align-self: end;
 }
 
-.status-assigned {
-    background-color: #feebc8;
-    color: #9c4221;
+/* 4. Tabla y Paginación */
+.planning-view__table-wrapper .info-message {
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-on-dark-muted);
 }
 
-.status-in_progress {
-    background-color: #d1e7dd;
-    color: #0f5132;
+/* MODIFICADO: Simplificado */
+.planning-view__pagination {
+  /* .card-footer.space-between ya gestiona el flex-layout */
+  /* Solo sobreescribimos el borde si es necesario */
+  border-top: 1px solid var(--glass-dark-border); 
 }
 
-.status-completed {
-    background-color: #dbeafe;
-    color: #1e40af;
+.planning-view__pagination span {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-text-on-dark);
 }
 
-.status-unknown {
-    background-color: #fbd38d;
-    color: #9c4221;
+/* ============================================= */
+/* RESPONSIVE                                    */
+/* ============================================= */
+
+@media (max-width: 1400px) {
+  .planning-view__filter-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  
+  .planning-view__filter-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 1024px) {
+  .planning-view__filter-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .planning-view__filter-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .planning-view__filter-actions {
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  
+  .planning-view__filter-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .planning-view__header-actions {
+    gap: var(--space-sm);
+  }
+}
+
+/* ============================================= */
+/* FALLBACK MODO CLÁSICO                         */
+/* ============================================= */
+
+body.classic-mode .planning-view__header.card .card-header {
+  background: linear-gradient(
+    135deg,
+    var(--color-primary) 0%,
+    var(--color-primary-dark) 100%
+  );
+  backdrop-filter: none;
+  border-bottom: 1px solid var(--color-primary-dark);
+}
+/* h2 e <i> son manejados por el fallback de _cards.css */
+
+body.classic-mode .planning-view__ai-btn {
+  background: var(--color-primary-darker);
+  color: var(--color-text-inverted);
+  border: none;
+  box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.4);
+  backdrop-filter: none;
+}
+
+body.classic-mode .planning-view__ai-btn:hover {
+  box-shadow: 0 6px 16px rgba(var(--color-primary-rgb), 0.5);
+}
+
+body.classic-mode .planning-view__filter-grid .form-group label svg {
+  color: var(--color-primary);
+}
+
+body.classic-mode .planning-view__pagination {
+  border-top: 1px solid var(--color-border-light);
+}
+
+body.classic-mode .planning-view__table-wrapper .info-message {
+  color: var(--color-text-secondary);
+}
+
+body.classic-mode .planning-view__pagination span {
+  color: var(--color-text-primary);
 }

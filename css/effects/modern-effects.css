@@ -1,0 +1,267 @@
+/* =================================================================== */
+/* css/effects/modern-effects.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
+
+/* --- 1. EFECTO GLASS OSCURO (Genérico) --- */
+.acrylic-panel,
+.glass-panel {
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  border: 1px solid var(--glass-dark-border);
+  color: var(--color-text-on-dark);
+  box-shadow: var(--shadow-glass-card);
+}
+
+/* Variante con glow */
+.glass-panel.glow {
+  border-color: var(--glass-dark-border-glow);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-glow-green-sm);
+}
+
+/* --- 2. ANIMACIONES DE ENTRADA --- */
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes scaleIn {
+  from { 
+    opacity: 0; 
+    transform: scale(0.92); 
+  }
+  to { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { 
+    opacity: 0; 
+    transform: translateX(30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+@keyframes slideInLeft {
+  from { 
+    opacity: 0; 
+    transform: translateX(-30px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
+}
+
+/* Clases de animación */
+.animate-slide-up {
+  animation: slideUp 0.5s var(--ease-smooth) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.4s var(--ease-smooth) both;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s var(--ease-smooth) both;
+}
+
+.animate-slide-right {
+  animation: slideInRight 0.4s var(--ease-smooth) both;
+}
+
+.animate-slide-left {
+  animation: slideInLeft 0.4s var(--ease-smooth) both;
+}
+
+/* Delays para animaciones escalonadas */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+/* --- 3. EFECTOS HOVER --- */
+.hover-lift {
+  transition: all var(--transition-base) var(--ease-smooth);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-glow-green-sm);
+}
+
+.hover-glow {
+  transition: all var(--transition-base) var(--ease-smooth);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(var(--rgb-green-neon), 0.4);
+  border-color: var(--color-accent-neon);
+}
+
+/* --- 4. RIPPLE EFFECT --- */
+.ripple-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple-effect::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  border-radius: inherit;
+  background: rgba(var(--rgb-white), 0.3);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ripple-effect:active::after {
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  to {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* --- 5. SHIMMER/LOADING EFFECT --- */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(var(--rgb-white), 0.05) 25%,
+    rgba(var(--rgb-white), 0.1) 50%,
+    rgba(var(--rgb-white), 0.05) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* --- 6. PULSE EFFECT --- */
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+/* --- 7. GLOW EFFECTS --- */
+.glow-green {
+  box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.4);
+}
+
+.glow-blue {
+  box-shadow: 0 0 12px rgba(var(--rgb-primary), 0.4);
+}
+
+.glow-red {
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.4);
+}
+
+/* --- 8. VIEW TRANSITIONS API --- */
+@supports (view-transition-name: root) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.3s;
+  }
+  
+  ::view-transition-old(root) {
+    animation: fade-out 0.15s cubic-bezier(0.4, 0, 1, 1) both;
+  }
+  
+  ::view-transition-new(root) {
+    animation: fade-in 0.3s cubic-bezier(0, 0, 0.2, 1) 0.15s both;
+  }
+}
+
+@keyframes fade-out { 
+  to { opacity: 0; } 
+}
+
+@keyframes fade-in { 
+  from { opacity: 0; } 
+}
+
+/* --- 9. ACCESIBILIDAD --- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .animate-slide-up,
+  .animate-scale-in,
+  .animate-fade-in,
+  .animate-slide-right,
+  .animate-slide-left,
+  .shimmer,
+  .pulse {
+    animation: none !important;
+  }
+}
+
+/* --- 10. RENDIMIENTO MÓVIL --- */
+@media (max-width: 768px) {
+  .acrylic-panel,
+  .glass-panel {
+    backdrop-filter: var(--backdrop-blur-md);
+    -webkit-backdrop-filter: var(--backdrop-blur-md);
+  }
+  
+  /* Desactivar algunos efectos pesados */
+  .hover-lift:hover,
+  .hover-glow:hover {
+    transform: none;
+  }
+}
+
+/* --- 11. MODO CLÁSICO --- */
+body.classic-mode .acrylic-panel,
+body.classic-mode .glass-panel {
+  background: var(--color-bg-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: var(--color-border);
+  color: var(--color-text-primary);
+}

@@ -1,114 +1,264 @@
-/* css/views/_admin-dashboard-view.css */
+/* =================================================================== */
+/* css/views/_admin-dashboard-view.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
-/* --- Contenedor de Filtros --- */
+/* Filtros del dashboard */
 .dashboard-filters {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.5rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  
+  background: rgba(var(--rgb-white), 0.03);
+  backdrop-filter: var(--backdrop-blur-sm);
+  -webkit-backdrop-filter: var(--backdrop-blur-sm);
+  border: 1px solid rgba(var(--rgb-white), 0.05);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-6);
 }
 
 .dashboard-filters h4 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--white);
 }
 
 #dashboard-date-filter {
-    min-width: 180px;
+  min-width: 200px;
 }
 
-/* --- Rejilla de Tarjetas de KPIs (Indicadores Clave) --- */
+/* Grid de KPIs */
 .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
 }
 
 .kpi-card {
-    background-color: var(--app-card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1.25rem;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    box-shadow: var(--shadow-sm);
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-card);
+  padding: var(--space-5);
+  
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  
+  box-shadow: var(--shadow-glass-card);
+  transition: all var(--transition-base) var(--ease-smooth);
+}
+
+.kpi-card:hover {
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+  transform: translateY(-4px);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-glow-green-sm);
 }
 
 .kpi-value {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: var(--app-primary-blue);
-    line-height: 1.2;
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+  color: var(--color-accent-neon);
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(var(--rgb-green-neon), 0.3);
 }
 
 .kpi-label {
-    font-size: 0.9rem;
-    color: var(--app-text-secondary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--color-text-on-dark-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* --- Rejilla para los Gráficos --- */
+/* Variantes de color para KPIs */
+.kpi-card.success .kpi-value {
+  color: var(--color-success);
+  text-shadow: 0 0 20px rgba(var(--rgb-green), 0.3);
+}
+
+.kpi-card.warning .kpi-value {
+  color: var(--color-warning);
+  text-shadow: 0 0 20px rgba(234, 179, 8, 0.3);
+}
+
+.kpi-card.danger .kpi-value {
+  color: var(--color-danger);
+  text-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+}
+
+/* Grid de gráficos */
 .charts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--space-5);
+  margin-bottom: var(--space-6);
 }
 
 .chart-container {
-    position: relative;
-    height: 350px;
-    width: 100%;
+  position: relative;
+  height: 400px;
+  width: 100%;
+  
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-card);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-glass-card);
 }
 
-/* --- Estilos para las Listas de Requerimientos --- */
+/* Grid de requerimientos */
 .requerimientos-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
-    gap: 1.5rem;
-    margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-5);
 }
 
 .requerimientos-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    max-height: 400px; /* Altura máxima con scroll */
-    overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: var(--space-2);
+  
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--rgb-white), 0.2) transparent;
+}
+
+.requerimientos-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.requerimientos-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.requerimientos-list::-webkit-scrollbar-thumb {
+  background: rgba(var(--rgb-white), 0.2);
+  border-radius: var(--radius-full);
 }
 
 .requerimiento-item {
-    background-color: #f8fafc;
-    border: 1px solid var(--border-color-light);
-    padding: 0.75rem 1rem;
-    border-radius: 6px;
+  background: rgba(var(--rgb-white), 0.05);
+  backdrop-filter: var(--backdrop-blur-sm);
+  -webkit-backdrop-filter: var(--backdrop-blur-sm);
+  
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  border-left: 4px solid var(--color-accent-neon);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+
+.requerimiento-item:hover {
+  background: rgba(var(--rgb-white), 0.08);
+  border-left-color: var(--color-accent-neon);
+  transform: translateX(4px);
+  box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.15);
 }
 
 .requerimiento-item .req-description {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.9rem;
-    color: var(--app-text-primary);
+  margin: 0 0 var(--space-2) 0;
+  font-size: var(--text-sm);
+  color: var(--white);
+  font-weight: var(--font-medium);
+  line-height: 1.5;
 }
 
 .requerimiento-item .req-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.75rem;
-    color: var(--app-text-secondary);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-on-dark-muted);
+  gap: var(--space-2);
 }
 
 .requerimiento-item .view-report-link {
-    font-weight: 500;
+  font-weight: var(--font-semibold);
+  color: var(--color-accent-neon);
+  text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
-/* Responsive para las listas en pantallas pequeñas */
+.requerimiento-item .view-report-link:hover {
+  color: var(--green-400);
+  text-decoration: underline;
+}
+
+/* Estados de requerimientos */
+.requerimiento-item.urgent {
+  border-left-color: var(--color-danger);
+}
+
+.requerimiento-item.completed {
+  opacity: 0.6;
+  border-left-color: var(--color-success);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
-    .requerimientos-grid {
-        grid-template-columns: 1fr; /* Una sola columna */
-    }
+  .requerimientos-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-container {
+    height: 300px;
+  }
+}
+
+/* Modo Clásico */
+body.classic-mode .kpi-card {
+  background: var(--color-bg-card);
+  border-color: var(--color-border);
+  backdrop-filter: none;
+}
+
+body.classic-mode .kpi-value {
+  color: var(--color-primary);
+  text-shadow: none;
+}
+
+body.classic-mode .kpi-label {
+  color: var(--color-text-secondary);
+}
+
+body.classic-mode .requerimiento-item {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
+  backdrop-filter: none;
 }

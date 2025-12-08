@@ -1,43 +1,322 @@
-/* css/views/_service-order-modal.css */
+/* =================================================================== */
+/* css/views/_service-order-modal.css (Refactorizado - Moderna) */
+/* =================================================================== */
 
-#service-order-modal .modal-content { max-width: 700px; }
-#service-order-form hr { border: none; border-top: 1px solid var(--border-color-light); margin: 1.5rem 0; }
-#service-order-form h4 { margin-bottom: 1rem; font-weight: 500; }
+/* --- 1. Estilos generales del modal --- */
+#service-order-modal .modal-content.extra-large {
+    max-width: 1200px;
+    width: 95%;
+}
 
-/* ✅ SECCIÓN CORREGIDA Y MEJORADA */
-.styled-form-section {
+/* El .modal-body se encarga del scroll */
+#service-order-modal .modal-step {
+    display: block;
+}
+#service-order-modal .modal-step.hidden {
+    display: none;
+}
+
+/* --- 2. Layout del Paso 2 (Grid) --- */
+.wizard-step-2-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+}
+.wizard-column-recursos,
+.wizard-column-tareas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+/* --- 3. Títulos de Sección (Moderno/Glass) --- */
+.column-title,
+.sub-column-title {
+    font-size: var(--text-base);
+    font-weight: 600;
+    margin: 0 0 var(--space-2) 0;
+    padding-bottom: var(--space-2);
+    /* Estilo Moderno/Glass */
+    color: var(--white);
+    border-bottom: 1px solid var(--glass-dark-border);
+}
+.sub-column-title {
+    font-size: var(--text-sm);
+    color: var(--color-text-on-dark-muted);
+    border-bottom-style: dashed;
+}
+
+/* --- 4. Componentes Específicos (Moderno/Glass) --- */
+
+/* Metadata de la orden (Nº y Estado) */
+.order-meta-display {
     display: flex;
     align-items: center;
+    gap: var(--space-3);
+}
+.order-number {
+    font-weight: 600;
+    font-size: 1.1rem;
+    /* Estilo Moderno/Glass */
+    background-color: rgba(var(--rgb-white), 0.05);
+    border: 1px solid var(--glass-dark-border);
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--color-text-on-dark-muted);
+}
+/* .status-pill hereda de _planning-view.css */
+
+/* Contenedores para listas (Tareas) */
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    /* Estilo Moderno/Glass */
+    background-color: rgba(var(--rgb-black), 0.2);
+    border: 1px solid var(--glass-dark-border);
+    border-radius: var(--radius-md);
+    min-height: 100px;
+}
+
+/* Ítems dentro de las listas (Tareas) */
+/* 💡 SOLUCIÓN AL TEXTO BLANCO */
+.task-item {
+    display: flex;
     justify-content: space-between;
-    background-color: #f8fafc;
-    border: 1px solid var(--border-color-light);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+    align-items: center;
+    font-size: 0.9rem;
+    padding: var(--space-2) var(--space-3);
+    /* Estilo Moderno/Glass */
+    background-color: var(--glass-dark-bg-soft); /* Fondo oscuro */
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-dark-border);
+    color: var(--white); /* 💡 Texto blanco/claro */
 }
 
-.styled-form-section label {
+/* Grupo para añadir Tareas Generales */
+.task-input-group {
+    display: flex;
+    gap: var(--space-2);
+}
+.task-input-group input {
+    flex-grow: 1;
+}
+
+/* Formulario para añadir Tareas Específicas */
+.add-task-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-top: var(--space-3);
+}
+.add-task-form button {
+    align-self: flex-end;
+}
+/* (Inputs y Textarea heredan de _forms.css) */
+
+/* Etiqueta para el agente en la lista de tareas específicas */
+.agent-tag {
+    /* Estilo Moderno/Glass */
+    background-color: rgba(var(--rgb-blue), 0.15);
+    color: var(--color-info);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
     font-weight: 500;
-    color: var(--app-text-primary);
-    margin-right: 1rem; /* Añade espacio para que no se solape */
+    margin: 0 var(--space-3);
 }
 
-.styled-form-section select {
-    min-width: 200px;
-    border-color: var(--app-primary-blue); /* Añade el borde azul por defecto */
+/* Estilos para el AgentSelector (multi-agente) */
+/* (Hereda de .selector, pero definimos el wrapper) */
+.agent-selector-wrapper {
+    position: relative;
+    /* Estilo Moderno/Glass (como .selector) */
+    background: rgba(var(--rgb-white), 0.05);
+    backdrop-filter: var(--backdrop-blur-md);
+    border: 1px solid rgba(var(--rgb-white), 0.1);
+    border-radius: var(--radius-lg);
+    padding: var(--space-1) var(--space-2);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 44px; /* Coincidir con .selector */
+}
+.agent-chips-container {
+    display: contents;
+}
+.agent-chip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+    /* Estilo Moderno/Glass */
+    background-color: rgba(var(--rgb-blue), 0.15);
+    color: var(--color-info);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1);
+}
+.agent-chip .agent-display-id {
+    background-color: var(--color-info);
+    color: var(--white);
+    font-family: var(--font-monospace);
+    font-weight: 700;
+    padding: 0.1em 0.4em;
+    border-radius: var(--radius-sm);
+    font-size: 0.9em;
+}
+.agent-chip .agent-display-name {
+    font-weight: 500;
+    color: var(--color-info);
+    padding-left: 0.2em;
+}
+.remove-chip {
+    margin-left: 0.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: var(--color-info);
+}
+.agent-search-input {
+    flex: 1;
+    border: none;
+    padding: var(--space-1);
+    min-width: 150px;
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+    color: var(--white); /* 💡 Texto de input */
+}
+.agent-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    /* Estilo Moderno/Glass */
+    background: var(--glass-dark-bg);
+    border: 1px solid var(--glass-dark-border-glow);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1050;
+    box-shadow: var(--shadow-lg);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+}
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: var(--space-2) var(--space-3);
+    cursor: pointer;
+}
+.dropdown-item:hover {
+    background: rgba(var(--rgb-white), 0.1);
+}
+.dropdown-item .agent-display-id {
+    font-family: var(--font-monospace);
+    background-color: rgba(var(--rgb-white), 0.1);
+    color: var(--color-text-on-dark-muted);
+    padding: 0.1em 0.4em;
+    border-radius: var(--radius-sm);
+}
+.dropdown-item:hover .agent-display-id {
+    background-color: var(--color-accent-neon);
+    color: var(--gray-900);
+}
+.dropdown-item .agent-display-name {
+    color: var(--white);
+    font-weight: 500;
+}
+.dropdown-item.disabled {
+    color: var(--color-text-on-dark-dimmed);
+    cursor: not-allowed;
 }
 
-.task-manager { background-color: #f8fafc; border: 1px solid var(--border-color-light); border-radius: 8px; padding: 1rem; }
-#task-list-container { margin-bottom: 1rem; max-height: 150px; overflow-y: auto; }
+/* Footer del Asistente (Stepper) */
+.modal-stepper-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Hereda estilos de .modal-footer */
+}
+.stepper-buttons-right {
+    display: flex;
+    gap: var(--space-2);
+}
+/* (Los botones heredan de _buttons.css) */
 
-.task-item { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem; background-color: white; border: 1px solid var(--border-color); border-radius: 6px; }
-.task-item:not(:last-child) { margin-bottom: 0.5rem; }
-.task-item .task-description { flex-grow: 1; }
-.task-item .task-assignment { font-size: 0.8rem; color: var(--app-text-secondary); }
 
-.task-item .delete-task-btn { padding: 4px; background: none; border: none; color: var(--danger-color); cursor: pointer; opacity: 0.7; transition: opacity 0.2s ease; }
-.task-item .delete-task-btn:hover { opacity: 1; }
+/* ============================================= */
+/* --- MODO CLÁSICO (Anulaciones) --- */
+/* ============================================= */
 
-.add-task-form { display: flex; gap: 0.75rem; }
-.add-task-form input { flex-grow: 1; }
-.add-task-form select { min-width: 200px; }
+body.classic-mode .column-title,
+body.classic-mode .sub-column-title {
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+}
+body.classic-mode .sub-column-title {
+    color: var(--color-text-secondary);
+    border-bottom-style: dashed;
+}
+body.classic-mode .order-number {
+    background-color: var(--color-bg-inactive);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+}
+body.classic-mode .task-list {
+    background-color: var(--color-bg-inactive);
+    border: 1px solid var(--color-border);
+}
+body.classic-mode .task-item {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-primary); /* 💡 Texto oscuro */
+}
+body.classic-mode .agent-tag {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+}
+body.classic-mode .agent-selector-wrapper {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    backdrop-filter: none;
+}
+body.classic-mode .agent-chip {
+    background-color: var(--color-primary-light);
+    color: var(--color-primary-dark);
+}
+body.classic-mode .agent-chip .agent-display-id {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverted);
+}
+body.classic-mode .agent-chip .agent-display-name {
+    color: var(--color-primary-dark);
+}
+body.classic-mode .agent-chip .remove-chip {
+    color: var(--color-primary-dark);
+}
+body.classic-mode .agent-search-input {
+    color: var(--color-text-primary);
+}
+body.classic-mode .agent-dropdown {
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-lg);
+}
+body.classic-mode .dropdown-item:hover {
+    background: var(--color-bg-hover);
+}
+body.classic-mode .dropdown-item .agent-display-id {
+    background-color: var(--color-bg-inactive);
+    color: var(--color-text-primary);
+}
+body.classic-mode .dropdown-item:hover .agent-display-id {
+    background-color: var(--color-primary);
+    color: var(--color-text-inverted);
+}
+body.classic-mode .dropdown-item .agent-display-name {
+    color: var(--color-text-primary);
+}
+body.classic-mode .dropdown-item.disabled {
+    color: var(--color-text-muted);
+}

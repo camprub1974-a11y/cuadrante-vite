@@ -1,56 +1,138 @@
-/* css/views/_agent-dashboard.css */
+/* =================================================================== */
+/* css/views/_agent-dashboard.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
 #agent-current-order-widget .card-content {
-    padding: 0; /* Quitamos el padding por defecto para un control total */
+  padding: 0;
 }
 
+/* Header del widget */
 .widget-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #f7fafc;
-    padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid var(--border-color-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  background: rgba(var(--rgb-green-neon), 0.05);
+  backdrop-filter: var(--backdrop-blur-sm);
+  -webkit-backdrop-filter: var(--backdrop-blur-sm);
+  
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid rgba(var(--rgb-green-neon), 0.2);
 }
 
 .widget-header h4 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 500;
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .widget-reg-number {
-    font-size: 0.85rem;
-    font-weight: 500;
-    background-color: #eef2f9;
-    color: var(--app-text-secondary);
-    padding: 4px 8px;
-    border-radius: 6px;
+  font-size: var(--text-sm);
+  font-weight: var(--font-bold);
+  background: rgba(var(--rgb-white), 0.1);
+  color: var(--color-accent-neon);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(var(--rgb-green-neon), 0.3);
+  font-family: var(--font-monospace);
 }
 
+/* Detalles del widget */
 .widget-details {
-    padding: 1.25rem;
+  padding: var(--space-5);
 }
 
 .widget-details p {
-    margin: 0 0 0.75rem 0;
-    font-size: 0.9rem;
-    color: var(--app-text-secondary);
+  margin: 0 0 var(--space-3) 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
 }
 
 .widget-details p strong {
-    color: var(--app-text-primary);
-    min-width: 60px;
-    display: inline-block;
+  color: var(--white);
+  font-weight: var(--font-semibold);
+  min-width: 100px;
+  flex-shrink: 0;
 }
 
 .widget-details p:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
+/* Acciones del widget */
 .widget-actions {
-    padding: 1rem 1.25rem;
-    background-color: #f8fafc;
-    border-top: 1px solid var(--border-color-light);
-    text-align: right;
+  padding: var(--space-4) var(--space-5);
+  background: rgba(var(--rgb-black), 0.2);
+  border-top: 1px solid rgba(var(--rgb-white), 0.1);
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .widget-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+  
+  .widget-details {
+    padding: var(--space-4);
+  }
+  
+  .widget-details p {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+  
+  .widget-details p strong {
+    min-width: auto;
+  }
+  
+  .widget-actions {
+    padding: var(--space-3) var(--space-4);
+    flex-direction: column;
+  }
+  
+  .widget-actions .button {
+    width: 100%;
+  }
+}
+
+/* Modo Clásico */
+body.classic-mode .widget-header {
+  background: var(--color-bg-hover);
+  border-bottom-color: var(--color-border);
+  backdrop-filter: none;
+}
+
+body.classic-mode .widget-header h4 {
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .widget-reg-number {
+  background: var(--color-bg-inactive);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
+}
+
+body.classic-mode .widget-details p {
+  color: var(--color-text-secondary);
+}
+
+body.classic-mode .widget-details p strong {
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .widget-actions {
+  background: var(--color-bg-hover);
+  border-top-color: var(--color-border);
 }

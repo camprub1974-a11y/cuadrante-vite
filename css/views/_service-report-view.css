@@ -1,410 +1,581 @@
-/* css/views/_service-report-view.css */
+/* css/views/_service-report-view.css (Refactorizado con Arquitectura MCST/Glass) */
 
-/* --- Contenedor Principal de la Vista --- */
-#service-report-view {
-    padding-bottom: 100px; /* Espacio para la barra de acciones fija */
+/* --- Contenedor Principal y Layout --- */
+.service-report {
+  padding-bottom: 100px;
+}
+.service-report__grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-4);
+  align-items: start;
 }
 
-/* --- ✅ Encabezado Principal del Reporte (Parte de Servicio: [Título de la Orden]) --- */
-.report-header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 1rem 1.25rem;
-    background-color: var(--app-primary-blue); /* Color de cabecera distintivo, similar al main-header */
-    color: white;
-    border-radius: 8px;
-    box-shadow: var(--shadow-md);
+/* --- Cabecera de la Vista --- */
+.service-report__info-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(var(--rgb-black), 0.2);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+  border: 1px solid var(--glass-dark-border);
+}
+body.classic-mode .service-report__info-bar {
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+}
+.service-report__info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+  color: var(--color-text-on-dark-muted);
+}
+body.classic-mode .service-report__info-item {
+  color: var(--color-text-secondary);
+}
+.service-report__info-item i {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text-on-dark-dimmed);
+}
+body.classic-mode .service-report__info-item i {
+  color: var(--color-text-muted);
 }
 
-#back-to-reports-list-btn {
-    width: 40px;
-    height: 40px;
-    flex-shrink: 0; /* Evita que el botón se encoja */
-    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco para el botón */
-    color: var(--app-primary-blue); /* Color del icono azul */
-    border-color: transparent;
+/* --- Estilo General de las Tarjetas de Contenido --- */
+.service-report__card {
+  background: var(--glass-dark-bg);
+  border: 1px solid var(--glass-dark-border);
+  box-shadow: var(--shadow-glass-card);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+body.classic-mode .service-report__card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+.service-report__card.glass-panel {
+  background: var(--glass-dark-bg-soft);
+}
+body.classic-mode .service-report__card.glass-panel {
+  background: var(--color-bg-hover);
+}
+.service-report__card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--glass-dark-border);
+}
+body.classic-mode .service-report__card-header {
+  border-bottom: 1px solid var(--color-border);
+}
+.service-report__card-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+body.classic-mode .service-report__card-header h2 {
+  color: var(--color-text-primary);
+}
+.service-report__card-header h2 i {
+  width: 20px;
+  height: 20px;
+  color: var(--color-primary-light);
+}
+body.classic-mode .service-report__card-header h2 i {
+  color: var(--color-primary);
+}
+.service-report__card-body {
+  padding: var(--space-4);
 }
 
-#back-to-reports-list-btn:hover {
-    background-color: white;
-    transform: translateY(-2px);
+/* --- Footer de Paginación --- */
+.service-report__card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--glass-dark-border);
+}
+body.classic-mode .service-report__card-footer {
+  border-top: 1px solid var(--color-border);
+}
+.service-report__card-footer span {
+  font-weight: 600;
+  color: var(--color-text-on-dark-muted);
+}
+body.classic-mode .service-report__card-footer span {
+  color: var(--color-text-secondary);
+}
+.service-report__card-footer .button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.report-header .title-block {
-    flex-grow: 1;
-    text-align: center;
+/* --- Pestañas --- */
+.service-report__tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.service-report__tab-btn {
+  padding: var(--space-2) var(--space-3);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--glass-dark-border);
+  background: var(--glass-dark-bg-soft);
+  color: var(--color-text-on-dark-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  transition: all 0.2s ease;
+}
+body.classic-mode .service-report__tab-btn {
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+}
+.service-report__tab-btn:hover {
+  background: var(--glass-light-bg-hover);
+  color: var(--white);
+}
+body.classic-mode .service-report__tab-btn:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+.service-report__tab-btn.active {
+  background: var(--gradient-green-glow);
+  color: var(--gray-900);
+  border-color: transparent;
+  font-weight: var(--font-bold);
+  box-shadow: var(--shadow-neon-green);
+}
+body.classic-mode .service-report__tab-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverted);
+  box-shadow: none;
+}
+.service-report__tab-btn i {
+  width: 16px;
+  height: 16px;
+}
+.service-report__tab-content {
+  display: none;
+}
+.service-report__tab-content.active {
+  display: block;
 }
 
-.report-header .title-block h2 {
-    margin: 0;
-    font-size: 1.5rem; /* Título más grande */
-    line-height: 1.2;
-    color: white; /* Asegura que el color del título sea blanco */
+/* --- Formulario de Novedades --- */
+.novedad-form__priority-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1rem;
+}
+.novedad-form__priority-group input {
+  width: 18px;
+  height: 18px;
+}
+.novedad-form__priority-group label {
+  margin-bottom: 0;
+}
+.novedad-form__actions {
+  text-align: right;
+  margin-top: 1.5rem;
 }
 
-.report-header .title-block p {
-    margin: 0;
-    color: rgba(255, 255, 255, 0.9); /* Texto secundario más claro */
-    font-size: 1rem; /* Texto de orden más grande */
+/* --- Estado Vacío --- */
+.empty-state-card {
+  text-align: center;
+  padding: var(--space-5) var(--space-3);
+  color: var(--color-text-on-dark-muted);
+}
+.empty-state-card i {
+  width: 48px;
+  height: 48px;
+  margin-bottom: var(--space-3);
+  stroke-width: 1.5;
+}
+.empty-state-card p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+body.classic-mode .empty-state-card {
+  color: var(--color-text-muted);
 }
 
-/* --- Estilo general para las tarjetas de la vista --- */
-.card .card-header {
-    background-color: var(--app-primary-blue); /* Color de cabecera de tarjeta, similar al principal */
-    color: white; /* Texto blanco */
-    padding: 0.75rem 1.25rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Borde más claro */
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top-left-radius: 8px; /* Bordes redondeados en la parte superior */
-    border-top-right-radius: 8px;
+/* --- Lista de Requerimientos y Checklist --- */
+.requerimiento-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--glass-dark-border);
+}
+body.classic-mode .requerimiento-item-row {
+  border-bottom: 1px solid var(--color-border);
+}
+.requerimiento-item-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.requerimiento-item-row:first-child {
+  padding-top: 0;
+}
+.req-main-content {
+  flex-grow: 1;
+}
+.req-info-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.req-time {
+  font-weight: 600;
+  font-size: 0.9em;
+  color: var(--color-primary-light);
+}
+body.classic-mode .req-time {
+  color: var(--color-primary);
+}
+.req-requerente {
+  font-size: 0.9em;
+  color: var(--color-text-on-dark-muted);
+}
+body.classic-mode .req-requerente {
+  color: var(--color-text-secondary);
+}
+.req-motivo {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95em;
+  color: var(--white);
+}
+body.classic-mode .req-motivo {
+  color: var(--color-text-primary);
+}
+.req-comentario,
+.req-comentario-empty {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--color-text-on-dark-muted);
+  background: rgba(var(--rgb-black), 0.15);
+  border-left: 3px solid var(--color-primary-light);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+body.classic-mode .req-comentario,
+body.classic-mode .req-comentario-empty {
+  color: var(--color-text-secondary);
+  background-color: var(--color-bg-hover);
+  border-left: 3px solid var(--color-primary);
+}
+.req-comentario-empty {
+  font-style: italic;
+}
+body.classic-mode .req-comentario-empty {
+  border-left-color: var(--color-border);
+}
+.req-actions-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-3);
 }
 
-.card .card-header h4 {
-    margin: 0;
-    font-size: 1.1rem; /* Título de tarjeta ligeramente más grande */
-    font-weight: 600;
-    color: rgb(27 156 252);
+/* --- Toggle de Estado (Pendiente/Realizado) --- */
+.requerimiento-status-toggle {
+  display: flex;
+  width: 100%;
+}
+.requerimiento-status-toggle input[type="radio"] {
+  display: none;
+}
+.requerimiento-status-toggle .status-label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--glass-dark-border);
+  background: rgba(var(--rgb-black), 0.2);
+  color: var(--color-text-on-dark-muted);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+body.classic-mode .requerimiento-status-toggle .status-label {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-hover);
+  color: var(--color-text-muted);
+}
+.requerimiento-status-toggle .status-label i {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.5;
+}
+.requerimiento-status-toggle .status-label.status-pendiente {
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+  border-right-width: 0.5px;
+}
+.requerimiento-status-toggle .status-label.status-realizado {
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  border-left-width: 0.5px;
 }
 
-/* Estilo para la meta-información dentro de la cabecera de la tarjeta */
-.card-header-meta {
-    font-size: 0.85rem;
-    font-weight: 400;
-    text-align: right;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    color: rgba(255, 255, 255, 0.8); /* Meta-información más sutil */
+/* Estado Pendiente Seleccionado */
+.requerimiento-status-toggle input[value="pendiente"]:checked + .status-label {
+  background-color: rgba(var(--rgb-yellow-400), 0.1);
+  border-color: var(--yellow-500);
+  color: var(--yellow-400);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+body.classic-mode .requerimiento-status-toggle input[value="pendiente"]:checked + .status-label {
+  background-color: rgba(var(--rgb-yellow), 0.1);
+  border-color: var(--color-warning);
+  color: var(--yellow-700);
+}
+/* Estado Realizado Seleccionado */
+.requerimiento-status-toggle input[value="realizado"]:checked + .status-label {
+  background-color: rgba(var(--rgb-green), 0.15);
+  border-color: var(--color-success);
+  color: var(--color-success);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+}
+body.classic-mode .requerimiento-status-toggle input[value="realizado"]:checked + .status-label {
+  background-color: rgba(var(--rgb-green), 0.1);
+  border-color: var(--color-success);
+  color: var(--green-700);
+}
+.requerimiento-status-toggle input[type="radio"]:disabled + .status-label {
+  cursor: not-allowed;
+  background-color: var(--color-bg-inactive);
+  opacity: 0.6;
+}
+.requerimiento-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.card-header-meta .reg-number {
-    font-weight: 500;
-    background-color: rgba(255, 255, 255, 0.2); /* Fondo sutil para el número de registro */
-    padding: 3px 8px;
-    border-radius: 4px;
+/* --- Resumen (Sidebar) --- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--space-3);
+}
+.stat-card.compact {
+  background: rgba(var(--rgb-black), 0.15);
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+body.classic-mode .stat-card.compact {
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+}
+.stat-card.compact:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+.stat-card.compact .stat-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--color-text-on-dark-muted);
+  margin-bottom: var(--space-2);
+}
+body.classic-mode .stat-card.compact .stat-icon {
+  color: var(--color-text-muted);
+}
+.stat-card.compact .stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+}
+body.classic-mode .stat-card.compact .stat-value {
+  color: var(--color-text-primary);
+}
+.stat-card.compact .stat-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-text-on-dark-muted);
+  margin-top: 4px;
+  line-height: 1.3;
+}
+body.classic-mode .stat-card.compact .stat-label {
+  color: var(--color-text-secondary);
 }
 
-/* Badge de estado dentro de la cabecera de la tarjeta */
-.card-header-meta .status-badge {
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.75em;
-    font-weight: bold;
-    color: white;
-    text-transform: capitalize;
-    background-color: var(--success-color); /* Color por defecto, se sobrescribe por estados */
+/* --- Footer de Acciones Fijo --- */
+.service-report__footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--glass-dark-bg);
+  border-top: 1px solid var(--glass-dark-border);
+  box-shadow: 0 -4px 10px rgba(var(--rgb-black), 0.2);
+  z-index: 1001;
+}
+body.classic-mode .service-report__footer {
+  background-color: var(--color-bg-card);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 10px rgba(var(--rgb-black), 0.05);
 }
 
-/* Colores para los badges de estado */
-.status-badge.status-open { background-color: #3b82f6; } /* Azul */
-.status-badge.status-pending_review { background-color: #f59e0b; } /* Naranja */
-.status-badge.status-validated { background-color: #16a34a; } /* Verde */
-.status-badge.status-returned { background-color: #dc2626; } /* Rojo */
-.status-badge.status-closed { background-color: #64748b; } /* Gris */
-
-
-.card .card-content {
-    padding: 1.25rem;
+/* --- Edición en Línea --- */
+.edit-mode-content .form-group {
+  margin-bottom: var(--space-3);
+}
+.inline-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
 }
 
-/* --- Estructura del Feed Cronológico (Novedades del Servicio) --- */
-.report-feed {
-    position: relative;
-    padding-left: 20px;
+/* ================================== */
+/* === 💡 INICIO DE LA SOLUCIÓN (CSS) 💡 === */
+/* ================================== */
+.instruction-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.instruction-list__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.instruction-list__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid var(--glass-dark-border);
+  color: var(--color-text-on-dark-muted);
+}
+.instruction-list__icon i {
+  width: 16px;
+  height: 16px;
+}
+/* Modificador para el icono de tiempo */
+.instruction-list__icon--time {
+  color: var(--color-primary-light);
+}
+.instruction-list__content p {
+  margin: 0;
+  line-height: 1.6;
+}
+.instruction-list__content-time {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--white);
+  margin-bottom: var(--space-1);
+}
+.instruction-list__content-text {
+  font-size: 0.9rem;
+  color: var(--color-text-on-dark-muted);
+}
+/* --- Fallbacks para Modo Clásico --- */
+body.classic-mode .instruction-list__icon {
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+body.classic-mode .instruction-list__icon--time {
+  color: var(--color-primary);
+}
+body.classic-mode .instruction-list__content-time {
+  color: var(--color-text-primary);
+}
+body.classic-mode .instruction-list__content-text {
+  color: var(--color-text-secondary);
+}
+/* ================================== */
+/* === 💡 FIN DE LA SOLUCIÓN (CSS) 💡 === */
+/* ================================== */
+
+/* ====================================================== */
+/* === 💡 AÑADIDO: Fix de Barra de Filtros (Novedades) 💡 === */
+/* ====================================================== */
+.filter-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+.filter-bar .button {
+  margin-top: var(--space-1);
+  justify-content: center;
+}
+/* ====================================================== */
+/* === 💡 FIN DE LA MODIFICACIÓN 💡 === */
+/* ====================================================== */
+
+/* Fila Finalizada */
+.requerimiento-item-row.status-finalizada {
+  background: rgba(var(--rgb-slate-800), 0.3);
+  opacity: 0.7;
+}
+body.classic-mode .requerimiento-item-row.status-finalizada {
+  background-color: var(--color-bg-hover);
+  opacity: 0.7;
+}
+.requerimiento-item-row.status-finalizada .req-motivo {
+  text-decoration: line-through;
+  color: var(--color-text-on-dark-muted);
+}
+body.classic-mode .requerimiento-item-row.status-finalizada .req-motivo {
+  color: var(--color-text-muted);
 }
 
-.report-feed::before {
-    content: '';
-    position: absolute;
-    left: 38px;
-    top: 10px;
-    bottom: 10px;
-    width: 2px;
-    background-color: var(--border-color-light);
+/* Layout */
+.service-report__main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.feed-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    position: relative;
-}
-
-.feed-item:not(:last-child) {
-    margin-bottom: 1.5rem;
-}
-
-.feed-item-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background-color: var(--app-primary-blue); /* Color de icono del feed */
-    border: 2px solid rgba(255, 255, 255, 0.5); /* Borde más claro */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-    flex-shrink: 0;
-    color: white; /* Color del icono */
-}
-
-.feed-item-icon .material-icons {
-    color: white; /* Asegura que el icono sea blanco */
-}
-
-.feed-item-content {
-    padding-top: 0.5rem;
-}
-
-.entry-header {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9em; /* Texto de cabecera de entrada ligeramente más grande */
-    color: var(--app-text-secondary);
-    margin-bottom: 0.5rem;
-}
-
-.entry-agent {
-    font-weight: 600;
-    color: var(--app-text-primary);
-}
-
-.entry-description {
-    margin: 0;
-    white-space: pre-line;
-    line-height: 1.6;
-    font-size: 1.05em; /* Texto de la novedad más grande */
-}
-
-/* --- Checklist (Ahora "Tareas") --- */
-#checklist-items-wrapper .checklist-item {
-    display: flex;
-    flex-direction: column; /* Apilar elementos dentro del item */
-    gap: 0.5rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border-color-light);
-}
-#checklist-items-wrapper .checklist-item:last-child {
-    border-bottom: none;
-}
-
-.checklist-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.checklist-item-header label {
-    font-weight: 500;
-    color: var(--app-text-primary);
-    flex-grow: 1;
-    margin-right: 1rem;
-}
-
-.checklist-status-options {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.checklist-status-options .radio-group {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;
-    color: var(--app-text-secondary);
-}
-
-.checklist-status-options input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--app-primary-blue); /* Color del radio button */
-    cursor: pointer;
-}
-
-/* Estilo para el icono de completado */
-.checklist-item .completion-details {
-    display: inline-flex; /* Para que el icono y el texto estén en línea */
-    align-items: center;
-    gap: 5px;
-    font-size: 0.85em;
-    color: var(--success-color); /* Color verde para completado */
-    margin-left: 1rem; /* Espacio a la izquierda del icono */
-}
-
-.checklist-item .completion-details .material-icons {
-    font-size: 1.1em; /* Tamaño del icono */
-}
-
-.checklist-comment-input {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid var(--border-color-light);
-    border-radius: 4px;
-    font-family: var(--app-font-family);
-    font-size: 0.9em;
-    color: var(--app-text-primary);
-    background-color: var(--app-bg-color);
-    box-sizing: border-box;
-    margin-top: 0.5rem; /* Espacio superior para el comentario */
-}
-
-.checklist-comment-input:focus {
-    border-color: var(--app-primary-blue);
-    box-shadow: 0 0 0 2px rgba(60, 72, 219, 0.2);
-    outline: none;
-}
-
-/* ✅ MODIFICADO: ELIMINADA esta regla para que el texto NO se tache ni cambie de color */
-/*
-.checklist-item.is-realizado .checklist-item-header label {
-    text-decoration: line-through;
-    color: var(--app-text-secondary);
-}
-*/
-
-/* --- Requerimientos (Ahora "Requerimientos") --- */
-/* Los estilos de .requerimiento-item y .requerimientos-list ya están definidos en _service-report-view.css
-   y _admin-dashboard-view.css. Aseguraremos que se vean bien con el nuevo header. */
-.requerimientos-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.requerimiento-item {
-    display: flex;
-    flex-direction: column; /* Apilar elementos dentro del item */
-    gap: 0.5rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border-color-light);
-}
-.requerimiento-item:last-child {
-    border-bottom: none;
-}
-
-.requerimiento-item-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.requerimiento-item-header label {
-    font-weight: 500;
-    color: var(--app-text-primary);
-    flex-grow: 1;
-    margin-right: 1rem;
-}
-
-.requerimiento-status-options {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-}
-
-.requerimiento-status-options .radio-group {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9em;
-    color: var(--app-text-secondary);
-}
-
-.requerimiento-status-options input[type="radio"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--app-primary-blue); /* Color del radio button */
-    cursor: pointer;
-}
-
-/* Estilo para el icono de completado en requerimientos */
-.requerimiento-item .completion-details {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.85em;
-    color: var(--success-color); /* Color verde para completado */
-    margin-left: 1rem;
-}
-
-.requerimiento-item .completion-details .material-icons {
-    font-size: 1.1em;
-}
-
-.requerimiento-comment-input {
-    width: 100%;
-    padding: 8px 10px;
-    border: 1px solid var(--border-color-light);
-    border-radius: 4px;
-    font-family: var(--app-font-family);
-    font-size: 0.9em;
-    color: var(--app-text-primary);
-    background-color: var(--app-bg-color);
-    box-sizing: border-box;
-    margin-top: 0.5rem;
-}
-
-.requerimiento-comment-input:focus {
-    border-color: var(--app-primary-blue);
-    box-shadow: 0 0 0 2px rgba(60, 72, 219, 0.2);
-    outline: none;
-}
-
-/* Eliminar también si hay una regla para tachar en requerimientos */
-/*
-.requerimiento-item.is-realizado label {
-    text-decoration: line-through;
-    color: var(--app-text-secondary);
-}
-*/
-
-
-/* --- Estilos para la Tarjeta de Resumen de Actuaciones --- */
-.summary-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 1.5rem;
-}
-
-.summary-item {
-    text-align: center;
-    background-color: var(--app-bg-color); /* Fondo para los ítems de resumen */
-    padding: 1rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-color-light);
-}
-
-.summary-item-value {
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--app-primary-blue); /* Color primario para los valores */
-}
-
-.summary-item-label {
-    font-size: 0.85rem;
-    color: var(--app-text-secondary);
-}
-
-/* --- Barra de Acciones Fija (Footer) --- */
-.report-actions-footer {
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #ffffff;
-    padding: 1rem 2rem;
-    border-top: 1px solid var(--border-color);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    z-index: 100;
-    box-sizing: border-box;
+/* --- Media Queries --- */
+@media (max-width: 992px) {
+  .service-report__grid {
+    grid-template-columns: 1fr;
+  }
+  .service-report__sidebar {
+    margin-top: var(--space-4);
+  }
 }

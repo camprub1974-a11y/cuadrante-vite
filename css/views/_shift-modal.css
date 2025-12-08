@@ -1,38 +1,339 @@
-/* css/components/_shift-modal.css */
-.shift-edit-info {
-    text-align: center;
-    margin: 1rem 0;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color-light);
+/* ==========================================================
+   css/views/_shift-modal.css
+   REFACTORIZADO CON ARQUITECTURA MCST/BEM
+   ========================================================== */
+
+/* ----------------------------------
+ * Bloque: .edit-shift-modal (Modal Principal)
+ * ---------------------------------- */
+
+/* Contenedor de información del agente/fecha */
+.edit-shift-modal__info-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--glass-dark-border);
 }
-.shift-edit-info p {
-    margin: 0.25rem 0;
-    color: var(--app-text-secondary);
+body.classic-mode .edit-shift-modal__info-display {
+  border-bottom-color: var(--color-border);
 }
-.shift-edit-info strong {
-    color: var(--app-text-primary);
+
+/* Item de info (Agente o Fecha) */
+.edit-shift-modal__info-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
 }
-.shift-type-buttons {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 0.75rem;
-    margin: 1.5rem 0;
+.edit-shift-modal__info-item > i {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
 }
-.shift-type-btn {
-    padding: 12px 8px;
-    font-weight: 500;
-    border: 1px solid var(--border-color);
-    background-color: #f8fafc;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+body.classic-mode .edit-shift-modal__info-item {
+  color: var(--color-text-secondary);
 }
-.shift-type-btn:hover {
-    background-color: var(--app-primary-blue);
-    color: white;
-    border-color: var(--app-primary-blue);
-    transform: translateY(-2px);
+
+.edit-shift-modal__info-item strong {
+  color: var(--color-text-on-dark);
+  font-weight: 600;
+  font-size: var(--text-base);
 }
-#remove-shift-btn {
-    width: 100%;
+body.classic-mode .edit-shift-modal__info-item strong {
+  color: var(--color-text-primary);
+}
+
+/* Helpers de espaciado para los títulos */
+.edit-shift-modal__label,
+.edit-shift-modal__form-group {
+  margin-top: var(--space-4);
+}
+
+/* Rejilla de botones (principal y secundaria) */
+.edit-shift-modal__button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: var(--space-2);
+}
+
+.edit-shift-modal__button-grid--secondary {
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+}
+
+/* Estilo para CADA botón generado por JS */
+.edit-shift-modal__shift-btn {
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  height: 70px;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  /* Estilo base (efecto glass secundario) */
+  background: var(--glass-light-bg);
+  border: 1px solid var(--glass-light-border);
+  color: var(--color-text-on-dark-muted);
+}
+.edit-shift-modal__shift-btn > i {
+  width: 20px;
+  height: 20px;
+}
+
+body.classic-mode .edit-shift-modal__shift-btn {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  height: 60px;
+}
+
+.edit-shift-modal__shift-btn:hover {
+  border-color: var(--glass-accent-border);
+  color: var(--color-text-on-dark);
+  background: var(--glass-light-bg-hover);
+}
+body.classic-mode .edit-shift-modal__shift-btn:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: var(--color-bg-hover);
+}
+
+/* --- Modificadores de color para botones principales --- */
+/* Mañana (M) */
+.edit-shift-modal__shift-btn--m {
+  background: var(--shift-M-bg);
+  border-color: var(--shift-M-bg);
+  color: var(--shift-M-text);
+}
+.edit-shift-modal__shift-btn--m:hover {
+  background: var(--shift-M-bg);
+  border-color: var(--white);
+  color: var(--shift-M-text);
+  filter: brightness(1.1);
+}
+body.classic-mode .edit-shift-modal__shift-btn--m {
+  background: var(--shift-M-bg);
+  border-color: var(--shift-M-bg);
+  color: var(--shift-M-text);
+}
+
+/* Tarde (T) */
+.edit-shift-modal__shift-btn--t {
+  background: var(--shift-A-bg); /* 'A' de Afternoon en tokens */
+  border-color: var(--shift-A-bg);
+  color: var(--shift-A-text);
+}
+.edit-shift-modal__shift-btn--t:hover {
+  background: var(--shift-A-bg);
+  border-color: var(--white);
+  color: var(--shift-A-text);
+  filter: brightness(1.1);
+}
+body.classic-mode .edit-shift-modal__shift-btn--t {
+  background: var(--shift-A-bg);
+  border-color: var(--shift-A-bg);
+  color: var(--shift-A-text);
+}
+
+/* Noche (N) */
+.edit-shift-modal__shift-btn--n {
+  background: var(--shift-N-bg);
+  border-color: var(--shift-N-bg);
+  color: var(--shift-N-text);
+}
+.edit-shift-modal__shift-btn--n:hover {
+  background: var(--shift-N-bg);
+  border-color: var(--white);
+  color: var(--shift-N-text);
+  filter: brightness(1.1);
+}
+body.classic-mode .edit-shift-modal__shift-btn--n {
+  background: var(--shift-N-bg);
+  border-color: var(--shift-N-bg);
+  color: var(--shift-N-text);
+}
+
+/* Libre (L) */
+.edit-shift-modal__shift-btn--l {
+  background: var(--shift-L-bg);
+  border-color: var(--shift-L-bg);
+  color: var(--shift-L-text);
+}
+.edit-shift-modal__shift-btn--l:hover {
+  background: var(--shift-L-bg);
+  border-color: var(--white);
+  color: var(--shift-L-text);
+  filter: brightness(1.1);
+}
+body.classic-mode .edit-shift-modal__shift-btn--l {
+  background: var(--shift-L-bg);
+  border-color: var(--shift-L-bg);
+  color: var(--shift-L-text);
+}
+
+/* ----------------------------------
+ * Bloque: .shift-details-popup (Popup de info de agentes)
+ * ---------------------------------- */
+
+.shift-details-popup {
+  position: fixed;
+  z-index: 10001; /* Encima de todo */
+  width: 300px;
+  max-width: 90vw;
+  /* UI Glass/Frosted */
+  background: var(--glass-dark-bg);
+  border: 1px solid var(--glass-dark-border);
+  backdrop-filter: var(--backdrop-blur-lg);
+  -webkit-backdrop-filter: var(--backdrop-blur-lg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl-dark);
+  overflow: hidden;
+
+  /* Animación de entrada */
+  opacity: 0;
+  transform: scale(0.95);
+  animation: popup-fade-in 0.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Fallback Modo Clásico */
+body.classic-mode .shift-details-popup {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-lg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+@keyframes popup-fade-in {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.shift-details-popup__header {
+  padding: var(--space-2) var(--space-3);
+  /* El JS aplica el background-color dinámicamente */
+  border-bottom: 1px solid rgba(var(--rgb-white), 0.1);
+}
+body.classic-mode .shift-details-popup__header {
+  border-bottom-color: var(--color-border);
+}
+
+.shift-details-popup__title {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-on-dark);
+  text-transform: uppercase;
+}
+body.classic-mode .shift-details-popup__title {
+  color: var(--color-text-primary);
+}
+/* Específico para el color de header de TUI */
+.shift-details-popup__title--inverted {
+  color: var(--color-text-inverted) !important;
+}
+
+.shift-details-popup__body {
+  padding: var(--space-3);
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.shift-details-popup__details-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
+  margin-bottom: var(--space-3);
+}
+.shift-details-popup__details-header i {
+  width: 16px;
+  height: 16px;
+}
+body.classic-mode .shift-details-popup__details-header {
+  color: var(--color-text-secondary);
+}
+
+.shift-details-popup__agent-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.shift-details-popup__agent-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s ease;
+  cursor: default;
+}
+.shift-details-popup__agent-item:hover {
+  background-color: var(--glass-light-bg-hover);
+}
+body.classic-mode .shift-details-popup__agent-item:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.shift-details-popup__agent-tag {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-text-inverted);
+  border: 2px solid rgba(var(--rgb-white), 0.2);
+  box-shadow: var(--shadow-sm);
+}
+body.classic-mode .shift-details-popup__agent-tag {
+  border-color: var(--color-bg-card);
+}
+
+.shift-details-popup__agent-name {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-on-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.classic-mode .shift-details-popup__agent-name {
+  color: var(--color-text-primary);
+}
+
+.shift-details-popup__action-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-text-on-dark-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+body.classic-mode .shift-details-popup__action-icon {
+  color: var(--color-text-muted);
+}
+
+.shift-details-popup__action-icon:hover {
+  transform: scale(1.1);
+  color: var(--color-accent-neon);
+}
+body.classic-mode .shift-details-popup__action-icon:hover {
+  color: var(--color-primary);
 }

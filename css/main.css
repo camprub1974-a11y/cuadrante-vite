@@ -1,9 +1,11 @@
 /*
- * Archivo principal de estilos.
+ * css/main.css
+ * VERSIÓN FINAL REFACTORIZADA
  */
 
 /* 1. Base */
-@import url('./base/_variables.css');
+@import url('./base/_tokens.css');
+/* @import url('./base/_variables.css'); */ /* <-- ELIMINADO */
 @import url('./base/_global.css');
 @import url('./base/_typography.css');
 
@@ -11,38 +13,69 @@
 @import url('./components/_buttons.css');
 @import url('./components/_forms.css');
 @import url('./components/_modals.css');
+@import url('./components/_modalPortal.css');
+/* @import url('./components/_modal-title.css'); */ /* <-- ELIMINADO */
 @import url('./components/_messages.css');
 @import url('./components/_loading.css');
 @import url('./components/_notification-badge.css');
 @import url('./components/_tables.css');
 @import url('./components/_cards.css');
 @import url('./components/_agent-manager.css');
-@import url('./components/_input-stepper.css');
-
+@import url('./components/_agent-tasks-modal.css');
+@import url('./components/_tabs.css');
 
 /* 3. Layout */
 @import url('./layout/_header.css');
 @import url('./layout/_main-layout.css');
-@import url('./layout/_tabs.css');
+@import url('./layout/_module-nav.css');
+@import url('./layout/_dropdown-nav.css');
+/* @import url('./layout/_sidebar-nav.css'); */ /* <-- ELIMINADO */
+@import url('./layout/_sidebar-modern.css');
 
-/* 4. Vistas */
+/* 4. Vistas (Organizadas y limpias) */
 @import url('./views/_login.css');
-@import url('./views/_schedule-view.css');
-@import url('./views/_activity-feed.css');
-@import url('./views/_stats-widget.css');
-@import url('./views/_extra-services.css');
-@import url('./views/_admin-tables.css');
-@import url('./views/_service-report-view.css');
-@import url('./views/_reports-list-view.css');
-@import url('./views/_admin-dashboard-view.css'); /* <-- AÑADE ESTA LÍNEA */
-@import url('./views/_shift-modal.css');
-@import url('./views/_agent-dashboard.css');
-@import url('./views/_service-order-modal.css');
-@import url('./views/_registro-view.css');
-@import url('./views/_croquis-view.css');
 @import url('./views/_cuadrante-view.css');
+@import url('./views/_toast-calendar.css');
+@import url('./views/_cuadrante-grid.css');
+@import url('./views/_stats-widget.css');
+@import url('./views/_activity-feed.css');
+@import url('./views/_tasks-view.css');
+@import url('./views/_reports-list-view.css');
+@import url('./views/_service-report-view.css');
+@import url('./views/_identificaciones-view.css');
+@import url('./views/_plantillas-view.css');
+@import url('./views/_croquis-view.css');
 @import url('./views/_planning-view.css');
+@import url('./views/_extra-services.css');
+@import url('./views/_admin-dashboard-view.css');
+@import url('./views/_admin-tables.css');
+@import url('./views/_manage-requests.css');
+@import url('./views/_registro-view.css');
+@import url('./views/_crear-registro-view.css');
+@import url('./views/_document-editor.css');
+@import url('./views/_shift-modal.css');
+@import url('./views/_service-order-modal.css');
+@import url('./views/_assignment-modal.css');
+@import url('./views/_view-modal.css');
+@import url('./views/_relevo-modal.css');
+@import url('./views/_fusionador-view.css');
+@import url('./views/_composicion-documentos.css');
+@import url('./views/_report-summary-modal.css');
+@import url('./views/_weekly-schedule-table.css');
+
 
 /* 5. Utilidades */
 @import url('./utilities/_helpers.css');
-@import url('./utilities/_print.css');
+
+/* 6. Efectos (Limpiados) */
+@import url('./effects/modern-effects.css');
+@import url('./effects/Calendar_legend_modern.css');
+/* @import url('./effects/fusionador-documentos-modern.css'); */ /* <-- ELIMINADO */
+/* @import url('./effects/plantillas-modern.css'); */ /* <-- ELIMINADO */
+
+
+/* ================================================= */
+/* 7. ESTILOS DE IMPRESIÓN (Cargados al final) */
+/* ================================================= */
+@import url('./utilities/_print.css'); 
+@import url('./views/_cuadrante-print.css'); 

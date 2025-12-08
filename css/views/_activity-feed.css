@@ -1,38 +1,449 @@
-/* css/views/_activity-feed.css */
+/* =================================================================== */
+/* css/views/_activity-feed.css (VERSIÓN CORREGIDA Y COMPLETA) */
+/* =================================================================== */
 
-/* Estilos existentes */
-#activity-feed-container ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+/* ⭐ IMPORTANTE: Este archivo reemplaza completamente el anterior */
+/* Incluye: sidebar overlay, posicionamiento, estilos de tabs, items, etc */
+
+/* ================================================================ */
+/* 1. SIDEBAR OVERLAY (FONDO OSCURO CON BLUR)                      */
+/* ================================================================ */
+
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Estilo Moderno/Glass */
+  background-color: rgba(var(--rgb-black), 0.85);
+  backdrop-filter: var(--backdrop-blur-xl);
+  -webkit-backdrop-filter: var(--backdrop-blur-xl);
+  
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-base) var(--ease-smooth);
 }
 
-#activity-feed-container li {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    font-size: 0.9em;
-    color: var(--app-text-primary);
+/* Estado: Overlay visible cuando sidebar está abierto */
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-#activity-feed-container li:last-child {
-    margin-bottom: 0;
+/* ================================================================ */
+/* 2. SIDEBAR COLUMN (CONTENEDOR PRINCIPAL)                        */
+/* ================================================================ */
+
+.sidebar-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
-/* ======================= NUEVOS ESTILOS ======================= */
-
-/* Estilo para la tarjeta de alertas */
-.card--alert {
-    background-color: var(--alert-card-bg);
-    border: 1px solid var(--marked-date-yellow-border); /* Reutilizamos el borde amarillo para consistencia */
+.sidebar-right {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  z-index: 1000;
+  
+  /* Estilo Moderno/Glass */
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-intense);
+  -webkit-backdrop-filter: var(--backdrop-blur-intense);
+  border-left: 1px solid var(--glass-dark-border-glow);
+  box-shadow: 
+    var(--shadow-glass-card),
+    var(--shadow-glow-green-sm);
+  
+  /* Animación de deslizamiento */
+  transform: translateX(100%);
+  transition: transform var(--transition-slow) var(--ease-smooth);
+  
+  display: flex;
+  flex-direction: column;
 }
 
-/* Estilo para el título H4 dentro de la tarjeta de alertas */
-.card--alert h4 {
-    padding-bottom: 0.75rem; /* Espacio para la línea */
-    border-bottom: 2px solid var(--alert-title-border-color); /* Línea roja debajo del título */
-    margin-bottom: 1rem; /* Espacio entre la línea y el contenido */
+/* Estado: Sidebar visible */
+.sidebar-right.active {
+  transform: translateX(0);
 }
-/* ============================================================== */
+
+/* ================================================================ */
+/* 3. ACTIVITY FEED WIDGET (CARD PRINCIPAL)                        */
+/* ================================================================ */
+
+.activity-feed-widget {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Card Header: Sin padding (lo controlan las tabs) */
+.activity-feed-widget .card-header {
+  padding: 0;
+  border-bottom: 1px solid var(--glass-dark-border);
+}
+
+/* ================================================================ */
+/* 4. WIDGET TITLE (ENCABEZADO)                                    */
+/* ================================================================ */
+
+.activity-feed-widget__title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-4);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  
+  color: var(--white);
+  text-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.2);
+  border-bottom: 1px solid rgba(var(--rgb-white), 0.1);
+}
+
+.activity-feed-widget__title i {
+  color: var(--color-accent-neon);
+  filter: drop-shadow(0 0 4px rgba(var(--rgb-green-neon), 0.4));
+}
+
+/* ================================================================ */
+/* 5. WIDGET TABS (PESTAÑA NOVEDADES/CAMBIOS)                      */
+/* ================================================================ */
+
+.widget-tabs {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4) 0 var(--space-4);
+  border-bottom: 1px solid rgba(var(--rgb-white), 0.05);
+}
+
+.widget-tab {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  
+  color: var(--color-text-on-dark-muted);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+
+.widget-tab i {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+}
+
+.widget-tab:hover {
+  color: var(--white);
+  border-bottom-color: rgba(var(--rgb-green-neon), 0.5);
+}
+
+.widget-tab.active {
+  color: var(--color-accent-neon);
+  border-bottom-color: var(--color-accent-neon);
+  text-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.3);
+}
+
+/* Modificador para tab de Cambios */
+.widget-tab[data-tab="cambios"] i {
+  color: var(--blue-500);
+}
+
+.widget-tab[data-tab="cambios"].active i {
+  color: var(--color-accent-neon);
+}
+
+/* ================================================================ */
+/* 6. ACTIVITY FEED CONTENT (CONTENEDOR DE ITEMS - SCROLLABLE)     */
+/* ================================================================ */
+
+.activity-feed-widget__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  
+  /* Scrollbar personalizado */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--rgb-white), 0.2) transparent;
+}
+
+.activity-feed-widget__content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.activity-feed-widget__content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.activity-feed-widget__content::-webkit-scrollbar-thumb {
+  background: rgba(var(--rgb-white), 0.2);
+  border-radius: var(--radius-full);
+}
+
+.activity-feed-widget__content::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--rgb-white), 0.3);
+}
+
+/* Estado: Vacío */
+.activity-feed-widget__content.empty {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-text-on-dark-muted);
+}
+
+/* ================================================================ */
+/* 7. ACTIVITY FEED ITEM (CADA NOVEDAD/CAMBIO)                     */
+/* ================================================================ */
+
+.activity-feed__item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  
+  /* Estilo Glass */
+  background: rgba(var(--rgb-white), 0.03);
+  border: 1px solid rgba(var(--rgb-white), 0.08);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+
+.activity-feed__item:hover {
+  background: rgba(var(--rgb-white), 0.06);
+  border-color: rgba(var(--rgb-green-neon), 0.2);
+  box-shadow: 0 0 12px rgba(var(--rgb-green-neon), 0.1);
+}
+
+/* Modificador: Item urgente */
+.activity-feed__item--urgent {
+  border-left: 3px solid var(--color-danger);
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.activity-feed__item--urgent:hover {
+  border-color: rgba(239, 68, 68, 0.3);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* ================================================================ */
+/* 8. ACTIVITY FEED ICON (ICONO DEL LADO IZQUIERDO)                */
+/* ================================================================ */
+
+.activity-feed__icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Estilo Glass con glow */
+  background: rgba(var(--rgb-green-neon), 0.1);
+  border: 1px solid rgba(var(--rgb-green-neon), 0.3);
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.2);
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+
+.activity-feed__icon svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-accent-neon);
+  stroke-width: 2;
+}
+
+/* Modificador: Icono urgente */
+.activity-feed__item--urgent .activity-feed__icon {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--color-danger);
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.2);
+}
+
+.activity-feed__item--urgent .activity-feed__icon svg {
+  color: var(--color-danger);
+}
+
+/* ================================================================ */
+/* 9. ACTIVITY FEED CONTENT (TEXTOS Y DETALLES)                    */
+/* ================================================================ */
+
+.activity-feed__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex-grow: 1;
+  min-width: 0; /* Permite que el texto se trunce correctamente */
+}
+
+.activity-feed__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.activity-feed__author {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--white);
+  line-height: 1.2;
+}
+
+.activity-feed__time {
+  font-size: var(--text-xs);
+  color: var(--color-text-on-dark-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.activity-feed__body {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
+  line-height: 1.4;
+  margin: 0;
+  word-wrap: break-word;
+}
+
+/* ================================================================ */
+/* 10. MODO CLÁSICO (FALLBACK)                                     */
+/* ================================================================ */
+
+body.classic-mode .sidebar-overlay {
+  background-color: rgba(var(--rgb-black), 0.7);
+}
+
+body.classic-mode .sidebar-right {
+  background: var(--color-bg-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-left: 1px solid var(--color-border);
+  box-shadow: var(--shadow-xl);
+}
+
+body.classic-mode .activity-feed-widget__title {
+  color: var(--color-text-primary);
+  text-shadow: none;
+  border-bottom-color: var(--color-border);
+}
+
+body.classic-mode .activity-feed-widget__title i {
+  color: var(--color-primary);
+  filter: none;
+}
+
+body.classic-mode .widget-tabs {
+  border-bottom-color: var(--color-border);
+}
+
+body.classic-mode .widget-tab {
+  color: var(--color-text-secondary);
+}
+
+body.classic-mode .widget-tab:hover {
+  color: var(--color-primary);
+}
+
+body.classic-mode .widget-tab.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+body.classic-mode .activity-feed__item {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-left: none;
+}
+
+body.classic-mode .activity-feed__item:hover {
+  background: var(--color-bg-hover);
+}
+
+body.classic-mode .activity-feed__item--urgent {
+  border-left: 3px solid var(--color-danger);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+body.classic-mode .activity-feed__icon {
+  background: var(--color-primary-light);
+  border-color: var(--color-primary);
+  box-shadow: none;
+}
+
+body.classic-mode .activity-feed__icon svg {
+  color: var(--color-primary);
+}
+
+body.classic-mode .activity-feed__item--urgent .activity-feed__icon {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--color-danger);
+}
+
+body.classic-mode .activity-feed__item--urgent .activity-feed__icon svg {
+  color: var(--color-danger);
+}
+
+body.classic-mode .activity-feed__author {
+  color: var(--color-text-primary);
+}
+
+body.classic-mode .activity-feed__time {
+  color: var(--color-text-secondary);
+}
+
+body.classic-mode .activity-feed__body {
+  color: var(--color-text-secondary);
+}
+
+/* ================================================================ */
+/* 11. RESPONSIVE                                                  */
+/* ================================================================ */
+
+@media (max-width: 768px) {
+  .sidebar-right {
+    width: 280px;
+  }
+  
+  .activity-feed-widget__title {
+    font-size: var(--text-base);
+    padding: var(--space-3);
+  }
+  
+  .widget-tabs {
+    padding: var(--space-2) var(--space-3) 0 var(--space-3);
+  }
+  
+  .activity-feed__item {
+    padding: var(--space-2);
+  }
+  
+  .activity-feed__icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sidebar-right {
+    width: 100%;
+  }
+}

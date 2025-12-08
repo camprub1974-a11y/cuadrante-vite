@@ -1,0 +1,404 @@
+/* =================================================================== */
+/* css/views/_manage-requests.css (Refactorizado - Arquitectura Moderna) */
+/* =================================================================== */
+
+/* 1. ESTILOS DE PESTAÑAS EN _Tabs.CSS
+
+/* ==========================================================================
+   2. ESTILOS DE FILTROS (Solución Layout Horizontal)
+   ========================================================================== */
+
+/* El HTML ya usa '.filter-bar' de la refactorización anterior */
+#manage-requests-modal .filter-bar {
+  /* 💡 SOLUCIÓN: Anulamos la dirección de columna por defecto */
+  flex-direction: row;
+  align-items: flex-end; /* Alinear con la parte inferior de los inputs */
+  gap: var(--space-3);
+  
+  /* Aseguramos estilos Glass (heredados de .card.glass-panel) */
+  background: var(--glass-dark-bg-soft);
+  padding: var(--space-3);
+  margin-bottom: var(--space-4); /* Añadido espacio inferior */
+}
+
+#manage-requests-modal .filter-bar .form-group {
+  flex-grow: 1; /* Ocupar espacio */
+  margin-bottom: 0; /* Quitar margen de .form-group */
+}
+
+#manage-requests-modal .filter-bar .button {
+  flex-shrink: 0; /* No encoger el botón */
+  height: 44px; /* Coincidir con altura de .selector */
+}
+
+/* ==========================================================================
+   3. ESTADÍSTICAS RESUMEN (Moderno/Glass)
+   ========================================================================== */
+
+/* El HTML ya usa 'stats-grid' */
+#manage-requests-modal .stats-grid {
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+  /* 💡 AÑADIDO: Usa las clases BEM .stats-grid--3-col */
+  /* grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); */
+}
+#manage-requests-modal .stats-grid .stat-card {
+  /* Estilo Moderno/Glass */
+  background: var(--glass-dark-bg-soft);
+  border: 1px solid var(--glass-dark-border);
+  border-left: 4px solid var(--color-primary-light);
+  color: var(--color-text-on-dark);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-base);
+}
+#manage-requests-modal .stats-grid .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glass-card-hover);
+  border-color: var(--glass-dark-border-glow);
+}
+#manage-requests-modal .stats-grid .stat-card.stat-pending {
+  border-left-color: var(--color-warning);
+  background: rgba(var(--rgb-yellow), 0.1);
+}
+#manage-requests-modal .stats-grid .stat-card.stat-rejected {
+  border-left-color: var(--color-danger);
+  background: rgba(var(--rgb-red), 0.1);
+}
+#manage-requests-modal .stats-grid .stat-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-on-dark-muted);
+  text-transform: uppercase;
+}
+#manage-requests-modal .stats-grid .stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+/* 💡 AÑADIDO: Estilos específicos para stats de admin (si es necesario) */
+#manage-requests-modal .stats-grid .stat-card.stat-pending .stat-value {
+  color: var(--color-warning);
+}
+#manage-requests-modal .stats-grid .stat-card.stat-rejected .stat-value {
+  color: var(--color-danger);
+}
+
+/* ==========================================================================
+   4. LISTA DE TARJETAS (Moderno/Glass)
+   ========================================================================== */
+#manage-requests-modal .shifts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+#manage-requests-modal .shift-card {
+  background: var(--glass-dark-bg);
+  border: 1px solid var(--glass-dark-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-glass-card);
+}
+#manage-requests-modal .shift-card:hover {
+  border-color: var(--glass-dark-border-glow);
+  box-shadow: var(--shadow-glass-card-hover);
+  transform: translateY(-2px);
+}
+#manage-requests-modal .shift-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(var(--rgb-black), 0.2);
+  border-bottom: 1px solid var(--glass-dark-border);
+}
+#manage-requests-modal .shift-title {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--white);
+}
+
+/* 💡 AÑADIDO: Clases BEM para el header de la tarjeta */
+#manage-requests-modal .shift-info-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+#manage-requests-modal .shift-id {
+    font-size: var(--text-xs);
+    color: var(--color-text-on-dark-dimmed);
+    font-family: var(--font-monospace);
+}
+
+/* Píldoras de estado (Moderno/Glass) */
+#manage-requests-modal .shift-badge {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    text-transform: uppercase;
+}
+#manage-requests-modal .shift-status-rejected {
+  background-color: rgba(var(--rgb-red), 0.15);
+  color: var(--color-danger);
+  border: 1px solid rgba(var(--rgb-red), 0.3);
+}
+#manage-requests-modal .shift-status-pending {
+  background-color: rgba(var(--rgb-yellow), 0.15);
+  color: var(--color-warning);
+  border: 1px solid rgba(var(--rgb-yellow), 0.3);
+}
+#manage-requests-modal .shift-status-approved {
+  background-color: rgba(var(--rgb-green), 0.15);
+  color: var(--color-success);
+  border: 1px solid rgba(var(--rgb-green), 0.3);
+}
+
+#manage-requests-modal .shift-card-content {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+#manage-requests-modal .shift-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+#manage-requests-modal .shift-column .label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-on-dark-muted);
+  text-transform: uppercase;
+  margin-bottom: var(--space-2);
+}
+#manage-requests-modal .shift-details {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(var(--rgb-black), 0.15);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary-light);
+}
+
+/* Tipos de turno (Moderno/Glass) */
+#manage-requests-modal .shift-type {
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+}
+#manage-requests-modal .shift-type-morning {
+  background: rgba(var(--rgb-green-neon), 0.1);
+  color: var(--color-accent-neon);
+}
+#manage-requests-modal .shift-type-evening {
+  background: rgba(var(--rgb-yellow), 0.1);
+  color: var(--color-warning);
+}
+#manage-requests-modal .shift-type-night {
+  background: rgba(var(--rgb-blue), 0.1);
+  color: var(--color-info);
+}
+
+#manage-requests-modal .shift-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(var(--rgb-black), 0.2);
+  border-top: 1px solid var(--glass-dark-border);
+}
+#manage-requests-modal .meta-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-text-on-dark-muted);
+}
+#manage-requests-modal .meta-item i {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-on-dark-dimmed);
+}
+#manage-requests-modal .shift-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+
+/* ==========================================================================
+   5. ANULACIONES MODO CLÁSICO
+   ========================================================================== */
+
+body.classic-mode #manage-requests-modal .modal-tabs {
+  border-bottom: 2px solid var(--color-border);
+}
+body.classic-mode #manage-requests-modal .tab-button {
+  color: var(--color-text-secondary);
+}
+body.classic-mode #manage-requests-modal .tab-button:hover {
+  color: var(--color-primary);
+}
+body.classic-mode #manage-requests-modal .tab-button.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* Estadísticas en Modo Clásico */
+body.classic-mode #manage-requests-modal .stats-grid .stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-bg-hover);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-primary);
+  transition: all var(--transition-base);
+  backdrop-filter: none;
+  border: 1px solid var(--color-border);
+}
+body.classic-mode #manage-requests-modal .stats-grid .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+body.classic-mode #manage-requests-modal .stats-grid .stat-card.stat-pending {
+  border-left-color: var(--color-warning);
+  background: var(--color-warning-light);
+}
+body.classic-mode #manage-requests-modal .stats-grid .stat-card.stat-rejected {
+  border-left-color: var(--color-danger);
+  background: var(--color-danger-light);
+}
+body.classic-mode #manage-requests-modal .stats-grid .stat-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+}
+body.classic-mode #manage-requests-modal .stats-grid .stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+/* 💡 AÑADIDO: Colores de valor en modo clásico */
+body.classic-mode #manage-requests-modal .stats-grid .stat-card.stat-pending .stat-value {
+  color: var(--color-warning-dark);
+}
+body.classic-mode #manage-requests-modal .stats-grid .stat-card.stat-rejected .stat-value {
+  color: var(--color-danger-dark);
+}
+
+/* Tarjetas de lista en Modo Clásico */
+body.classic-mode #manage-requests-modal .shift-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: none;
+}
+body.classic-mode #manage-requests-modal .shift-card:hover {
+  border-color: var(--color-border-alt);
+  box-shadow: var(--shadow-md);
+}
+body.classic-mode #manage-requests-modal .shift-card-header {
+  background: var(--color-bg-hover);
+  border-bottom: 1px solid var(--color-border);
+}
+body.classic-mode #manage-requests-modal .shift-title {
+  color: var(--color-text-primary);
+}
+body.classic-mode #manage-requests-modal .shift-status-rejected {
+  background-color: var(--color-danger-light);
+  color: var(--color-danger-dark);
+  border: none;
+}
+body.classic-mode #manage-requests-modal .shift-status-pending {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning-dark);
+  border: none;
+}
+body.classic-mode #manage-requests-modal .shift-status-approved {
+  background-color: var(--color-success-light);
+  color: var(--color-success-dark);
+  border: none;
+}
+body.classic-mode #manage-requests-modal .shift-column .label {
+  color: var(--color-text-secondary);
+}
+body.classic-mode #manage-requests-modal .shift-details {
+  background: var(--color-bg-hover);
+  border-left: 3px solid var(--color-primary);
+}
+body.classic-mode #manage-requests-modal .shift-type-morning {
+  background: var(--color-primary-light);
+  color: var(--color-primary-dark);
+}
+body.classic-mode #manage-requests-modal .shift-type-evening {
+  background: var(--color-warning-light);
+  color: var(--color-warning-dark);
+}
+body.classic-mode #manage-requests-modal .shift-type-night {
+  background: var(--color-bg-header);
+  color: var(--color-text-inverted);
+}
+body.classic-mode #manage-requests-modal .shift-card-footer {
+  background: var(--color-bg-hover);
+  border-top: 1px solid var(--color-border);
+}
+body.classic-mode #manage-requests-modal .meta-item {
+  color: var(--color-text-secondary);
+}
+body.classic-mode #manage-requests-modal .meta-item i {
+  color: var(--color-text-muted);
+}
+
+
+/* ==========================================================================
+   6. RESPONSIVE (Actualizado a .filter-bar y .stats-grid)
+   ========================================================================== */
+@media (max-width: 768px) {
+  #manage-requests-modal .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  #manage-requests-modal .filter-bar .selector,
+  #manage-requests-modal .filter-bar .button {
+    width: 100%;
+  }
+  #manage-requests-modal .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  #manage-requests-modal .shift-row {
+    grid-template-columns: 1fr;
+  }
+  #manage-requests-modal .shift-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  #manage-requests-modal .shift-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+  #manage-requests-modal .shift-actions button {
+    flex: 1;
+    justify-content: center;
+  }
+}
+@media (max-width: 480px) {
+  #manage-requests-modal .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  #manage-requests-modal .shift-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

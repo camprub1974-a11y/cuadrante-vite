@@ -1,0 +1,190 @@
+/* =================================================================== */
+/* css/views/_toast-calendar.css (Solo Grid y Modo Clásico) */
+/* Los estilos de eventos (Glass/MCST) son gestionados por js/main.js (setTheme) */
+/* =================================================================== */
+
+/* ===================================================================
+   1. ESTILOS DEL GRID (Celda, Números, "Hoy") - MANTENIDOS
+   =================================================================== */
+
+/* Celda del Grid (Fondo Glass) */
+.toastui-calendar-daygrid-cell {
+   background: rgba(var(--rgb-green-neon), 0.1) !important;
+    backdrop-filter: var(--backdrop-blur-md) !important;
+    -webkit-backdrop-filter: var(--backdrop-blur-md) !important;
+    border-color: rgba(var(--rgb-white), 0.08) !important;
+    transition: all var(--transition-fast) var(--ease-smooth);
+}
+.toastui-calendar-daygrid-cell:hover {
+    background: rgba(var(--rgb-green-neon), 0.08) !important;
+}
+.toastui-calendar-daygrid-cell-out-of-scope {
+    background: rgba(var(--rgb-slate-900), 0.3) !important;
+    opacity: 0.6;
+}
+
+/* Header (L, M, X...) */
+.toastui-calendar-dayname-item {
+    color: var(--color-text-on-dark-muted) !important;
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid rgba(var(--rgb-white), 0.1) !important;
+}
+
+/* Números del Día */
+.toastui-calendar-weekday-grid-date {
+    color: var(--white) !important;
+    font-weight: var(--font-bold);
+    font-size: var(--text-sm);
+    background: rgba(var(--rgb-white), 0.05);
+    border-radius: var(--radius-md);
+    padding: 2px var(--space-1);
+}
+
+/* "Hoy" (Efecto Glow) */
+.toastui-calendar-weekday-grid-date-decorator {
+    background: var(--color-accent-neon) !important;
+    color: var(--gray-900) !important;
+    box-shadow: var(--shadow-glow-green-sm) !important;
+}
+
+/* ===================================================================
+   2. ESTILOS DE EVENTOS (Turnos) - ELIMINADOS
+   =================================================================== */
+
+/* Eliminadas reglas para:
+.toastui-calendar-allday-event, .shift-event__content, .badge-mini, .agent-letter-mini, etc.
+...
+...
+*/
+
+/* ===================================================================
+   3. MODO CLÁSICO (Fallback) - MANTENIDOS
+   =================================================================== */
+
+/* 1. Grid */
+body.classic-mode .toastui-calendar-daygrid-cell {
+    background: var(--white) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: var(--color-border) !important;
+}
+body.classic-mode .toastui-calendar-daygrid-cell-out-of-scope {
+    background: var(--color-bg-inactive) !important;
+}
+body.classic-mode .toastui-calendar-daygrid-cell:hover {
+    background: var(--color-bg-hover) !important;
+}
+
+/* 2. Header */
+body.classic-mode .toastui-calendar-dayname-item {
+    color: var(--color-text-secondary) !important;
+    border-bottom: 1px solid var(--color-border) !important;
+}
+
+/* 3. Números */
+body.classic-mode .toastui-calendar-weekday-grid-date {
+    color: var(--color-text-primary) !important;
+    background: transparent !important;
+}
+
+/* 4. "Hoy" */
+body.classic-mode .toastui-calendar-weekday-grid-date-decorator {
+    background: var(--color-primary) !important;
+    color: var(--white) !important;
+    box-shadow: none !important;
+}
+
+/* 5. Eventos */
+body.classic-mode .toastui-calendar-allday-event {
+    background: transparent !important; /* El JS pondrá el color sólido */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+body.classic-mode .toastui-calendar-allday-event:hover {
+    box-shadow: var(--shadow-md) !important;
+}
+
+/* 6. Legibilidad Clásica (Sobrescribir el JS) */
+body.classic-mode .toastui-calendar-allday-event .badge-mini.shift-m {
+    color: var(--shift-M-text) !important;
+}
+body.classic-mode .toastui-calendar-allday-event .badge-mini.shift-t {
+    color: var(--shift-A-text) !important;
+}
+body.classic-mode .toastui-calendar-allday-event .badge-mini.shift-n {
+    color: var(--shift-N-text) !important;
+}
+body.classic-mode .toastui-calendar-allday-event .badge-mini.shift-l {
+    color: var(--shift-L-text) !important;
+}
+body.classic-mode .toastui-calendar-allday-event .agent-letter-mini {
+    color: var(--color-text-secondary) !important;
+    background: rgba(0,0,0,0.05) !important;
+    border-color: rgba(0,0,0,0.1) !important;
+}
+
+/* ========================================================== */
+/* === 💡 ESTILOS PARA VISTA DE AGENTE ÚNICO (CORREGIDO) === */
+/* ========================================================== */
+
+.calendar-event-single-agent {
+  display: flex;
+  /* 💡 CORRECCIÓN: 'row' en lugar de 'column' */
+  flex-direction: row; 
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* El icono del TURNO (M, T, N) */
+.single-agent-shift-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-base); /* 💡 Reducido */
+  font-weight: var(--font-bold);
+  font-family: var(--font-monospace);
+  width: 32px;  /* 💡 Reducido */
+  height: 32px; /* 💡 Reducido */
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* El icono del AGENTE (A, B, C) */
+.single-agent-letter-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-xs); /* 💡 Reducido */
+  font-weight: var(--font-bold);
+  width: 28px;  /* 💡 Reducido */
+  height: 28px; /* 💡 Reducido */
+  border-radius: var(--radius-full);
+  color: var(--color-text-on-dark-muted);
+  background: rgba(var(--rgb-black), 0.2);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+}
+
+/* --- ANULACIONES MODO CLÁSICO --- */
+body.classic-mode .calendar-event-single-agent {
+  gap: var(--space-1);
+}
+body.classic-mode .single-agent-shift-icon {
+  width: 30px;
+  height: 30px;
+}
+body.classic-mode .single-agent-letter-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
+}

@@ -1,65 +1,71 @@
-/* css/views/_schedule-view.css */
+/* css/views/_schedule-view.css (Refactorizado con Tokens) */
 
 .week-card {
-    margin-top: var(--space-3);
-    overflow: hidden;
+  margin-top: var(--space-3);
+  overflow: hidden;
 }
 
 .week-card h3 {
-    padding: var(--space-2) var(--space-3);
-    margin: 0;
-    font-size: 1.125rem;
-    background-color: var(--color-bg-table-header);
-    border-bottom: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+  font-size: var(--text-lg);
+  background-color: var(--color-primary-light); /* Usa token */
+  border-bottom: 1px solid var(--color-border);
 }
 
 .schedule-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
 }
 
-.schedule-table th, .schedule-table td {
-    border: 1px solid var(--color-border);
-    text-align: center;
-    vertical-align: middle;
+.schedule-table th,
+.schedule-table td {
+  border: 1px solid var(--color-border);
+  text-align: center;
+  vertical-align: middle;
 }
 
 .schedule-table th {
-    font-weight: 600;
-    padding: var(--space-1);
-    font-size: 0.8rem;
-    color: var(--color-text-secondary);
+  font-weight: 600;
+  padding: var(--space-2); /* 8px */
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
 }
 
 .schedule-table .agent-cell {
-    width: 160px;
-    text-align: left;
-    padding-left: var(--space-2);
-    font-weight: 600;
+  width: 160px;
+  text-align: left;
+  padding-left: var(--space-2);
+  font-weight: 600;
 }
 
 .shift-cell {
-    height: 50px;
-    cursor: pointer;
-    transition: background-color var(--transition-fast);
+  height: 50px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
-.shift-cell:hover { background-color: var(--color-background-hover); }
-.day-off-month { background-color: var(--color-bg-table-header); opacity: 0.6; }
+.shift-cell:hover {
+  background-color: var(--color-bg-hover);
+}
+.day-off-month {
+  background-color: var(--color-bg-inactive); /* Usa token */
+  opacity: 0.6;
+}
 
 .turno-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    color: var(--color-text-light);
-    font-weight: 600;
-    font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--color-text-inverted);
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
-/* ✅ REGLAS DE COLOR FINALES Y COMPLETAS */
+/* Reglas de color (ya usan los tokens de _tokens.css) */
 .shift-M { background-color: var(--shift-M-bg); }
 .shift-T { background-color: var(--shift-T-bg); }
 .shift-N { background-color: var(--shift-N-bg); }
@@ -68,4 +74,7 @@
 .shift-P { background-color: var(--shift-P-bg); }
 .shift-B { background-color: var(--shift-B-bg); }
 .shift-AP { background-color: var(--shift-AP-bg); }
-.shift-- { background-color: var(--color-bg-table-header); color: var(--color-text-secondary); }
+.shift-- {
+  background-color: var(--color-bg-inactive);
+  color: var(--color-text-secondary);
+}

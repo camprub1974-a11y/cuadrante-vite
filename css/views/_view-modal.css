@@ -1,0 +1,101 @@
+/* ================================== */
+/* CSS PARA MODAL VER ORDEN (NUEVO) */
+/* (Guardar en: css/views/_view-modal.css) */
+/* ================================== */
+
+.view-order-modal__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.view-order-modal__summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-3) var(--space-4);
+  padding: var(--space-4); /* Más padding */
+  background: rgba(var(--rgb-black), 0.2); /* Fondo Glass */
+  border-radius: var(--radius-lg);
+}
+
+.view-order-modal__summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.view-order-modal__summary-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.view-order-modal__summary-value {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--white);
+}
+
+/* Alineación de la píldora de estado */
+.view-order-modal__summary-value.status-pill {
+  align-self: flex-start; 
+}
+
+.view-order-modal__section {
+  border-top: 1px solid var(--glass-dark-border);
+  padding-top: var(--space-4);
+}
+
+.view-order-modal__section-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-on-dark-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 var(--space-3) 0;
+}
+
+.view-order-modal__description {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-dark);
+  line-height: 1.6;
+  white-space: pre-wrap; /* Respeta los saltos de línea */
+}
+
+.view-order-modal__resource-list,
+.view-order-modal__task-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.view-order-modal__task-list .empty-state-text,
+.view-order-modal__resource-list .empty-state-text {
+  font-style: italic;
+  color: var(--color-text-on-dark-dimmed);
+}
+
+/* --- Fallback Modo Clásico --- */
+body.classic-mode .view-order-modal__summary-grid {
+  background: var(--color-bg-hover);
+}
+body.classic-mode .view-order-modal__summary-label {
+  color: var(--color-text-muted);
+}
+body.classic-mode .view-order-modal__summary-value {
+  color: var(--color-text-primary);
+}
+body.classic-mode .view-order-modal__section {
+  border-top: 1px solid var(--color-border);
+}
+body.classic-mode .view-order-modal__section-title {
+  color: var(--color-text-primary);
+}
+body.classic-mode .view-order-modal__description {
+  color: var(--color-text-secondary);
+}
+body.classic-mode .view-order-modal__task-list .empty-state-text,
+body.classic-mode .view-order-modal__resource-list .empty-state-text {
+  color: var(--color-text-muted);
+}

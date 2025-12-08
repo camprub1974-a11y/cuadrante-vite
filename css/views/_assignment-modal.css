@@ -1,0 +1,203 @@
+/* =================================================================== */
+/* css/views/_assignment-modal.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
+
+.assignment-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  min-height: 60vh;
+}
+
+.assignment-column .column-title {
+  margin-top: 0;
+  margin-bottom: var(--space-4);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--white);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Lista de agentes */
+.agent-list {
+  background: rgba(var(--rgb-white), 0.03);
+  backdrop-filter: var(--backdrop-blur-sm);
+  -webkit-backdrop-filter: var(--backdrop-blur-sm);
+  
+  border: 2px dashed rgba(var(--rgb-white), 0.2);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  min-height: 350px;
+  height: 100%;
+  overflow-y: auto;
+  
+  transition: all var(--transition-base) var(--ease-smooth);
+  
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--rgb-white), 0.2) transparent;
+}
+
+.agent-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.agent-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.agent-list::-webkit-scrollbar-thumb {
+  background: rgba(var(--rgb-white), 0.2);
+  border-radius: var(--radius-full);
+}
+
+/* Drag over */
+.agent-list.drag-over {
+  border-color: var(--color-accent-neon);
+  background: rgba(var(--rgb-green-neon), 0.1);
+  box-shadow: 
+    inset 0 0 0 2px rgba(var(--rgb-green-neon), 0.3),
+    0 0 20px rgba(var(--rgb-green-neon), 0.2);
+}
+
+/* Tarjeta de agente */
+.agent-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+  background: rgba(var(--rgb-white), 0.08);
+  backdrop-filter: var(--backdrop-blur-sm);
+  -webkit-backdrop-filter: var(--backdrop-blur-sm);
+  
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-3);
+  
+  cursor: grab;
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  
+  transition: all var(--transition-fast) var(--ease-smooth);
+}
+
+.agent-card:active {
+  cursor: grabbing;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  transform: scale(1.02);
+}
+
+.agent-card:hover {
+  border-color: rgba(var(--rgb-green-neon), 0.5);
+  background: rgba(var(--rgb-white), 0.12);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(var(--rgb-green-neon), 0.2);
+}
+
+.agent-card-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.agent-card-info i {
+  width: 20px;
+  height: 20px;
+  color: var(--color-accent-neon);
+  filter: drop-shadow(0 0 4px rgba(var(--rgb-green-neon), 0.4));
+}
+
+.agent-card-info .agent-name {
+  font-weight: var(--font-semibold);
+  color: var(--white);
+  font-size: var(--text-sm);
+}
+
+/* Botones en tarjeta */
+.agent-card button {
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  border-radius: var(--radius-md);
+  padding: var(--space-1);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.agent-card button:hover {
+  background: rgba(var(--rgb-green-neon), 0.1);
+  border-color: var(--color-accent-neon);
+}
+
+.agent-card button i {
+  width: 18px;
+  height: 18px;
+  color: var(--color-accent-neon);
+}
+
+/* Estado dragging */
+.agent-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+}
+
+/* Empty state */
+.agent-list:empty::before {
+  content: 'Arrastra agentes aquí';
+  display: block;
+  text-align: center;
+  padding: var(--space-10) var(--space-4);
+  color: var(--color-text-on-dark-dimmed);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .assignment-layout {
+    grid-template-columns: 1fr;
+    min-height: 80vh;
+  }
+  
+  .agent-list {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 768px) {
+  .assignment-layout {
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+  
+  .agent-card {
+    padding: var(--space-2) var(--space-3);
+  }
+}
+
+/* Modo Clásico */
+body.classic-mode .agent-list {
+  background: var(--color-bg-card);
+  border-color: var(--color-border-alt);
+  backdrop-filter: none;
+}
+
+body.classic-mode .agent-list.drag-over {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+body.classic-mode .agent-card {
+  background: var(--color-bg-hover);
+  border-color: var(--color-border);
+  backdrop-filter: none;
+}
+
+body.classic-mode .agent-card:hover {
+  border-color: var(--color-primary);
+}
+
+body.classic-mode .agent-card-info .agent-name {
+  color: var(--color-text-primary);
+}

@@ -1,73 +1,169 @@
-/* css/layout/_header.css */
+/* =================================================================== */
+/* css/layout/_header.css (Refactorizado - Versión Moderna) */
+/* =================================================================== */
 
 .main-header {
-  height: var(--space-8); /* 64px */
-  background-color: var(--color-header-bg);
-  color: #1b9cfc;
+  height: 64px;
+  
+  background: var(--glass-dark-bg);
+  backdrop-filter: var(--backdrop-blur-xl);
+  -webkit-backdrop-filter: var(--backdrop-blur-xl);
+  border-bottom: 1px solid var(--glass-dark-border);
+  
+  color: var(--white);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-4);
-  box-shadow: var(--shadow-card);
+  justify-content: center;
+  padding: 0;
+  /* 🎨 AÑADIR ESTAS LÍNEAS */
+  max-width: 1920px;
+  margin: 0 auto;
+  
+  box-shadow: var(--shadow-glass-card);
   width: 100%;
-  box-sizing: border-box;
   position: sticky;
   top: 0;
   z-index: 1000;
 }
 
+.main-header .container-fluid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 var(--space-5);
+}
+
+/* Brand */
 .header-brand {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .header-logo {
-  height: 40px;
+  height: 44px;
   width: auto;
+  filter: drop-shadow(0 0 8px rgba(var(--rgb-green-neon), 0.3));
+  transition: filter var(--transition-base);
 }
 
+.header-logo:hover {
+  filter: drop-shadow(0 0 12px rgba(var(--rgb-green-neon), 0.5));
+}
+
+/* Títulos */
 .header-title .main-title {
   font-family: var(--font-primary);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  line-height: var(--leading-tight);
-  display: block;
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  line-height: 1.2;
+  color: var(--white);
+  text-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.2);
+  letter-spacing: 0.02em;
 }
 
 .header-title .sub-title {
   font-family: var(--font-primary);
   font-size: var(--text-sm);
-  font-weight: 400;
-  opacity: 0.8;
+  font-weight: var(--font-normal);
+  color: var(--color-text-on-dark-muted);
+  margin-top: 2px;
 }
 
-.header-actions {
+
+
+/* User info */
+.header-user {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(var(--rgb-white), 0.05);
+  border: 1px solid rgba(var(--rgb-white), 0.1);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
-.header-actions .icon-button {
+.header-user:hover {
+  background: rgba(var(--rgb-white), 0.1);
+  border-color: rgba(var(--rgb-green-neon), 0.3);
+}
+
+.header-user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-neon);
+  color: var(--gray-900);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  background-color: transparent;
-  border: none;
-  border-radius: 50%;
-  color: #1b9cfc;
-  cursor: pointer;
-  position: relative;
-  transition: background-color var(--transition-fast);
+  font-weight: var(--font-bold);
+  font-size: var(--text-sm);
+  box-shadow: 0 0 8px rgba(var(--rgb-green-neon), 0.3);
 }
 
-.header-actions .icon-button:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+.header-user-name {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--white);
 }
 
-.header-actions .icon-button svg {
-  width: 20px; /* Tamaño 20x20px según informe */
-  height: 20px;
+/* Responsive */
+@media (max-width: 768px) {
+  .main-header {
+    height: 56px;
+  }
+  
+  .main-header .container-fluid {
+    padding: 0 var(--space-3);
+  }
+  
+  .header-logo {
+    height: 36px;
+  }
+  
+  .header-title .main-title {
+    font-size: var(--text-base);
+  }
+  
+  .header-title .sub-title {
+    display: none;
+  }
+  
+  .header-actions {
+    gap: var(--space-2);
+  }
+  
+  .header-user-name {
+    display: none;
+  }
+}
+
+/* Modo Clásico */
+body.classic-mode .main-header {
+  background: var(--color-bg-header);
+  backdrop-filter: none;
+  border-bottom: none;
+}
+
+body.classic-mode .header-logo {
+  filter: none;
+}
+
+body.classic-mode .header-title .main-title {
+  text-shadow: none;
+}
+
+body.classic-mode .header-actions .icon-button {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-text-inverted);
+}
+
+body.classic-mode .header-actions .icon-button:hover {
+  background: rgba(var(--rgb-white), 0.1);
+  color: var(--color-text-inverted);
 }
