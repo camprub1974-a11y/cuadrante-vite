@@ -1,0 +1,76 @@
+/* css/layout/_tabs.css (CÓDIGO CORREGIDO) */
+
+/* 1. Barra de navegación principal (ocupa todo el ancho) */
+.module-nav {
+  background-color: var(--color-primary);
+  width: 100%;
+}
+
+/* 2. Contenedor interior que centra los enlaces */
+.module-nav > .container-fluid {
+  /* Centrado y con el ancho del contenido principal */
+  max-width: var(--container-max-width, 1280px); 
+  margin: 0 auto;
+  padding: 0 1rem;
+
+  /* Propiedades flex para alinear los enlaces dentro de este contenedor */
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-1);
+  justify-content: flex-end; /* Alinea los enlaces a la izquierda */
+}
+
+/* 3. Estilos para cada pestaña individual (tu código existente) */
+.module-nav .module-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 8px 16px;
+  font-family: var(--font-primary);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.module-nav .module-tab svg {
+  stroke: currentColor;
+}
+
+.module-nav .module-tab:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.module-nav .module-tab.active {
+  background-color: white;
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- Resto de tu código de _tabs.css (menú desplegable, etc.) --- */
+.module-tab-dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  background-color: var(--color-bg-card, white);
+  border-radius: var(--border-radius-md, 8px);
+  box-shadow: var(--shadow-dropdown);
+  padding: var(--space-1);
+  min-width: 200px;
+  list-style: none;
+  margin: 0;
+}

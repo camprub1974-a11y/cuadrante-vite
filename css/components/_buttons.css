@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 /* =================================================================== */
 /* css/components/_buttons.css (Refactorizado - Versión Moderna) */
 /* =================================================================== */
+=======
+/* css/components/_buttons.css (VERSIÓN FINAL CORREGIDA) */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 
 /* --- 1. ESTILO BASE .button --- */
 .button {
+<<<<<<< HEAD
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -356,4 +361,181 @@ body.classic-mode .icon-button:hover {
     color: var(--color-primary);
     background: var(--color-bg-hover);
     border-color: var(--color-primary);
+=======
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  height: 40px;
+  padding: 0 var(--space-2);
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-primary);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+.button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* --- Variantes de Color --- */
+
+.button-primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-light);
+}
+.button-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Variante Secundaria */
+.button-secondary {
+  background-color: transparent;
+  stroke: var(--color-primary); 
+  border-color: var(--color-primary);
+}
+.button-secondary:hover {
+  background-color: rgb(22, 73, 112);
+}
+
+.button-danger {
+  background-color: var(--color-danger);
+  color: var(--color-text-light);
+}
+.button-danger:hover {
+  background-color: var(--color-danger-hover);
+}
+
+/* Botón de contorno (Outline) */
+.button-outline {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.button-outline:hover {
+  background-color: rgba(27, 156, 252, 0.1);
+}
+
+/* Botón terciario (solo texto/icono) */
+.button-tertiary {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+}
+.button-tertiary:hover {
+  background-color: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+/* --- Modificador para Botones de Icono --- */
+
+/* Esta clase se AÑADE a .button para convertirlo en un botón de icono.
+  Ej: class="button button-icon button-primary"
+*/
+.button-icon {
+  width: 40px;  /* Mismo alto que el botón normal */
+  height: 40px;
+  padding: 0;
+  border-radius: var(--border-radius-full); /* Lo hace circular */
+}
+
+/* --- Estilos para otras secciones (se mantienen) --- */
+
+.view-actions .button-secondary {
+  stroke: var(--color-primary);
+}
+
+.acciones-registro {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.acciones-registro button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.acciones-registro button:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.acciones-registro button svg,
+.acciones-registro button i {
+  width: 18px;
+  height: 18px;
+  stroke: #555;
+  transition: stroke 0.2s ease;
+}
+
+/* ==========================================================================
+   Estilo Específico para Botones de Paginación
+   ========================================================================== */
+
+.pagination-button {
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; /* Espacio entre icono y texto */
+
+  /* Tamaño */
+  height: 36px;
+  padding: 0 1rem;
+  
+  /* Apariencia SÓLIDA */
+  background-color: var(--color-surface-variant); /* Fondo sólido y neutro */
+  color: var(--color-on-surface-variant);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  
+  /* Texto */
+  font-size: var(--text-sm);
+  font-weight: 500;
+  
+  /* Comportamiento */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination-button:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.pagination-button:disabled {
+  background-color: var(--color-bg-disabled);
+  color: var(--color-text-disabled);
+  border-color: var(--color-border-disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Nuevo estilo para que los botones de Doc.Entrada/Salida se muestren en horizontal */
+.task-resolution-column .button-group {
+    display: flex;        /* Usa flexbox para alineación horizontal */
+    gap: 10px;            /* Añade un espacio de 10px entre los botones */
+    margin-top: 10px;     /* Espacio opcional para separarlos de la etiqueta */
+}
+
+/* Opcional: Asegurar que los botones compartan el espacio de forma equitativa */
+.task-resolution-column .button-group .button {
+    flex-grow: 1;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }

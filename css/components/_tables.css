@@ -34,14 +34,19 @@
 
 .data-table {
   width: 100%;
+<<<<<<< HEAD
   border-collapse: separate;
   border-spacing: 0;
+=======
+  border-collapse: collapse;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .data-table thead.sticky-header {
   position: sticky;
   top: 0;
   z-index: 10;
+<<<<<<< HEAD
 }
 
 .data-table thead {
@@ -73,9 +78,30 @@
 
 .data-table tbody tr {
   transition: all var(--transition-fast) var(--ease-smooth);
+=======
+}
+
+.data-table th {
+  background-color: var(--color-bg-table-header); /* #F0F2F5 */
+  padding: 12px var(--space-2); /* 12px vertical, 16px horizontal */
+  text-align: left;
+  font-size: var(--text-sm); /* 14px */
+  font-weight: 400; /* Regular */
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid var(--color-border); /* #E2E5E9 */
+}
+
+.data-table td {
+  padding: 12px var(--space-2); /* 12px vertical, 16px horizontal */
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--text-sm); /* 14px */
+  line-height: var(--leading-tight);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .data-table tbody tr:nth-child(even) {
+<<<<<<< HEAD
   background: rgba(var(--rgb-white), 0.02);
 }
 
@@ -85,12 +111,20 @@
 
 .data-table tbody tr:hover td {
   border-bottom-color: rgba(var(--rgb-green-neon), 0.2);
+=======
+  background-color: var(--color-bg-table-row-alt); /* #FBFCFD */
+}
+
+.data-table tbody tr:hover {
+  background-color: var(--color-background-hover);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .data-table tbody tr:last-child td {
   border-bottom: none;
 }
 
+<<<<<<< HEAD
 .data-table td.actions-cell {
   display: flex;
   gap: var(--space-2);
@@ -616,3 +650,65 @@ body.classic-mode .status-pill.status-closed {
   color: var(--color-text-secondary);
   border-color: var(--color-border);
 }
+=======
+.pagination-controls {
+  display: flex; /* Activa Flexbox */
+  justify-content: space-between; /* Empuja los botones a los extremos */
+  align-items: center; /* Centra verticalmente el texto y los botones */
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.pagination-controls span {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+/* Mejora la apariencia de los botones con iconos */
+.pagination-controls .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem; /* Espacio entre el icono y el texto */
+}
+
+/* Estilo visual para botones desactivados */
+.pagination-controls .button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+   FIX DEFINITIVO: Forzar estilos sólidos en botones de acción
+   ========================================================================== */
+
+/*
+  Esta regla fuerza el color de fondo sólido usando !important para ganar
+  cualquier conflicto de especificidad con otras hojas de estilo.
+*/
+.data-table td.actions-cell .button.button-secondary {
+  background-color: var(--color-secondary) !important;
+  opacity: 1 !important;
+  color: white !important;
+}
+
+.data-table td.actions-cell .button.button-danger {
+  background-color: var(--color-danger) !important;
+  opacity: 1 !important;
+  color: white !important;
+}
+
+/* Añadimos también una regla para los botones primarios que puedas usar 
+  en otras tablas, como el de generar PDF.
+*/
+.data-table td.actions-cell .button.button-primary {
+  background-color: var(--color-primary) !important;
+  opacity: 1 !important;
+  color: white !important;
+}
+
+/* Efecto hover consistente */
+.data-table td.actions-cell .button:hover {
+  filter: brightness(110%);
+}
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786

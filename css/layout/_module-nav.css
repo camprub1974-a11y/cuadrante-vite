@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* =================================================================== */
 /* css/layout/_module-nav.css (Refactorizado - Versión Moderna) */
 /* =================================================================== */
@@ -31,15 +32,42 @@
   margin: 0 auto;
 }
 
+=======
+/* EN: css/layout/_module-nav.css (VERSIÓN FINAL) */
+
+.module-nav {
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-border-main);
+  box-shadow: var(--shadow-small);
+  padding: 0 var(--space-4);
+}
+
+.module-nav>.container-fluid {
+  max-width: var(--container-max-width, 1280px);
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-1);
+  justify-content: flex-start !important;
+}
+
+/* Oculta la barra de scroll en navegadores Webkit (Chrome, Safari) */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 .module-nav .container-fluid::-webkit-scrollbar {
   display: none;
 }
 
+<<<<<<< HEAD
 /* Tabs con efecto glass */
+=======
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 .module-tab {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+<<<<<<< HEAD
   padding: var(--space-2) var(--space-4);
   font-size: var(--text-sm);
   
@@ -140,4 +168,27 @@ body.classic-mode .module-tab.active {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: var(--color-text-inverted) !important;
   border-color: var(--color-primary);
+=======
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease-in-out;
+  white-space: nowrap; /* Impide que el texto de la pestaña se parta */
+}
+
+.module-tab:hover {
+  background-color: var(--color-background-light);
+  color: var(--color-text-main);
+}
+
+.module-tab.active {
+  color: var(--app-primary-blue);
+  border-bottom-color: var(--app-primary-blue);
+  font-weight: 600;
+}
+
+.module-tab.active i {
+  color: var(--app-primary-blue);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }

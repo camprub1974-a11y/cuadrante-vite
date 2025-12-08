@@ -3,6 +3,7 @@
 /* =================================================================== */
 
 .main-header {
+<<<<<<< HEAD
   height: 64px;
   
   background: var(--glass-dark-bg);
@@ -11,6 +12,11 @@
   border-bottom: 1px solid var(--glass-dark-border);
   
   color: var(--white);
+=======
+  height: var(--space-8); /* 64px */
+  background-color: #1f2d3d;
+  color: #1b9cfc;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
   display: flex;
   align-items: center;
   justify-content: center;
@@ -26,6 +32,7 @@
   z-index: 1000;
 }
 
+<<<<<<< HEAD
 .main-header .container-fluid {
   display: flex;
   align-items: center;
@@ -35,6 +42,17 @@
 }
 
 /* Brand */
+=======
+/*
+  Esta regla anula el padding horizontal del contenedor principal de la cabecera,
+  alineando su contenido con los bordes de la ventana.
+*/
+.main-header .container-fluid {
+  padding-left: var(--space-2); /* O el valor que desees, ej: 1rem */
+  padding-right: var(--space-2); /* O el valor que desees, ej: 1rem */
+}
+
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 .header-brand {
   display: flex;
   align-items: center;
@@ -77,6 +95,7 @@
 .header-user {
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
   background: rgba(var(--rgb-white), 0.05);
@@ -166,4 +185,74 @@ body.classic-mode .header-actions .icon-button {
 body.classic-mode .header-actions .icon-button:hover {
   background: rgba(var(--rgb-white), 0.1);
   color: var(--color-text-inverted);
+=======
+  gap: var(--space-2); /* Espacio uniforme entre los botones */
+}
+
+/* ✅ ESTILOS A AÑADIR/MODIFICAR PARA UNIFICAR BOTONES */
+
+/* Regla general para todos los botones de icono en el header */
+.header-actions .icon-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; /* Los hace circulares */
+  color: #fff;
+  background-color: transparent;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.header-actions .icon-button:hover {
+  background-color: var(--color-background-light);
+  color: var(--color-text-main);
+}
+
+.header-actions .icon-button i {
+  width: 22px;
+  height: 22px;
+}
+
+/* En css/layout/_header.css o similar */
+
+.app-header {
+  width: 100%;
+  background-color: var(--color-background); /* O el color que prefieras */
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 1rem; /* Espaciado lateral */
+  position: sticky; /* Opcional: Mantiene la cabecera fija arriba */
+  top: 0;
+  z-index: 100;
+}
+
+
+.header-content-wrapper {
+  /* ... tus estilos existentes de max-width y margin ... */
+  max-width: var(--container-max-width, 1280px);
+  margin: 0 auto;
+  padding: 0 1rem;
+  height: 64px;
+
+  /* --- INICIO DE LA CORRECCIÓN --- */
+  display: flex;
+  align-items: center; /* Centra los elementos verticalmente */
+  justify-content: space-between; /* ¡Esta es la clave! */
+  width: 100%; /* Asegura que el contenedor ocupe todo el espacio disponible */
+  /* --- FIN DE LA CORRECCIÓN --- */
+}
+
+
+/* Estilo específico para el botón del menú de gestión */
+#open-sidebar-btn {
+  background-color: var(--app-primary-blue); /* Color de fondo azul */
+  color: #f6fbffff; /* Color del icono en blanco para contraste */
+}
+
+/* Efecto al pasar el ratón por encima para que se oscurezca ligeramente */
+#open-sidebar-btn:hover {
+  background-color: #0056b3; /* Un tono de azul más oscuro */
+  color: var(--color-white);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }

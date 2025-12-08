@@ -7,6 +7,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+<<<<<<< HEAD
   gap: var(--space-4);
   padding: var(--space-4) var(--space-5);
   
@@ -16,10 +17,15 @@
   border: 1px solid rgba(var(--rgb-white), 0.05);
   border-radius: var(--radius-xl);
   margin-bottom: var(--space-6);
+=======
+  gap: 1rem;
+  padding: 0.5rem 1.25rem;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .dashboard-filters h4 {
   margin: 0;
+<<<<<<< HEAD
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
   color: var(--white);
@@ -27,11 +33,20 @@
 
 #dashboard-date-filter {
   min-width: 200px;
+=======
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+#dashboard-date-filter {
+  min-width: 180px;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 /* Grid de KPIs */
 .kpi-grid {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-5);
   margin-bottom: var(--space-6);
@@ -77,6 +92,35 @@
   color: var(--color-text-on-dark-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+=======
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.kpi-card {
+  background-color: var(--app-card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.kpi-value {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--app-primary-blue);
+  line-height: 1.2;
+}
+
+.kpi-label {
+  font-size: 0.9rem;
+  color: var(--app-text-secondary);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 /* Variantes de color para KPIs */
@@ -98,13 +142,20 @@
 /* Grid de gráficos */
 .charts-grid {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: var(--space-5);
   margin-bottom: var(--space-6);
+=======
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .chart-container {
   position: relative;
+<<<<<<< HEAD
   height: 400px;
   width: 100%;
   
@@ -116,18 +167,29 @@
   border-radius: var(--radius-card);
   padding: var(--space-5);
   box-shadow: var(--shadow-glass-card);
+=======
+  height: 350px;
+  width: 100%;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 /* Grid de requerimientos */
 .requerimientos-grid {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-5);
+=======
+  grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .requerimientos-list {
   display: flex;
   flex-direction: column;
+<<<<<<< HEAD
   gap: var(--space-3);
   max-height: 500px;
   overflow-y: auto;
@@ -176,12 +238,31 @@
   color: var(--white);
   font-weight: var(--font-medium);
   line-height: 1.5;
+=======
+  gap: 1rem;
+  max-height: 400px; /* Altura máxima con scroll */
+  overflow-y: auto;
+}
+
+.requerimiento-item {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color-light);
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+}
+
+.requerimiento-item .req-description {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: var(--app-text-primary);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .requerimiento-item .req-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
+<<<<<<< HEAD
   font-size: var(--text-xs);
   color: var(--color-text-on-dark-muted);
   gap: var(--space-2);
@@ -214,10 +295,19 @@
   .charts-grid {
     grid-template-columns: 1fr;
   }
+=======
+  font-size: 0.75rem;
+  color: var(--app-text-secondary);
+}
+
+.requerimiento-item .view-report-link {
+  font-weight: 500;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 @media (max-width: 900px) {
   .requerimientos-grid {
+<<<<<<< HEAD
     grid-template-columns: 1fr;
   }
   
@@ -262,3 +352,8 @@ body.classic-mode .requerimiento-item {
   border-color: var(--color-border);
   backdrop-filter: none;
 }
+=======
+    grid-template-columns: 1fr; /* Una sola columna */
+  }
+}
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786

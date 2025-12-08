@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* =================================================================== */
 /* css/views/_service-order-modal.css (Refactorizado - Moderna) */
 /* =================================================================== */
@@ -319,4 +320,111 @@ body.classic-mode .dropdown-item .agent-display-name {
 }
 body.classic-mode .dropdown-item.disabled {
     color: var(--color-text-muted);
+=======
+/* RUTA: css/views/_service-order-modal.css (CÓDIGO COMPLETO Y CORREGIDO) */
+
+/* 1. Estilos generales del modal */
+#service-order-modal .modal-content.extra-large {
+  max-width: 1200px; /* Aumentamos el ancho para que quepan las 3 columnas */
+  width: 95%;
+}
+
+/* 2. Layout principal de 3 columnas */
+#service-order-modal .modal-body.three-column-layout {
+  display: grid;
+  /* Proporciones: Col 1 (1.2), Col 2 (0.8), Col 3 (1.5) */
+  grid-template-columns: 1.2fr 0.8fr 1.5fr; 
+  gap: 1.5rem; /* Espacio entre columnas */
+  padding: 1.5rem;
+  align-items: start; /* Alinea el contenido de las columnas en la parte superior */
+}
+
+/* 3. Estilos para cada columna */
+.three-column-layout .column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* Espacio entre los elementos dentro de una columna */
+}
+
+.column-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 0.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* 4. Estilos para los componentes específicos */
+
+/* Metadata de la orden (Nº y Estado) */
+.order-meta-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.order-number {
+  font-weight: 600;
+  font-size: 1.1rem;
+  background-color: var(--color-background-inactive);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius-md);
+}
+
+/* Contenedores para listas (Agentes, Tareas, etc.) */
+.resource-list,
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background-color: var(--color-background-inactive);
+  border-radius: var(--border-radius-md);
+  min-height: 100px;
+}
+
+/* Ítems dentro de las listas */
+.resource-item,
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+/* Grupo para añadir Tareas Generales */
+.task-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+.task-input-group input {
+  flex-grow: 1;
+}
+
+/* Formulario para añadir Tareas Específicas */
+.add-task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--color-border);
+}
+.add-task-form button {
+  align-self: flex-end; /* Alinea el botón a la derecha */
+}
+
+/* Etiqueta para el agente en la lista de tareas específicas */
+.agent-tag {
+  background-color: var(--color-surface-variant);
+  color: var(--color-on-surface-variant);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin: 0 1rem;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }

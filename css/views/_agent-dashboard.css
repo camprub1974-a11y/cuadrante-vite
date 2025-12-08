@@ -3,7 +3,11 @@
 /* =================================================================== */
 
 #agent-current-order-widget .card-content {
+<<<<<<< HEAD
   padding: 0;
+=======
+  padding: 0; /* Quitamos el padding por defecto para un control total */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 /* Header del widget */
@@ -11,6 +15,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+<<<<<<< HEAD
   
   background: rgba(var(--rgb-green-neon), 0.05);
   backdrop-filter: var(--backdrop-blur-sm);
@@ -18,10 +23,16 @@
   
   padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid rgba(var(--rgb-green-neon), 0.2);
+=======
+  background-color: #f7fafc;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border-color-light);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .widget-header h4 {
   margin: 0;
+<<<<<<< HEAD
   font-size: var(--text-lg);
   font-weight: var(--font-semibold);
   color: var(--white);
@@ -38,10 +49,24 @@
   border-radius: var(--radius-full);
   border: 1px solid rgba(var(--rgb-green-neon), 0.3);
   font-family: var(--font-monospace);
+=======
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.widget-reg-number {
+  font-size: 0.85rem;
+  font-weight: 500;
+  background-color: #eef2f9;
+  color: var(--app-text-secondary);
+  padding: 4px 8px;
+  border-radius: 6px;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 /* Detalles del widget */
 .widget-details {
+<<<<<<< HEAD
   padding: var(--space-5);
 }
 
@@ -59,6 +84,21 @@
   font-weight: var(--font-semibold);
   min-width: 100px;
   flex-shrink: 0;
+=======
+  padding: 1.25rem;
+}
+
+.widget-details p {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: var(--app-text-secondary);
+}
+
+.widget-details p strong {
+  color: var(--app-text-primary);
+  min-width: 60px;
+  display: inline-block;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .widget-details p:last-child {
@@ -67,6 +107,7 @@
 
 /* Acciones del widget */
 .widget-actions {
+<<<<<<< HEAD
   padding: var(--space-4) var(--space-5);
   background: rgba(var(--rgb-black), 0.2);
   border-top: 1px solid rgba(var(--rgb-white), 0.1);
@@ -136,3 +177,10 @@ body.classic-mode .widget-actions {
   background: var(--color-bg-hover);
   border-top-color: var(--color-border);
 }
+=======
+  padding: 1rem 1.25rem;
+  background-color: #f8fafc;
+  border-top: 1px solid var(--border-color-light);
+  text-align: right;
+}
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786

@@ -10,6 +10,7 @@ export const parseISO = dateFnsParseISO;
 export const isValid = dateFnsIsValid; // <-- Usaremos esta importación
 
 export function formatDate(date, formatString) {
+<<<<<<< HEAD
     if (!date || !isValid(date)) {
         console.warn('formatDate: Fecha de entrada inválida o no es un objeto Date.', date);
         return 'Fecha Inválida';
@@ -31,7 +32,30 @@ export function parseDateString(dateString) {
     } catch (e) {
         console.error('Error al parsear cadena de fecha con parseDateString:', dateString, e);
         return new Date('Invalid Date');
+=======
+  if (!date || !isValid(date)) {
+    console.warn('formatDate: Fecha de entrada inválida o no es un objeto Date.', date);
+    return 'Fecha Inválida';
+  }
+  const zonedDate = toZonedTime(date, MADRID_TIMEZONE);
+  return formatInTimeZone(zonedDate, MADRID_TIMEZONE, formatString, { locale: es });
+}
+
+export function parseDateString(dateString) {
+  if (!dateString || typeof dateString !== 'string') {
+    return new Date('Invalid Date');
+  }
+  try {
+    const parsed = parseISO(dateString + 'T00:00:00');
+    if (isValid(parsed)) {
+      return toZonedTime(parsed, MADRID_TIMEZONE);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     }
+    return new Date('Invalid Date');
+  } catch (e) {
+    console.error('Error al parsear cadena de fecha con parseDateString:', dateString, e);
+    return new Date('Invalid Date');
+  }
 }
 
 /**
@@ -79,6 +103,7 @@ export function parseDate(dateString, formatString) {
  * @returns {Array<{id: string, name: string}>}
  */
 export function generateMonthsForYear(year) {
+<<<<<<< HEAD
     
     // Convertimos el año a un número
     let validYear = parseInt(year, 10);
@@ -128,6 +153,17 @@ export function formatTimeAgo(date) {
   // 🛑 ANTES: if (!isValidDate(date))
   if (!isValid(date)) { 
     return 'Fecha inválida';
+=======
+  const months = [];
+  for (let i = 0; i < 12; i++) {
+    const monthDate = new Date(year, i, 1);
+    const monthName = formatInTimeZone(monthDate, MADRID_TIMEZONE, 'MMMM', { locale: es });
+    months.push({
+      id: `cuadrante_${monthName.toLowerCase()}_${year}`,
+      name: monthName.charAt(0).toUpperCase() + monthName.slice(1),
+      monthIndex: i,
+    });
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
   }
 
   const seconds = Math.floor((new Date() - date) / 1000);
@@ -239,8 +275,20 @@ export function getDaysInMonth(date) {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 }
 
+/**
+ * Devuelve el número de días que tiene un mes específico.
+ * @param {Date} date - Una fecha dentro del mes que se quiere consultar.
+ * @returns {number} El número de días del mes.
+ */
+export function getDaysInMonth(date) {
+  // Se crea una fecha para el día 0 del mes SIGUIENTE,
+  // lo que mágicamente nos da el último día del mes ACTUAL.
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
 // ✅ FUNCIÓN CORREGIDA Y SIMPLIFICADA
 export function getShiftDisplayText(shiftType) {
+<<<<<<< HEAD
     if (!shiftType) return '-';
     // Mapeo directo de todos los tipos conocidos a una sola letra o símbolo.
     const mappings = {
@@ -300,6 +348,67 @@ export function parseDateToISO(date) {
         return '';
     }
     return format(date, 'yyyy-MM-dd');
+=======
+  if (!shiftType) return '-';
+  // Mapeo directo de todos los tipos conocidos a una sola letra o símbolo.
+  const mappings = {
+    Mañana: 'M',
+    Tarde: 'T',
+    Noche: 'N',
+    Libre: 'L',
+    Vacaciones: 'V',
+    Permiso: 'P',
+    Baja: 'B',
+    'Asuntos Propios': 'AP',
+    'Permiso Retribuido': 'P',
+    Lc: 'L',
+    PR: 'P', // Unificamos variantes a una sola letra
+  };
+  // Si el tipo ya es una letra conocida, la devolvemos.
+  if (['M', 'T', 'N', 'L', 'V', 'P', 'B', 'AP'].includes(shiftType)) {
+    return shiftType;
+  }
+  // Si no, buscamos en el mapa. Si no se encuentra, devolvemos un guion.
+  return mappings[shiftType] || '-';
+}
+
+export function getShiftFullName(shiftType) {
+  if (!shiftType) return 'Sin Turno';
+  const mappings = {
+    M: 'Mañana',
+    T: 'Tarde',
+    N: 'Noche',
+    L: 'Libre',
+    V: 'Vacaciones',
+    PR: 'Permiso Retribuido',
+    AP: 'Asuntos Propios',
+  };
+  if (shiftType === 'N') return 'No Aplica';
+  return mappings[shiftType] || shiftType;
+}
+
+export function getTurnoInitial(shiftType) {
+  if (!shiftType) return '-';
+  const mappings = {
+    Mañana: 'M',
+    Tarde: 'T',
+    Noche: 'N',
+    Libre: 'L',
+    Vacaciones: 'V',
+    'Permiso Retribuido': 'PR',
+    'Asuntos Propios': 'AP',
+  };
+  if (shiftType === 'N' || shiftType === 'Noche') return '-';
+  if (['M', 'T', 'L', 'V', 'PR', 'AP'].includes(shiftType)) return shiftType;
+  return mappings[shiftType] || (shiftType.length > 2 ? shiftType.substring(0, 2) : shiftType);
+}
+
+export function parseDateToISO(date) {
+  if (!date || !dateFnsIsValid(date)) {
+    return '';
+  }
+  return format(date, 'yyyy-MM-dd');
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 /**
@@ -310,6 +419,7 @@ export function parseDateToISO(date) {
  * @returns {Promise<Blob>} - Una promesa que se resuelve con el nuevo archivo (Blob) redimensionado.
  */
 export function resizeImage(file, maxWidth = 1024) {
+<<<<<<< HEAD
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -410,4 +520,37 @@ export function waitForElements(selectors, timeout = 3000, root = document) {
 
         checkElements();
     });
+=======
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = new Image();
+      img.src = event.target.result;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scaleFactor = maxWidth / img.width;
+        const newWidth = img.width > maxWidth ? maxWidth : img.width;
+        const newHeight = img.width > maxWidth ? img.height * scaleFactor : img.height;
+
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+        // Convierte el canvas a un Blob (archivo) comprimido
+        canvas.toBlob(
+          (blob) => {
+            resolve(blob);
+          },
+          'image/jpeg',
+          0.85
+        ); // 85% de calidad
+      };
+      img.onerror = (error) => reject(error);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }

@@ -1,4 +1,5 @@
 /* =================================================================== */
+<<<<<<< HEAD
 /* css/views/_activity-feed.css (VERSIÓN CORREGIDA Y COMPLETA) */
 /* =================================================================== */
 
@@ -447,3 +448,75 @@ body.classic-mode .activity-feed__body {
     width: 100%;
   }
 }
+=======
+/* 1. ESTILOS PARA EL PANEL DE NOVEDADES (FEED)
+/* =================================================================== */
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.feed-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.feed-item-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+.feed-item-icon i {
+  width: 20px;
+  height: 20px;
+}
+.feed-item-content {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  overflow: hidden;
+}
+.feed-item-title {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.feed-item-date {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+.info-message, .error-message {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: 10px;
+}
+.error-message {
+  color: var(--color-warning);
+}
+
+/* =================================================================== */
+/* 2. ESTILO PARA EL INDICADOR DE FECHA SEÑALADA EN EL CALENDARIO
+/* =================================================================== */
+.marked-date-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background-color: #dc2626; /* Rojo de "Baja" (es un buen color de alerta) */
+  border-radius: 50%;
+  border: 1.5px solid white;
+  box-shadow: 0 0 3px rgba(0,0,0,0.5);
+  cursor: help; /* Para que el usuario sepa que puede pasar el ratón */
+}
+
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786

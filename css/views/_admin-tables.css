@@ -6,6 +6,7 @@
 .admin-filters {
   display: flex;
   flex-wrap: wrap;
+<<<<<<< HEAD
   gap: var(--space-4);
   align-items: flex-end;
   
@@ -21,16 +22,32 @@
 
 .admin-filters .form-group {
   flex: 1 1 200px;
+=======
+  gap: 1rem;
+  align-items: flex-end;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.admin-filters .form-group {
+  flex: 1 1 180px; /* Flexbox para que se ajusten */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
   margin-bottom: 0;
 }
 
 .admin-filters .button {
+<<<<<<< HEAD
   flex-shrink: 0;
+=======
+  flex-shrink: 0; /* Evita que el botón se encoja */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
   margin-bottom: 0;
 }
 
 /* Tabla de admin (hereda de .data-table) */
 .admin-services-table {
+<<<<<<< HEAD
   /* Estilos base de _tables.css */
 }
 
@@ -98,3 +115,34 @@ body.classic-mode .admin-filters {
 body.classic-mode .admin-services-table .notes-cell {
   color: var(--color-text-secondary);
 }
+=======
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-services-table th,
+.admin-services-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.admin-services-table thead th {
+  background-color: var(--table-header-bg);
+  color: var(--table-header-text);
+  font-weight: 500;
+}
+
+.admin-services-table tbody tr:hover {
+  background-color: var(--table-row-hover-bg);
+}
+
+.admin-services-table .notes-cell {
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9em;
+  color: var(--text-color-light);
+}
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786

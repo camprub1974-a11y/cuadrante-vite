@@ -93,6 +93,7 @@ export function showInitializeMonthModal() {
 export function hideInitializeMonthModal() {
   const modal = document.getElementById('initialize-month-modal');
   if (modal) modal.classList.add('hidden');
+<<<<<<< HEAD
 }
 
 /**
@@ -155,4 +156,6 @@ export function setupModalCloseButtons(modalElement) { // <-- CORREGIDO: Nombre 
             console.log(`Listener de cierre añadido a:`, btn); 
         }
     });
+=======
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }

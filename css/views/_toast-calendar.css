@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* =================================================================== */
 /* css/views/_toast-calendar.css (Solo Grid y Modo Clásico) */
 /* Los estilos de eventos (Glass/MCST) son gestionados por js/main.js (setTheme) */
@@ -187,4 +188,553 @@ body.classic-mode .single-agent-letter-icon {
   color: var(--color-text-secondary);
   background: var(--color-bg-hover);
   border-color: var(--color-border);
+=======
+/* ============================================================================
+   TOAST UI CALENDAR - CSS PARA 5 BARRAS HORIZONTALES POR SECCIÓN
+   Mañana | Tarde | Noche | Asuntos | Libre
+   ============================================================================ */
+
+/* ==========================================================================
+   1. CONTROLES Y HEADER
+   ========================================================================== */
+
+body .calendar-controls {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding-bottom: var(--space-2) !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    margin-bottom: var(--space-2) !important;
+    flex-wrap: wrap !important;
+    gap: var(--space-2) !important;
+}
+
+body .calendar-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: var(--space-1) !important;
+}
+
+body #currentMonthTitle {
+    font-size: var(--text-xl) !important;
+    font-weight: 600 !important;
+    color: var(--color-text) !important;
+    margin: 0 var(--space-1) !important;
+}
+
+body .schedule-actions {
+    display: flex !important;
+    gap: var(--space-1) !important;
+}
+
+/* ==========================================================================
+   2. EVENTOS CON 5 BARRAS HORIZONTALES MÁS GRANDES
+   ========================================================================== */
+
+/* Contenedor principal del evento - Barras más grandes */
+.toastui-calendar-allday-event {
+    position: relative !important;
+    padding: 0 !important;
+    border-radius: 3px !important;
+    border-left-width: 3px !important;
+    border-left-style: solid !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08) !important;
+    overflow: hidden !important;
+    
+    /* Altura aumentada para 6 barras */
+    min-height: 24px !important;
+    max-height: 26px !important;
+    
+    /* Espaciado claro entre barras */
+    margin-bottom: 2px !important;
+}
+
+/* Capa de fondo con color de sección */
+.event-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.25;
+}
+
+/* Contenido de la barra - Más espaciado */
+.event-foreground {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 2px 4px;
+    height: 100%;
+    overflow: hidden;
+    font-size: 0.7rem;
+}
+
+/* Barra de sección */
+.event-section-bar {
+    width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    flex-wrap: nowrap !important;
+}
+
+/* --- ESTILOS PARA ALINEAR EL NÚMERO DEL DÍA (VERSIÓN REFORZADA) --- */
+
+/* 1. Contenedor de la celda del día */
+.toastui-calendar-daygrid-cell {
+  vertical-align: top !important; /* Fuerza la alineación superior */
+}
+
+/* 2. Cabecera del día (donde está el número) */
+.toastui-calendar-daygrid-cell-header {
+  padding-top: 5px !important;    /* Ajusta el padding para que no quede pegado */
+  padding-left: 5px !important;
+}
+
+/* ==========================================================================
+   3. ÍCONOS Y AGENTES - TAMAÑO MEDIO
+   ========================================================================== */
+
+/* Icono del turno - Tamaño mejorado */
+.event-letter-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+    font-weight: 800;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+    border: 1.5px solid white;
+    text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.4);
+}
+
+/* Lista de agentes en la barra */
+.event-agents-list {
+    display: flex;
+    gap: 2px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+/* Tags de agentes - Tamaño mejorado */
+.agent-tag {
+    color: white;
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.5);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 38px;
+    display: inline-block;
+    line-height: 1;
+}
+
+/* Indicador de agentes adicionales */
+.agent-extra {
+    color: white;
+    padding: 1px 2px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 2px;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* ==========================================================================
+   4. FONDO DE CELDAS
+   ========================================================================== */
+
+/* ==========================================================================
+   HEADER DE NÚMEROS DE DÍAS - Colorear la fila completa (no ampliar números)
+   ========================================================================== */
+
+/* La fila COMPLETA con los números debe ser azul */
+.toastui-calendar-daygrid-header-row {
+    background-color: #fafafa !important;
+}
+
+/* Fondo azul para cada celda del header */
+.toastui-calendar-daygrid-header-row > div {
+    background-color: #2563eb !important;
+    border-color: #1e40af !important;
+}
+
+/* Números en blanco pero TAMAÑO NORMAL (sin ampliar) */
+.toastui-calendar-grid-cell-date {
+    /* --- Dimensiones (Altura y Ancho) --- */
+    width: 28px;           /* Ancho del icono */
+    height: 28px;          /* Alto del icono */
+    line-height: 28px;     /* Centra el número verticalmente. ¡Igual que la altura! */
+    
+    /* --- Color de Fondo --- */
+    background-color: transparent; /* Por defecto transparente, cámbialo si quieres un fondo */
+    
+    /* --- Color del Texto (Número) --- */
+    color: #0d0741 !important; /* Color del número. Usa !important si es necesario */
+    
+    /* --- Otros Estilos Visuales --- */
+    display: inline-block;
+    text-align: center;
+    border-radius: 50%;    /* Descomenta esta línea para hacer el fondo circular */
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    padding: 0 !important; /* Reseteamos el padding para un control preciso */
+}
+
+/* Nombre del día de la semana (Mon, Tue, etc.) - blanco también */
+.toastui-calendar-weekday {
+    color: white !important;
+    font-weight: 500 !important;
+    background-color: #ffffff !important;
+
+}
+
+/* Fondo sutil para días de semana */
+.toastui-calendar-daygrid-cell {
+    background-color: #ffffff;
+}
+
+/* Fondo blanco para fines de semana */
+.toastui-calendar-weekend-cell {
+    background-color: #f5aaaa !important;
+}
+
+/* ==========================================================================
+   ESTILOS PARA EL ICONO DEL DÍA ACTUAL (HOY)
+   ========================================================================== */
+
+.toastui-calendar-today .toastui-calendar-grid-cell-date {
+    /* --- Color de Fondo --- */
+    background-color: #260481; /* Azul intenso por defecto, cámbialo aquí */
+
+    /* --- Color del Texto (Número) --- */
+    color: white !important; /* El color del número, usualmente blanco para contraste */
+    
+    /* --- Dimensiones (Altura y Ancho) --- */
+    height: 28px;              /* Asegúrate de que coincida con los otros días */
+    width: 28px;               /* para mantener la consistencia */
+    line-height: 28px;         /* Centrado vertical perfecto */
+
+    /* --- Otros Estilos Visuales --- */
+    border-radius: 50%;        /* Mantiene la forma circular */
+    font-weight: 700 !important; /* Puedes hacerlo más grueso */
+}
+
+
+.toastui-calendar-grid-cell-date .toastui-calendar-weekday-grid-date.toastui-calendar-weekday-grid-date-decorator {
+    background-color: #0e005a !important;
+    color: white !important;
+    border-radius: 50%;
+    display: inline-block;
+    font-weight: 700;
+    height: 26px;
+    line-height: 26px;
+    margin-left: 2px;
+    text-align: center;
+    width: 26px;
+}
+
+/* ==========================================================================
+   5. LEYENDA DE COLORES AMPLIADA (5 secciones)
+   ========================================================================== */
+
+.calendar-legend {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    padding: 12px 16px !important;
+    background-color: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 6px !important;
+    margin-top: 16px !important;
+    font-size: 0.85rem !important;
+}
+
+.legend-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.legend-color {
+    width: 24px !important;
+    height: 24px !important;
+    border-radius: 4px !important;
+    border: 1px solid rgba(0,0,0,0.1) !important;
+    display: inline-block !important;
+}
+
+/* Colores de secciones en leyenda */
+.legend-color.section-morning { background-color: #2563eb !important; }
+.legend-color.section-afternoon { background-color: #ea580c !important; }
+.legend-color.section-free { background-color: #78716c !important; }
+.legend-color.section-vacation { background-color: #8b5cf6 !important; }
+.legend-color.section-matters { background-color: #0d9488 !important; }
+.legend-color.section-other { background-color: #6b7280 !important; }
+
+/* Colores de turnos individuales */
+.legend-color.shift-m { background-color: #2563eb !important; }
+.legend-color.shift-t { background-color: #ea580c !important; }
+.legend-color.shift-n { background-color: #4b5563 !important; }
+.legend-color.shift-l { background-color: #78716c !important; }
+.legend-color.shift-p { background-color: #a855f7 !important; }
+.legend-color.shift-v { background-color: #8b5cf6 !important; }
+.legend-color.shift-b { background-color: #dc2626 !important; }
+.legend-color.shift-ap { background-color: #0d9488 !important; }
+.legend-color.shift-lc { background-color: #16a34a !important; }
+
+.legend-text {
+    color: #374151 !important;
+    font-weight: 600 !important;
+}
+
+/* ==========================================================================
+   6. POPUP MEJORADO
+   ========================================================================== */
+
+.custom-popup-body {
+    padding: 12px !important;
+}
+
+.popup-header {
+    padding: 10px !important;
+    border-radius: 4px !important;
+    margin-bottom: 10px !important;
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+}
+
+.popup-content p {
+    margin: 8px 0 !important;
+    font-size: 0.85rem !important;
+    color: #374151 !important;
+    line-height: 1.4 !important;
+}
+
+/* ==========================================================================
+   TARJETA INFORMATIVA DE HORARIOS (Estilos Profesionales)
+   ========================================================================== */
+
+.schedule-info-card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-card);
+    margin-bottom: var(--space-3);
+    overflow: hidden;
+}
+
+.info-card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-2);
+    background-color: var(--color-bg-table-header);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+}
+
+.info-card-header h4 {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: 600;
+}
+
+.info-card-header i {
+    width: 18px;
+    height: 18px;
+    color: var(--color-primary);
+}
+
+.info-card-content ul {
+    list-style: none;
+    padding: var(--space-2);
+    margin: 0;
+}
+
+.info-card-content li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-sm);
+}
+
+.info-card-content li:not(:last-child) {
+    margin-bottom: var(--space-2);
+}
+
+.info-card-content li i {
+    width: 20px;
+    height: 20px;
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.info-card-content li div {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-card-content li strong {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.info-card-content li span {
+    color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   7. ESTILOS PARA EL POPUP PERSONALIZADO (NUEVO)
+   ========================================================================== */
+
+.custom-toast-popup {
+    position: absolute;
+    z-index: 10001; /* Muy alto para que aparezca por encima de todo */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 280px; /* Ancho similar al original */
+    font-family: var(--font-primary);
+    border: 1px solid var(--color-border);
+}
+
+.custom-toast-popup .popup-body {
+    padding: 12px;
+}
+
+.custom-toast-popup .popup-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 0 8px 0;
+    color: var(--color-text);
+}
+
+.custom-toast-popup .popup-details {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #4b5563; /* Un gris azulado para el texto secundario */
+    margin: 0;
+}
+
+.custom-toast-popup .popup-details i {
+    width: 16px;
+    height: 16px;
+}
+
+.custom-toast-popup .popup-footer {
+    display: flex;
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-table-header); /* Fondo gris claro como las cabeceras de tabla */
+}
+
+.custom-toast-popup .popup-button {
+    flex: 1; /* Para que ambos botones ocupen el 50% del espacio */
+    background: none;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #4b5563;
+    transition: background-color 0.2s ease;
+}
+
+.custom-toast-popup .popup-button:hover {
+    background-color: #e5e7eb; /* Un gris un poco más oscuro al pasar el ratón */
+}
+
+/* Línea divisoria entre los dos botones */
+.custom-toast-popup .popup-button:first-child {
+    border-right: 1px solid var(--color-border);
+}
+
+.custom-toast-popup .popup-button i {
+    width: 16px;
+    height: 16px;
+}
+
+.custom-toast-popup .popup-header {
+    padding: 10px 12px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.custom-toast-popup .popup-header .popup-title {
+    color: white;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* =================================================================== */
+/* 8. INDICADOR DE FECHA SEÑALADA (USANDO PLANTILLA)
+/* =================================================================== */
+
+/* Contenedor que envuelve el número y el punto */
+.day-number-container {
+  position: relative; /* Clave para posicionar el punto */
+  display: inline-block; /* Ajusta el tamaño al contenido */
+  padding-right: 5px; /* Espacio para el punto */
+}
+
+/* El número del día (clase de TOAST UI) */
+.toastui-calendar-weekday-grid-date {
+  /* No necesita cambios específicos aquí si ya se ve bien */
+}
+
+/* Wrapper que contiene el icono */
+.marked-date-indicator-wrapper {
+    position: absolute;
+    top: 0px;        /* Ajusta la posición vertical */
+    right: -10px;    /* Ajusta la posición horizontal */
+    z-index: 5;
+    cursor: help;
+    color: #dc2626; /* Color del icono */
+}
+
+/* El icono (ya no es un span, será un <i>) */
+.marked-date-indicator i {
+    width: 14px;     /* Tamaño del icono */
+    height: 14px;
+    stroke-width: 2.5; /* Grosor del icono */
+}
+/* Elimina las reglas de background, border-radius, border, box-shadow para .marked-date-indicator */
+.marked-date-indicator {
+    /* Vacío o solo display: block si es necesario */
+}
+
+
+/* Asegurar espacio */
+.day-number-container {
+  position: relative;
+  display: inline-block;
+  padding-right: 12px; /* Más espacio para el icono */
+}
+
+/* Opcional: Estilo para el día actual cuando tiene marcador */
+.toastui-calendar-today .day-number-container.has-marker .toastui-calendar-weekday-grid-date-decorator {
+  /* Puedes ajustar el padding si el punto se solapa mucho */
+}
+
+/* Quitar el position:relative que añadimos antes al header (ya no es necesario) */
+.toastui-calendar-daygrid-cell-header {
+  position: static !important; /* Volver al valor por defecto */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }

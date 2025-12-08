@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // js/dataController.js (CORREGIDO Y VALIDADO)
+=======
+// js/dataController.js (VERSIÓN COMPLETA, CORREGIDA Y VALIDADA)
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 
 import {
     collection,
@@ -16,6 +20,7 @@ import {
     updateDoc,
     deleteDoc,
     limit,
+<<<<<<< HEAD
     limit as limitQuery,  // <-- AÑADIR ESTO
     getCountFromServer,
     startAfter,
@@ -33,6 +38,19 @@ import { toZonedTime } from 'date-fns-tz';
 
 export { storage };
 
+=======
+    startAfter,
+} from 'firebase/firestore';
+import { db, app, storage } from './firebase-config.js';
+import { ref, listAll, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { currentUser, setAvailableAgents, setPendingTasksCount, setPendingRequestsCount, availableAgents } from './state.js';
+import { parseISO, endOfMonth } from 'date-fns';
+import { getMonthNumberFromName } from './utils.js';
+import { toZonedTime } from 'date-fns-tz';
+
+const functions = getFunctions(app, 'us-central1');
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 const MADRID_TIMEZONE = 'Europe/Madrid';
 
 // --- Función de ayuda interna para traducir turnos ---
@@ -90,6 +108,7 @@ export async function countAllDocumentTemplates() {
 }
 
 export async function createServiceOrder(orderData) {
+<<<<<<< HEAD
     const callable = httpsCallable(functions, 'createServiceOrder');
     return callable(orderData).then((result) => result.data);
 }
@@ -97,6 +116,35 @@ export async function createServiceOrder(orderData) {
 export async function updateServiceOrder(orderId, updateData) {
     const callable = httpsCallable(functions, 'updateServiceOrder');
     return callable({ orderId, updateData }).then((result) => result.data);
+=======
+    const callable = httpsCallable(functions, 'createServiceOrder');
+    return callable(orderData).then((result) => result.data);
+}
+
+export async function updateServiceOrder(orderId, updateData) {
+    const callable = httpsCallable(functions, 'updateServiceOrder');
+    return callable({ orderId, updateData }).then((result) => result.data);
+}
+
+export async function getServiceOrderById(orderId) {
+    if (!orderId) throw new Error('Se requiere un ID de orden.');
+    try {
+        const orderRef = doc(db, 'serviceOrders', orderId);
+        const docSnap = await getDoc(orderRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.service_date && typeof data.service_date.toDate === 'function') {
+                data.service_date = data.service_date.toDate();
+            }
+            return { id: docSnap.id, ...data };
+        } else {
+            throw new Error('No se encontró ninguna orden de servicio con ese ID.');
+        }
+    } catch (error) {
+        console.error('Error al obtener la orden de servicio por ID:', error);
+        throw error;
+    }
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 export async function getServiceOrderById(orderId) {
@@ -124,6 +172,7 @@ export async function getServiceOrderById(orderId) {
  * Esto soluciona el problema de IDs perdidos en la Cloud Function.
  */
 export async function getServiceOrders(filters = {}) {
+<<<<<<< HEAD
     console.log("[DataController] Obteniendo órdenes vía Firestore Directo...", filters);
     
     try {
@@ -256,6 +305,57 @@ export async function assignResourcesToOrder(assignmentData) {
 export async function startServiceOrder(orderId) {
     const callable = httpsCallable(functions, 'startServiceOrder');
     return callable({ orderId }).then((result) => result.data);
+=======
+    const callable = httpsCallable(functions, 'getServiceOrders');
+    return callable(filters).then((result) => result.data);
+}
+
+export async function getPendingTasksForAgents(agentIds) {
+    const callable = httpsCallable(functions, 'getPendingTasksForAgents');
+    try {
+        const result = await callable({ agentIds });
+        return result.data;
+    } catch (error) {
+        console.error("Error al llamar a getPendingTasksForAgents:", error);
+        throw new Error('No se pudo verificar el estado de las tareas pendientes.');
+    }
+}
+
+export async function generateAiServiceOrder(date, shiftType) {
+    const callable = httpsCallable(functions, 'generateAiServiceOrder');
+    try {
+        const result = await callable({ date, shiftType });
+        if (result.data.success) {
+            return result.data;
+        } else {
+            throw new Error(result.data.message || 'La función de IA devolvió un error.');
+        }
+    } catch (error) {
+        console.error("Error al llamar a la Cloud Function 'generateAiServiceOrder':", error);
+        throw error;
+    }
+}
+
+export async function generarInformeManualPDF(data) {
+    const callable = httpsCallable(functions, 'generarInformeManualPDF');
+    try {
+        const result = await callable(data);
+        return result.data;
+    } catch (error) {
+        console.error("Error al llamar a la Cloud Function 'generarInformeManualPDF':", error);
+        throw error;
+    }
+}
+
+export async function assignResourcesToOrder(assignmentData) {
+    const callable = httpsCallable(functions, 'assignResourcesToOrder');
+    return callable(assignmentData).then((result) => result.data);
+}
+
+export async function startServiceOrder(orderId) {
+    const callable = httpsCallable(functions, 'startServiceOrder');
+    return callable({ orderId }).then((result) => result.data);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 // ============================================================
@@ -265,6 +365,7 @@ export async function startServiceOrder(orderId) {
 export async function addReportEntry(entryData) {
     // 1. Llamada original a la Cloud Function para guardar la tarea en el parte
     const callable = httpsCallable(functions, 'addReportEntry');
+<<<<<<< HEAD
     
     try {
         const result = await callable(entryData).then((res) => res.data);
@@ -331,6 +432,44 @@ export async function getServiceReportDetails(reportId) {
         console.error('Error al llamar a getServiceReportDetails (Cloud Function):', error);
         throw error;
     }
+=======
+    return callable(entryData).then((result) => result.data);
+}
+
+export async function getReportForOrder(orderId) {
+    const callable = httpsCallable(functions, 'getReportForOrder');
+    return callable({ orderId }).then((result) => result.data);
+}
+
+export async function getServiceReportDetails(reportId) {
+    const callable = httpsCallable(functions, 'getServiceReportDetails');
+    try {
+        const result = await callable({ reportId });
+        if (result.data.success) {
+            const report = result.data.report;
+            if (report.order && report.order.service_date) {
+                report.order.service_date = new Date(report.order.service_date);
+            }
+            if (report.requerimientos) {
+                report.requerimientos.forEach(req => {
+                    if (req.createdAt) req.createdAt = new Date(req.createdAt);
+                });
+            }
+            if (report.specificTasks) {
+                report.specificTasks.forEach(task => {
+                    if (task.createdAt) task.createdAt = new Date(task.createdAt);
+                    if (task.completedAt) task.completedAt = new Date(task.completedAt);
+                });
+            }
+            return report;
+        } else {
+            throw new Error(result.data.message || 'La función devolvió un error.');
+        }
+    } catch (error) {
+        console.error('Error al llamar a getServiceReportDetails (Cloud Function):', error);
+        throw error;
+    }
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 export async function submitServiceReport({ reportId }) { // 💡 AHORA ACEPTA OBJETO
@@ -342,14 +481,25 @@ export async function submitServiceReport({ reportId }) { // 💡 AHORA ACEPTA O
 }
 
 export async function validateServiceReport(validationData) {
+<<<<<<< HEAD
     const callable = httpsCallable(functions, 'validateServiceReport');
     return callable(validationData).then((result) => result.data);
+=======
+    const callable = httpsCallable(functions, 'validateServiceReport');
+    return callable(validationData).then((result) => result.data);
+}
+
+export async function getServiceReports(filters = {}) {
+    const callable = httpsCallable(functions, 'getServiceReports');
+    return callable(filters).then((result) => result.data);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 // ==========================================================
 // ⭐️ INICIO DE LA CORRECCIÓN - PROBLEMA 2
 // ==========================================================
 export async function createDefaultServiceOrders(date, templateShiftType) {
+<<<<<<< HEAD
     const callable = httpsCallable(functions, 'createDefaultServiceOrders');
     
     const translatedShiftType = translateShiftType(templateShiftType);
@@ -361,12 +511,17 @@ export async function createDefaultServiceOrders(date, templateShiftType) {
 
     // Enviamos el valor traducido de fecha y turno
     return callable({ date: isoDate, templateShiftType: translatedShiftType }).then((result) => result.data);
+=======
+    const callable = httpsCallable(functions, 'createDefaultServiceOrders');
+    return callable({ date, templateShiftType }).then((result) => result.data);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 // ==========================================================
 // ⭐️ FIN DE LA CORRECCIÓN - PROBLEMA 2
 // ==========================================================
 
 export async function updateChecklistItemStatus(data) {
+<<<<<<< HEAD
     const callable = httpsCallable(functions, 'updateChecklistItemStatus');
     return callable(data).then((result) => result.data);
 }
@@ -379,6 +534,20 @@ export async function generateNextOrderNumber(service_date) {
 export async function deleteServiceOrder(orderId) {
     const callable = httpsCallable(functions, 'deleteServiceOrder');
     return callable({ orderId }).then((result) => result.data);
+=======
+    const callable = httpsCallable(functions, 'updateChecklistItemStatus');
+    return callable(data).then((result) => result.data);
+}
+
+export async function generateNextOrderNumber(service_date) {
+    const callable = httpsCallable(functions, 'generateNextOrderNumber');
+    return callable({ service_date }).then((result) => result.data);
+}
+
+export async function deleteServiceOrder(orderId) {
+    const callable = httpsCallable(functions, 'deleteServiceOrder');
+    return callable({ orderId }).then((result) => result.data);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 /**
@@ -391,6 +560,7 @@ export async function updateReportSummary({ reportId, summaryData }) {
     if (!summaryData) throw new Error("Faltan los datos del resumen.");
 
     const callable = httpsCallable(functions, 'updateReportSummary');
+<<<<<<< HEAD
     
     try {
         // Enviamos al backend la estructura correcta
@@ -424,6 +594,33 @@ export async function addRequerimiento({ reportId, data }) {
     } catch (error) {
         console.error("Error en dataController.addRequerimiento:", error);
         throw error;
+=======
+    return callable({ reportId, summaryData }).then((result) => result.data);
+}
+
+export async function addRequerimiento(reportId, requerimientoData) {
+    if (!reportId) {
+        throw new Error('ID de parte de servicio no encontrado para añadir requerimiento.');
+    }
+    const callable = httpsCallable(functions, 'addRequerimiento');
+    return callable({ reportId, data: requerimientoData }).then((result) => result.data);
+}
+
+export async function updateRequerimientoStatus(data) {
+    const callable = httpsCallable(functions, 'updateRequerimientoStatus');
+    return callable(data).then((result) => result.data);
+}
+
+export async function getRequerimientosForReport(reportId) {
+    try {
+        const reqsRef = collection(db, 'serviceReports', reportId, 'requerimientos');
+        const q = query(reqsRef, orderBy('createdAt', 'asc'));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error('Error al obtener los requerimientos:', error);
+        throw new Error('No se pudieron cargar los requerimientos.');
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     }
 }
 
@@ -455,6 +652,7 @@ export async function toggleRequerimientoStatus({ reportId, requerimientoId, isR
     }
 }
 
+<<<<<<< HEAD
 /**
  * Obtiene las órdenes de servicio activas para el agente actual.
  * (Versión Cliente - Firestore Directo)
@@ -534,6 +732,23 @@ export async function getActiveServiceOrdersForAgent() {
         console.error("Error obteniendo órdenes activas:", error);
         // Devolvemos array vacío en vez de lanzar error para no romper la UI
         return []; 
+=======
+export async function getActiveServiceOrdersForAgent() {
+    const callable = httpsCallable(functions, 'getActiveOrdersForAgentCallable');
+    try {
+        const result = await callable();
+        if (result.data && result.data.success) {
+            return result.data.orders.map(order => ({
+                ...order,
+                service_date: new Date(order.service_date)
+            }));
+        } else {
+            throw new Error(result.data.message || 'La función del servidor devolvió un error.');
+        }
+    } catch (error) {
+        console.error('Error al llamar a la Cloud Function getActiveOrdersForAgentCallable:', error);
+        throw new Error('No se pudieron obtener las órdenes de servicio.');
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     }
 }
 
@@ -553,6 +768,7 @@ export async function setAutomationConfig(config) {
 // --- MÓDULO DE CROQUIS ---
 
 export async function getCroquisAssets() {
+<<<<<<< HEAD
     const assetsRef = ref(storage, 'croquis_assets');
     const assets = { vias: [], vehiculos: [], senales: [] };
     try {
@@ -575,10 +791,35 @@ export async function getCroquisAssets() {
         console.error('Error al cargar los recursos para el croquis:', error);
         throw new Error('No se pudieron cargar los recursos del croquis.');
     }
+=======
+    const assetsRef = ref(storage, 'croquis_assets');
+    const assets = { vias: [], vehiculos: [], senales: [] };
+    try {
+        const folders = await listAll(assetsRef);
+        for (const folderRef of folders.prefixes) {
+            const category = folderRef.name;
+            if (assets[category]) {
+                const items = await listAll(folderRef);
+                for (const itemRef of items.items) {
+                    const url = await getDownloadURL(itemRef);
+                    assets[category].push({
+                        name: itemRef.name.split('.')[0],
+                        url: url,
+                    });
+                }
+            }
+        }
+        return assets;
+    } catch (error) {
+        console.error('Error al cargar los recursos para el croquis:', error);
+        throw new Error('No se pudieron cargar los recursos del croquis.');
+    }
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 // 1. FUNCIÓN CORREGIDA: Subir Imagen
 export async function uploadCroquisImage(file) {
+<<<<<<< HEAD
     // --- SEGURIDAD: Obtener usuario con Fallback ---
     let user = currentUser.get();
     if (!user || !user.agentId) {
@@ -593,6 +834,9 @@ export async function uploadCroquisImage(file) {
         }
     }
 
+=======
+    const user = currentUser.get();
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     if (!user) throw new Error('Usuario no autenticado.');
 
     const timestamp = new Date().getTime();
@@ -610,6 +854,7 @@ export async function saveSketchRecord(sketchData) {
     // --- SEGURIDAD: Obtener usuario con Fallback ---
     let user = currentUser.get();
     if (!user || !user.uid || !user.agentId) {
+<<<<<<< HEAD
         const auth = getAuth();
         const fbUser = auth.currentUser;
         if (fbUser) {
@@ -624,15 +869,20 @@ export async function saveSketchRecord(sketchData) {
     // Validación final
     if (!user || !user.uid) {
         throw new Error('No se pudo identificar al usuario para guardar el registro.');
+=======
+        throw new Error('Datos de usuario no válidos. No se puede guardar el croquis.');
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     }
-
     const sketchPayload = {
         ...sketchData,
         createdAt: serverTimestamp(),
+<<<<<<< HEAD
         createdByAgentId: user.agentId || 'unknown', // Evita fallo si es null
+=======
+        createdByAgentId: user.agentId,
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
         createdByUid: user.uid,
     };
-
     try {
         await addDoc(collection(db, 'sketches'), sketchPayload);
     } catch (error) {
@@ -642,6 +892,7 @@ export async function saveSketchRecord(sketchData) {
 }
 
 export async function getSketches(options = {}) {
+<<<<<<< HEAD
     const { limit: queryLimit = 12, startAfterDoc, filters = {} } = options;
     
     // --- 1. SEGURIDAD ROBUSTA ---
@@ -699,6 +950,38 @@ export async function getSketches(options = {}) {
     const isAdmin = user.role === 'admin' || user.role === 'supervisor';
     if (!isAdmin) {
         queryConstraints.push(where('createdByUid', '==', user.uid));
+=======
+    const { limit: queryLimit = 15, startAfterDoc } = options;
+    const user = currentUser.get();
+    if (!user) throw new Error('Usuario no autenticado.');
+
+    const sketchesCol = collection(db, 'sketches');
+    let queryConstraints = [orderBy('fechaSuceso', 'desc')];
+
+    if (user.role !== 'admin' && user.role !== 'supervisor') {
+        queryConstraints.unshift(where('createdByUid', '==', user.uid));
+    }
+    if (startAfterDoc) {
+        queryConstraints.push(startAfter(startAfterDoc));
+    }
+    queryConstraints.push(limit(queryLimit));
+
+    const q = query(sketchesCol, ...queryConstraints);
+    try {
+        const querySnapshot = await getDocs(q);
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const sketches = querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            if (data.fechaSuceso && typeof data.fechaSuceso.toDate === 'function') {
+                data.fechaSuceso = data.fechaSuceso.toDate();
+            }
+            return { id: doc.id, ...data };
+        });
+        return { sketches, lastVisible };
+    } catch (error) {
+        console.error('Error al obtener los croquis:', error);
+        throw new Error('No se pudieron cargar los registros de croquis.');
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     }
     */
     // Al eliminarlo, el usuario verá TODOS los croquis que cumplen los filtros de fecha/tipo.
@@ -759,6 +1042,7 @@ export async function getSketches(options = {}) {
 }
 
 export async function getSketchById(sketchId) {
+<<<<<<< HEAD
     const docRef = doc(db, 'sketches', sketchId);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
@@ -770,6 +1054,19 @@ export async function getSketchById(sketchId) {
     } else {
         throw new Error('El croquis no fue encontrado.');
     }
+=======
+    const docRef = doc(db, 'sketches', sketchId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.fechaSuceso && typeof data.fechaSuceso.toDate === 'function') {
+            data.fechaSuceso = data.fechaSuceso.toDate();
+        }
+        return { id: docSnap.id, ...data };
+    } else {
+        throw new Error('El croquis no fue encontrado.');
+    }
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 export async function updateSketch(sketchId, updateData) {
@@ -779,6 +1076,7 @@ export async function updateSketch(sketchId, updateData) {
 }
 
 export async function generateSketchPdf(sketchId) {
+<<<<<<< HEAD
   console.log(`[DataController] Solicitando PDF para sketch: ${sketchId}`);
   
   // 💡 CORRECCIÓN: Usar el nombre exacto del export en index.js (CamelCase)
@@ -801,6 +1099,11 @@ export async function generateSketchPdf(sketchId) {
     // Relanzar con mensaje limpio
     throw new Error(error.message || 'Error al generar el PDF');
   }
+=======
+    const callable = httpsCallable(functions, 'generateSketchPdf', { timeout: 120000 });
+    const result = await callable({ sketchId });
+    return result.data;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 export async function deleteSketch(sketchId) {
@@ -847,9 +1150,64 @@ export async function getEstablecimientos() {
     }
 }
 
+// --- MÓDULO DE IDENTIFICACIONES ---
+
+export async function getPersonas() {
+    try {
+        const personasRef = collection(db, 'personas');
+        const q = query(personasRef, orderBy('apellidos'), orderBy('nombre'));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Error al obtener las personas:", error);
+        throw new Error("No se pudieron cargar los datos de las personas.");
+    }
+}
+
+export async function searchPersonas(searchTerm) {
+    try {
+        const personasRef = collection(db, 'personas');
+        const qDni = query(personasRef, where('dni', '>=', searchTerm), where('dni', '<=', searchTerm + '\uf8ff'));
+        const qNombre = query(personasRef, where('nombre', '>=', searchTerm), where('nombre', '<=', searchTerm + '\uf8ff'));
+        const [dniSnapshot, nombreSnapshot] = await Promise.all([getDocs(qDni), getDocs(qNombre)]);
+        const personasMap = new Map();
+        dniSnapshot.forEach(doc => personasMap.set(doc.id, { id: doc.id, ...doc.data() }));
+        nombreSnapshot.forEach(doc => personasMap.set(doc.id, { id: doc.id, ...doc.data() }));
+        return Array.from(personasMap.values());
+    } catch (error) {
+        console.error("Error al buscar personas:", error);
+        throw new Error("La búsqueda de personas falló.");
+    }
+}
+
+export async function getVehiculos() {
+    try {
+        const vehiculosRef = collection(db, 'vehiculos');
+        const q = query(vehiculosRef, orderBy(documentId()));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Error al obtener los vehículos:", error);
+        throw new Error("No se pudieron cargar los datos de los vehículos.");
+    }
+}
+
+export async function getEstablecimientos() {
+    try {
+        const establecimientosRef = collection(db, 'establecimientos');
+        const q = query(establecimientosRef, orderBy('nombreComercial'));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Error al obtener los establecimientos:", error);
+        throw new Error("No se pudieron cargar los datos de los establecimientos.");
+    }
+}
+
 // --- MÓDULO DE REGISTRO ELECTRÓNICO Y PLANTILLAS ---
 
 export async function generateNextRegistrationNumber(data) {
+<<<<<<< HEAD
     const callable = httpsCallable(functions, 'generateNextRegistrationNumber');
     return callable(data).then((result) => result.data);
 }
@@ -867,6 +1225,25 @@ export async function getRegistroById(recordId) {
     } else {
         throw new Error('El registro no fue encontrado.');
     }
+=======
+    const callable = httpsCallable(functions, 'generateNextRegistrationNumber');
+    return callable(data).then((result) => result.data);
+}
+
+export async function createRegistro(documentType, data) {
+    const callable = httpsCallable(functions, 'createRegistro');
+    return callable({ documentType, data }).then((result) => result.data);
+}
+
+export async function getRegistroById(recordId) {
+    const docRef = doc(db, 'registros', recordId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() };
+    } else {
+        throw new Error('El registro no fue encontrado.');
+    }
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 /**
@@ -882,6 +1259,7 @@ export async function getRegistroById(recordId) {
 export async function getRegistros(filters = {}) {
     const callable = httpsCallable(functions, 'getRegistros');
     try {
+<<<<<<< HEAD
         // Construir objeto de filtros para enviar al backend
         const filterPayload = {
             direction: filters.direction,
@@ -916,6 +1294,23 @@ export async function getRegistros(filters = {}) {
         } else {
             throw new Error(result.data.message || 'La función getRegistros del backend devolvió un error.');
         }
+=======
+        const result = await callable(filters);
+        if (result.data && result.data.success) {
+            const registrosConFechas = result.data.registros.map(reg => ({
+                ...reg,
+                createdAt: reg.createdAt ? new Date(reg.createdAt) : null,
+                fechaPresentacion: reg.fechaPresentacion ? new Date(reg.fechaPresentacion) : null
+            }));
+            return {
+                success: true,
+                registros: registrosConFechas,
+                lastVisible: result.data.lastVisible
+            };
+        } else {
+            throw new Error(result.data.message || 'La función getRegistros del backend devolvió un error.');
+        }
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     } catch (error) {
         console.error("Error al llamar a la Cloud Function 'getRegistros':", error);
         throw error;
@@ -923,6 +1318,7 @@ export async function getRegistros(filters = {}) {
 }
 
 export async function updateRegistro(recordId, data) {
+<<<<<<< HEAD
     const callable = httpsCallable(functions, 'updateRegistro');
     return callable({ recordId, updateData: data }).then((result) => result.data);
 }
@@ -1040,11 +1436,94 @@ export async function uploadTemplateImage(file) {
         console.error('Error en dataController al subir la imagen de la plantilla:', error);
         throw new Error('No se pudo subir la imagen.');
     }
+=======
+    const callable = httpsCallable(functions, 'updateRegistro');
+    return callable({ recordId, updateData: data }).then((result) => result.data);
+}
+
+export async function markRegistroAsDeleted(recordId, reason) {
+    const callable = httpsCallable(functions, 'markRegistroAsDeleted');
+    return callable({ recordId, reason }).then((result) => result.data);
+}
+
+export async function getDocumentTemplates(options = {}) {
+    const { limit: queryLimit = 15, startAfterDoc, documentType } = options;
+    const templatesCol = collection(db, 'documentTemplates');
+    let queryConstraints = [];
+
+    if (documentType && documentType !== 'all') {
+        queryConstraints.push(where('documentType', '==', documentType));
+    }
+    queryConstraints.push(orderBy('templateName', 'asc'));
+
+    if (startAfterDoc) {
+        queryConstraints.push(startAfter(startAfterDoc));
+    }
+    queryConstraints.push(limit(queryLimit));
+
+    const q = query(templatesCol, ...queryConstraints);
+    const querySnapshot = await getDocs(q);
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    const templates = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return { templates, lastVisible };
+}
+
+export async function createDocumentTemplate(templateData) {
+    const callable = httpsCallable(functions, 'createDocumentTemplate');
+    return callable(templateData).then((result) => result.data);
+}
+
+export async function updateDocumentTemplate(templateId, updateData) {
+    const callable = httpsCallable(functions, 'updateDocumentTemplate');
+    return callable({ templateId, updateData }).then((result) => result.data);
+}
+
+export async function getTemplatesByType(documentType) {
+    const templatesCol = collection(db, 'documentTemplates');
+    const q = query(templatesCol, where('documentType', '==', documentType), orderBy('templateName', 'asc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+}
+
+export async function deleteDocumentTemplate(templateId) {
+    const callable = httpsCallable(functions, 'deleteDocumentTemplate');
+    return callable({ templateId }).then((result) => result.data);
+}
+
+export async function duplicateDocumentTemplate(templateId) {
+    const callable = httpsCallable(functions, 'duplicateDocumentTemplate');
+    try {
+        const result = await callable({ templateId });
+        if (result.data && result.data.success) {
+            return result.data;
+        } else {
+            throw new Error(result.data.message || 'Error desconocido al duplicar la plantilla.');
+        }
+    } catch (error) {
+        console.error('Error en dataController al llamar a duplicateDocumentTemplate:', error);
+        throw error;
+    }
+}
+
+export async function uploadTemplateImage(file) {
+    if (!file) throw new Error('No se proporcionó ningún archivo para subir.');
+    if (!file.type.startsWith('image/')) throw new Error('El archivo seleccionado no es una imagen.');
+    try {
+        const filePath = `template_images/${Date.now()}-${file.name}`;
+        const storageRef = ref(storage, filePath);
+        await uploadBytes(storageRef, file);
+        return await getDownloadURL(storageRef);
+    } catch (error) {
+        console.error('Error en dataController al subir la imagen de la plantilla:', error);
+        throw new Error('No se pudo subir la imagen.');
+    }
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 // --- OTRAS FUNCIONES ---
 
 export async function loadInitialAgents() {
+<<<<<<< HEAD
     const agentsCol = collection(db, 'agents');
     const q = query(agentsCol, orderBy(documentId()));
     const querySnapshot = await getDocs(q);
@@ -1143,11 +1622,74 @@ export async function getSolicitudes(filters = {}) {
 
     // Lógica de filtrado de agentes y usuarios
     if (!isAdmin) {
+=======
+    const agentsCol = collection(db, 'agents');
+    const q = query(agentsCol, orderBy(documentId()));
+    const querySnapshot = await getDocs(q);
+    const agentsList = querySnapshot.docs.map((doc) => ({ id: String(doc.id), ...doc.data() }));
+    setAvailableAgents(agentsList);
+    return agentsList;
+}
+
+export async function getPermissionTypes() {
+    try {
+        const typesCol = collection(db, 'permissionTypes');
+        const q = query(typesCol, orderBy('name'));
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error('Error al cargar los tipos de permiso:', error);
+        throw error;
+    }
+}
+
+export async function addSolicitud(requestData) {
+    try {
+        const userProfile = currentUser.get();
+        if (!userProfile) throw new Error('Usuario no autenticado.');
+        const solicitudPayload = {
+            ...requestData,
+            agentId: String(requestData.agentId),
+            userId: userProfile.uid,
+            status: 'Pendiente',
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+            attachments: requestData.attachments || [],
+            startDate: Timestamp.fromDate(parseISO(requestData.startDate)),
+            endDate: Timestamp.fromDate(requestData.endDate ? parseISO(requestData.endDate) : parseISO(requestData.startDate)),
+        };
+        await addDoc(collection(db, 'solicitudes'), solicitudPayload);
+        return { success: true };
+    } catch (error) {
+        console.error('ERROR - dataController: Error añadiendo solicitud:', error);
+        throw error;
+    }
+}
+
+export async function uploadFile(file, path) {
+    const storageRef = ref(storage, path);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+    return new Promise((resolve, reject) => {
+        uploadTask.on('state_changed', () => {}, (error) => {
+            console.error('ERROR - dataController: Error al subir archivo:', error);
+            reject(error);
+        }, async () => {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+        });
+    });
+}
+
+export async function getSolicitudes(filters = {}) {
+    const userProfile = currentUser.get();
+    if (!userProfile || !userProfile.uid) throw new Error('Perfil de usuario o UID no disponible.');
+    const solicitudesRef = collection(db, 'solicitudes');
+    let queryConstraints = [];
+    if (userProfile.role !== 'admin') {
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
         queryConstraints.push(where('userId', '==', userProfile.uid));
-    } else {
-        if (filters.agentId && filters.agentId !== 'all') {
-            queryConstraints.push(where('agentId', '==', String(filters.agentId)));
-        }
+    } else if (filters.agentId && filters.agentId !== 'all') {
+        queryConstraints.push(where('agentId', '==', String(filters.agentId)));
     }
 
     // Lógica de filtrado de estado
@@ -1162,11 +1704,15 @@ export async function getSolicitudes(filters = {}) {
     // ============================================================
 
     queryConstraints.push(orderBy('createdAt', 'desc'));
+<<<<<<< HEAD
 
+=======
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     const q = query(solicitudesRef, ...queryConstraints);
     
     try {
         const querySnapshot = await getDocs(q);
+<<<<<<< HEAD
         
         // Primero mapeamos todos los documentos
         let results = querySnapshot.docs.map((doc) => {
@@ -1228,6 +1774,11 @@ export async function getSolicitudes(filters = {}) {
         return results;
     } catch (error) {
         console.error('ERROR - dataController: Error cargando solicitudes:', error);
+=======
+        return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error('ERROR - dataController: Error cargando solicitudes de permiso:', error);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
         throw error;
     }
 }
@@ -1260,6 +1811,7 @@ export async function getSolicitudById(solicitudId) {
 }
 
 export async function addShiftChangeRequest(requestData) {
+<<<<<<< HEAD
     const callable = httpsCallable(functions, 'addShiftChangeRequest');
     try {
         const result = await callable(requestData);
@@ -1307,6 +1859,22 @@ export async function getShiftChangeRequests(filters = {}) {
         throw new Error('Usuario no autenticado. Por favor, recarga la página.');
     }
     
+=======
+    const callable = httpsCallable(functions, 'addShiftChangeRequest');
+    try {
+        const result = await callable(requestData);
+        if (result.data?.success) return result.data;
+        throw new Error(result.data?.message || 'Error desconocido al añadir solicitud de cambio.');
+    } catch (error) {
+        console.error('ERROR - dataController: Error al llamar a Cloud Function addShiftChangeRequest:', error);
+        throw error;
+    }
+}
+
+export async function getShiftChangeRequests(filters = {}) {
+    const userProfile = currentUser.get();
+    if (!userProfile) throw new Error('Perfil de usuario no disponible.');
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     const callable = httpsCallable(functions, 'getShiftChangeRequestsCallable');
     
     try {
@@ -1316,6 +1884,7 @@ export async function getShiftChangeRequests(filters = {}) {
         });
         
         if (result.data?.success) {
+<<<<<<< HEAD
             // 💡 HELPER PARA CONVERTIR CUALQUIER FORMATO DE FECHA
             const parseFlexibleDate = (value) => {
                 if (!value) return null;
@@ -1336,6 +1905,18 @@ export async function getShiftChangeRequests(filters = {}) {
                 req.createdAt = parseFlexibleDate(req.createdAt) || new Date(0);
                 req.requesterShiftDate = parseFlexibleDate(req.requesterShiftDate);
                 req.targetShiftDate = parseFlexibleDate(req.targetShiftDate);
+=======
+            return result.data.data.map((req) => {
+                Object.keys(req).forEach((key) => {
+                    if (typeof req[key] === 'string' && key.toLowerCase().includes('date')) {
+                        try {
+                            req[key] = parseISO(req[key]);
+                        } catch (e) {
+                            console.warn(`Could not parse date string: ${req[key]}`);
+                        }
+                    }
+                });
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
                 return req;
             });
 
@@ -1383,6 +1964,7 @@ export async function getShiftChangeRequests(filters = {}) {
 }
 
 export async function respondToShiftChangeRequest(requestData) {
+<<<<<<< HEAD
     const callable = httpsCallable(functions, 'respondToShiftChangeRequest');
     try {
         const result = await callable(requestData);
@@ -1674,26 +2256,277 @@ export async function getAllExtraServices(filters = {}) {
     if (startAfterDoc) queryConstraints.push(startAfter(startAfterDoc));
     if (queryLimit) queryConstraints.push(limit(queryLimit));
 
-    const q = query(servicesRef, ...queryConstraints);
-    
+=======
+    const callable = httpsCallable(functions, 'respondToShiftChangeRequest');
+    try {
+        const result = await callable(requestData);
+        if (result.data?.success) return result.data;
+        throw new Error(result.data?.message || 'Error en Cloud Function de respuesta.');
+    } catch (error) {
+        console.error('Error al enviar la respuesta:', error);
+        throw error;
+    }
+}
+
+export async function addAgent(agentData) {
+    const callable = httpsCallable(functions, 'addAgentCallable');
+    try {
+        const result = await callable(agentData);
+        if (result.data?.success) return result.data;
+        throw new Error(result.data?.message || 'Error al añadir agente.');
+    } catch (error) {
+        console.error('Error al añadir agente (Cloud Function):', error);
+        throw error;
+    }
+}
+
+export async function updateAgent(agentId, updateData) {
+    const callable = httpsCallable(functions, 'updateAgentCallable');
+    try {
+        const result = await callable({ agentId, updateData });
+        if (result.data?.success) return result.data;
+        throw new Error(result.data?.message || 'Error al actualizar agente.');
+    } catch (error) {
+        console.error('Error al actualizar agente:', error);
+        throw error;
+    }
+}
+
+export async function deleteAgent(agentId) {
+    const callable = httpsCallable(functions, 'deleteAgentCallable');
+    try {
+        const result = await callable({ agentId });
+        if (result.data?.success) return result.data;
+        throw new Error(result.data?.message || 'Error al eliminar agente.');
+    } catch (error) {
+        console.error('Error al eliminar agente:', error);
+        throw error;
+    }
+}
+
+export async function updateSolicitudStatus(requestData) {
+    const callable = httpsCallable(functions, 'updateSolicitudStatus');
+    try {
+        const result = await callable(requestData);
+        if (result.data?.success) return result.data;
+        throw new Error(result.data?.message || 'Error al actualizar estado de solicitud.');
+    } catch (error) {
+        console.error('Error al llamar a updateSolicitudStatus (Cloud Function):', error);
+        throw error;
+    }
+}
+
+export async function addMarkedDateCallable(markedDateData) {
+    const callable = httpsCallable(functions, 'addMarkedDateCallable');
+    try {
+        const result = await callable(markedDateData);
+        if (result.data?.success) return result.data;
+        throw new Error(result.data?.message || 'Error desconocido al añadir fecha marcada.');
+    } catch (error) {
+        console.error('Error - dataController: Error al llamar a Cloud Function addMarkedDateCallable:', error);
+        throw error;
+    }
+}
+
+export async function updateNotificationCount() {
+    const userProfile = currentUser.get();
+    if (!userProfile || !userProfile.agentId) {
+        setPendingTasksCount(0);
+        setPendingRequestsCount(0);
+        // Log más específico
+        console.log('[updateNotificationCount] DETENIDO: Usuario no válido o sin agentId. Contadores a 0.'); 
+        return;
+    }
+
+    // Log del perfil de usuario que estamos usando
+    console.log('[updateNotificationCount] Calculando notificaciones para:', { agentId: userProfile.agentId, role: userProfile.role });
+
+    try {
+        setPendingTasksCount(0); // Asumiendo que las tareas no son el foco ahora
+
+        let requestsCount = 0;
+
+        // a) Solicitudes de Permiso (solo para Admin/Super)
+        if (userProfile.role === 'admin' || userProfile.role === 'supervisor') {
+            try {
+                const solicitudesPermisoPendientes = await getSolicitudes({ status: 'Pendiente' });
+                requestsCount += solicitudesPermisoPendientes.length;
+                console.log(`[updateNotificationCount] Admin/Super: Encontradas ${solicitudesPermisoPendientes.length} solicitudes de permiso pendientes.`);
+            } catch (permError) {
+                console.error('ERROR - dataController: Fallo al contar solicitudes de permiso:', permError);
+            }
+        }
+
+        // b) Propuestas de CAMBIO DE TURNO (para el usuario actual)
+        try {
+            // Aseguramos conversión a string y lo logueamos
+            const agentIdStr = String(userProfile.agentId); 
+            console.log(`[updateNotificationCount] Consultando Firestore: solicitudes_cambio_turno where targetAgentId == "${agentIdStr}" AND status == "Pendiente_Target"`);
+            
+            const shiftChangesRef = collection(db, 'solicitudes_cambio_turno');
+            const q = query(
+                shiftChangesRef,
+                where('targetAgentId', '==', agentIdStr), // Usar string explícito
+                where('status', '==', 'Pendiente_Target')
+            );
+            
+            // Log ANTES de ejecutar la consulta
+            console.log('[updateNotificationCount] Ejecutando consulta de cambios de turno...');
+            const querySnapshot = await getDocs(q);
+            const pendingShiftChanges = querySnapshot.size; // Obtener el número de resultados
+
+            // Log DESPUÉS de ejecutar la consulta con el resultado
+            console.log(`[updateNotificationCount] Consulta completada. Encontradas ${pendingShiftChanges} propuestas de cambio pendientes para agente ${agentIdStr}.`);
+
+            requestsCount += pendingShiftChanges; // Añadir al total
+
+        } catch (shiftError) {
+             // Loguear cualquier error durante esta consulta específica
+             console.error('ERROR - dataController: Fallo al consultar/contar propuestas de cambio:', shiftError);
+        }
+        
+        // c) Actualizar estado global y loguear el total final
+        setPendingRequestsCount(requestsCount);
+        console.log(`[updateNotificationCount] FINAL: Contador total de notificaciones ('pendingRequestsCount') establecido en: ${requestsCount}`);
+
+    } catch (error) {
+        // Loguear errores generales en la función
+        console.error('ERROR - dataController: Fallo general en updateNotificationCount:', error);
+        setPendingTasksCount(0); 
+        setPendingRequestsCount(0);
+    }
+}
+export async function markShiftChangeNotificationAsSeen(changeId) {
+    const callable = httpsCallable(functions, 'markShiftChangeNotificationAsSeen');
+    try {
+        const result = await callable({ changeId });
+        await updateNotificationCount();
+        return result.data;
+    } catch (error) {
+        console.error('ERROR - dataController: Error al marcar notificación como vista (Cloud Function):', error);
+        throw error;
+    }
+}
+
+export async function getMarkedDates(monthId) {
+    const markedDatesRef = collection(db, 'markedDates');
+    let q = query(markedDatesRef);
+    if (monthId) {
+        const parts = monthId.split('_');
+        if (parts.length === 3) {
+            const monthName = parts[1];
+            const year = parseInt(parts[2]);
+            const startOfMonthDate = toZonedTime(new Date(year, getMonthNumberFromName(monthName), 1), MADRID_TIMEZONE);
+            const endOfMonthDate = toZonedTime(endOfMonth(startOfMonthDate), MADRID_TIMEZONE);
+            endOfMonthDate.setHours(23, 59, 59, 999);
+            q = query(q, where('date', '>=', Timestamp.fromDate(startOfMonthDate)), where('date', '<=', Timestamp.fromDate(endOfMonthDate)), orderBy('date', 'asc'));
+        }
+    } else {
+        q = query(q, orderBy('date', 'asc'));
+    }
     try {
         const querySnapshot = await getDocs(q);
-        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        const services = querySnapshot.docs.map((doc) => ({
+        return querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            if (data.date && typeof data.date.toDate === 'function') {
+                data.date = data.date.toDate();
+            }
+            return { id: doc.id, ...data };
+        });
+    } catch (error) {
+        console.error('ERROR - dataController: Error cargando fechas marcadas:', error);
+        throw error;
+    }
+}
+
+export async function addExtraService(serviceData) {
+    const userProfile = currentUser.get();
+    if (!userProfile || !userProfile.agentId) throw new Error('Perfil de agente no válido.');
+    const payload = {
+        ...serviceData,
+        agentId: String(userProfile.agentId),
+        userId: userProfile.uid,
+        date: Timestamp.fromDate(parseISO(serviceData.date)),
+        createdAt: serverTimestamp(),
+    };
+    try {
+        const docRef = await addDoc(collection(db, 'extraordinaryServices'), payload);
+        return { success: true, id: docRef.id };
+    } catch (error) {
+        console.error('Error al añadir servicio extraordinario:', error);
+        throw error;
+    }
+}
+
+export async function getExtraServices(agentId, startDate, endDate) {
+    if (!agentId || !startDate || !endDate) return [];
+    const servicesRef = collection(db, 'extraordinaryServices');
+    const q = query(servicesRef, where('agentId', '==', String(agentId)), where('date', '>=', startDate), where('date', '<=', endDate), orderBy('date'));
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map((doc) => ({
             id: doc.id,
             ...doc.data(),
             date: doc.data().date.toDate(),
         }));
+    } catch (error) {
+        console.error('Error al obtener servicios extraordinarios:', error);
+        throw error;
+    }
+}
+
+export async function getAllExtraServices(filters = {}) {
+    const userProfile = currentUser.get();
+    if (!userProfile || (userProfile.role !== 'admin' && userProfile.role !== 'supervisor')) {
+        throw new Error('Acceso no autorizado.');
+    }
+    const servicesRef = collection(db, 'extraordinaryServices');
+    let queryConstraints = [];
+    if (filters.agentId && filters.agentId !== 'all') {
+        queryConstraints.push(where('agentId', '==', filters.agentId));
+    }
+    if (filters.type && filters.type !== 'all') {
+        queryConstraints.push(where('type', '==', filters.type));
+    }
+    if (filters.startDate) {
+        queryConstraints.push(where('date', '>=', Timestamp.fromDate(new Date(filters.startDate))));
+    }
+    if (filters.endDate) {
+        queryConstraints.push(where('date', '<=', Timestamp.fromDate(new Date(filters.endDate))));
+    }
+    queryConstraints.push(orderBy('date', 'desc'));
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
+    const q = query(servicesRef, ...queryConstraints);
+    
+    try {
+        const querySnapshot = await getDocs(q);
+<<<<<<< HEAD
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const services = querySnapshot.docs.map((doc) => ({
+=======
+        return querySnapshot.docs.map((doc) => ({
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
+            id: doc.id,
+            ...doc.data(),
+            date: doc.data().date.toDate(),
+        }));
+<<<<<<< HEAD
 
         return { services, lastVisible };
     } catch (error) {
         console.error('Error al obtener servicios extraordinarios:', error);
         if (error.message.includes('indexes')) throw error;
         throw new Error('No se pudieron cargar los servicios.');
+=======
+    } catch (error) {
+        console.error('Error al obtener todos los servicios extraordinarios (admin):', error);
+        throw error;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     }
 }
 
 export async function updateExtraService(serviceId, updateData) {
+<<<<<<< HEAD
     const serviceRef = doc(db, 'extraordinaryServices', serviceId);
     try {
         const payload = { ...updateData };
@@ -1705,6 +2538,19 @@ export async function updateExtraService(serviceId, updateData) {
         console.error('Error al actualizar servicio extraordinario:', error);
         throw error;
     }
+=======
+    const serviceRef = doc(db, 'extraordinaryServices', serviceId);
+    try {
+        const payload = { ...updateData };
+        if (typeof payload.date === 'string') {
+            payload.date = Timestamp.fromDate(parseISO(payload.date));
+        }
+        await updateDoc(serviceRef, payload);
+    } catch (error) {
+        console.error('Error al actualizar servicio extraordinario:', error);
+        throw error;
+    }
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 export async function deleteExtraService(serviceId) {
@@ -2221,6 +3067,7 @@ export async function addNovedad(content, category = 'general', isPinned = false
         await addDoc(collection(db, 'novedades'), novedadData);
         return { success: true };
     } catch (error) {
+<<<<<<< HEAD
         console.error("Error al añadir novedad:", error);
         throw new Error("No se pudo guardar la novedad.");
     }
@@ -2757,6 +3604,9 @@ export async function addShiftToSchedule(data) {
         return result.data;
     } catch (error) {
         console.error("Error en addShiftToSchedule:", error);
+=======
+        console.error('Error al eliminar servicio extraordinario:', error);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
         throw error;
     }
 }
@@ -2858,6 +3708,7 @@ export async function countTotalRegistros(filters = {}) {
     }
 }
 
+<<<<<<< HEAD
 // --- MÓDULO DE VADOS ---
 
 /**
@@ -3902,5 +4753,381 @@ export async function updateIncidenciaStatus(id, updateData) {
     } catch (error) {
         console.error("Error actualizando incidencia:", error);
         throw error;
+=======
+export async function getScheduleForMonth(monthId) {
+    console.log(`[dataController.js] 📥 Buscando datos para el mes: "${monthId}"`);
+    if (!monthId) {
+        console.error("[dataController.js] 🛑 ERROR: getScheduleForMonth fue llamado sin un monthId.");
+        return null;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
     }
+    try {
+        const docRef = doc(db, 'schedules', monthId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            console.log('[dataController.js] ✅ ¡Datos encontrados!', docSnap.data());
+            return { id: docSnap.id, ...docSnap.data() };
+        } else {
+            console.error(`[dataController.js] ❌ ERROR DE DATOS: No se encontró ningún documento con el ID: "${monthId}".`);
+            return null;
+        }
+    } catch (error) {
+        console.error("[dataController.js] 🔥 Error catastrófico al obtener los datos del cuadrante:", error);
+        return null;
+    }
+}
+
+export async function getLatestActivityFeed() {
+    try {
+        const feedRef = collection(db, 'markedDates');
+        const q = query(feedRef, orderBy('date', 'desc'), limit(10));
+        const querySnapshot = await getDocs(q);
+        const feed = [];
+        querySnapshot.forEach((doc) => {
+            feed.push({ id: doc.id, ...doc.data() });
+        });
+        return feed;
+    } catch (error) {
+        console.error('Error al obtener el feed de actividad:', error);
+        return [];
+    }
+}
+
+export async function getLatestMarkedDates() {
+    try {
+        const markedDatesRef = collection(db, 'markedDates');
+        const q = query(markedDatesRef, orderBy('date', 'desc'), limit(10));
+        const querySnapshot = await getDocs(q);
+        const dates = [];
+        querySnapshot.forEach((doc) => {
+            dates.push({ id: doc.id, ...doc.data() });
+        });
+        return dates;
+    } catch (error) {
+        console.error('Error al obtener las fechas marcadas:', error);
+        return [];
+    }
+}
+
+export async function deleteServiceReport(reportId) {
+    const callable = httpsCallable(functions, 'deleteServiceReport');
+    return callable({ reportId }).then((result) => result.data);
+}
+
+export async function getAllShiftTypes() {
+    const workShifts = [
+        { quadrant_symbol: 'M', name: 'Mañana' },
+        { quadrant_symbol: 'T', name: 'Tarde' },
+        { quadrant_symbol: 'N', name: 'Noche' },
+        { quadrant_symbol: 'L', name: 'Libre' },
+    ];
+    try {
+        const permissionTypes = await getPermissionTypes();
+        return [...workShifts, ...permissionTypes];
+    } catch (error) {
+        console.error('Error al obtener todos los tipos de turno:', error);
+        return workShifts;
+    }
+}
+
+export async function uploadRecordImage(file) {
+    if (!file) throw new Error('No se proporcionó ningún archivo.');
+    const fileName = file.name || `imagen.${file.type.split('/')[1] || 'jpg'}`;
+    const filePath = `record_images/${Date.now()}-${fileName}`;
+    const storageRef = ref(storage, filePath);
+    try {
+        await uploadBytes(storageRef, file);
+        return await getDownloadURL(storageRef);
+    } catch (error) {
+        console.error('Error en dataController al subir la imagen del registro:', error);
+        throw new Error('No se pudo subir la imagen del registro.');
+    }
+}
+
+// --- MÓDULO DE IDENTIFICACIONES (CRUD) ---
+
+export async function savePersona(dni, data) {
+    if (!dni) throw new Error("El DNI es obligatorio para crear una ficha de persona.");
+    const personaRef = doc(db, 'personas', dni);
+    const finalData = { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
+    await setDoc(personaRef, finalData);
+    return { id: personaRef.id };
+}
+
+export async function updatePersona(personaId, data) {
+    if (!personaId) throw new Error("Se requiere el ID de la persona para actualizar.");
+    const personaRef = doc(db, 'personas', personaId);
+    const finalData = { ...data, updatedAt: serverTimestamp() };
+    await updateDoc(personaRef, finalData);
+    return { id: personaRef.id };
+}
+
+export async function saveVehiculo(matricula, data) {
+    if (!matricula) throw new Error("La matrícula es obligatoria para crear una ficha de vehículo.");
+    const vehiculoRef = doc(db, 'vehiculos', matricula);
+    const finalData = { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
+    await setDoc(vehiculoRef, finalData);
+    return { id: vehiculoRef.id };
+}
+
+export async function updateVehiculo(vehiculoId, data) {
+    if (!vehiculoId) throw new Error("Se requiere el ID del vehículo para actualizar.");
+    const vehiculoRef = doc(db, 'vehiculos', vehiculoId);
+    const finalData = { ...data, updatedAt: serverTimestamp() };
+    await updateDoc(vehiculoRef, finalData);
+    return { id: vehiculoRef.id };
+}
+
+export async function getVehiculoByMatricula(matricula) {
+    if (!matricula || matricula.trim() === '') {
+        throw new Error("Se requiere una matrícula para la búsqueda.");
+    }
+    const vehiculoRef = doc(db, 'vehiculos', matricula.trim().toUpperCase());
+    const docSnap = await getDoc(vehiculoRef);
+    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
+}
+
+export async function searchVehiculos(searchTerm) {
+    const callable = httpsCallable(functions, 'searchVehiculos');
+    try {
+        const result = await callable({ searchTerm });
+        if (result.data.success) {
+            return result.data.vehicles;
+        } else {
+            throw new Error('La búsqueda en el servidor no tuvo éxito.');
+        }
+    } catch (error) {
+        console.error("Error en dataController al llamar a searchVehiculos:", error);
+        throw error;
+    }
+}
+
+export async function saveEstablecimiento(cif, data) {
+    if (!cif) throw new Error("El CIF es obligatorio para crear una ficha de establecimiento.");
+    const establecimientoRef = doc(db, 'establecimientos', cif);
+    const finalData = { ...data, createdAt: serverTimestamp(), updatedAt: serverTimestamp() };
+    await setDoc(establecimientoRef, finalData);
+    return { id: establecimientoRef.id };
+}
+
+export async function updateEstablecimiento(establecimientoId, data) {
+    if (!establecimientoId) throw new Error("Se requiere el ID del establecimiento para actualizar.");
+    const establecimientoRef = doc(db, 'establecimientos', establecimientoId);
+    const finalData = { ...data, updatedAt: serverTimestamp() };
+    await updateDoc(establecimientoRef, finalData);
+    return { id: establecimientoRef.id };
+}
+
+export async function searchEstablecimientos(searchTerm) {
+    try {
+        const establecimientosRef = collection(db, 'establecimientos');
+        const qNombre = query(establecimientosRef, where('nombreComercial', '>=', searchTerm), where('nombreComercial', '<=', searchTerm + '\uf8ff'));
+        const querySnapshot = await getDocs(qNombre);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Error al buscar establecimientos:", error);
+        throw new Error("La búsqueda de establecimientos falló.");
+    }
+}
+
+// --- MÓDULO DE GESTIÓN DE REQUERIMIENTOS (CRUD) ---
+
+export async function deleteRequerimiento(reportId, requerimientoId) {
+    if (!reportId || !requerimientoId) {
+        throw new Error("Se requieren los IDs del parte y del requerimiento.");
+    }
+    const requerimientoRef = doc(db, 'serviceReports', reportId, 'requerimientos', requerimientoId);
+    try {
+        await deleteDoc(requerimientoRef);
+    } catch (error) {
+        console.error("Error al eliminar el requerimiento:", error);
+        throw new Error("No se pudo eliminar el requerimiento de la base de datos.");
+    }
+}
+
+export async function updateRequerimiento(reportId, requerimientoId, data) {
+    if (!reportId || !requerimientoId || !data) {
+        throw new Error("Faltan datos para actualizar el requerimiento.");
+    }
+    const requerimientoRef = doc(db, 'serviceReports', reportId, 'requerimientos', requerimientoId);
+    const updateData = { ...data, updatedAt: serverTimestamp() };
+    try {
+        await updateDoc(requerimientoRef, updateData);
+    } catch (error) {
+        console.error("Error al actualizar el requerimiento:", error);
+        throw new Error("No se pudo actualizar el requerimiento.");
+    }
+}
+
+export async function getDashboardStats(startDate, endDate) {
+    const callable = httpsCallable(functions, 'getDashboardStats');
+    try {
+        const result = await callable({ startDate, endDate });
+        if (result.data.success) {
+            return result.data;
+        } else {
+            throw new Error('La función de estadísticas devolvió un error.');
+        }
+    } catch (error) {
+        console.error("Error al llamar a la Cloud Function 'getDashboardStats':", error);
+        throw error;
+    }
+}
+
+export async function getDocumentTemplateById(templateId) {
+    try {
+        const docRef = doc(db, "documentTemplates", templateId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            return { id: docSnap.id, ...docSnap.data() };
+        } else {
+            throw new Error("No se encontró la plantilla con el ID proporcionado.");
+        }
+    } catch (error) {
+        console.error("Error al obtener el documento por ID:", error);
+        throw error;
+    }
+}
+
+// --- MÓDULO DE GESTIÓN DE TAREAS ---
+
+export async function resolveTaskWithComment(data) {
+    const callable = httpsCallable(functions, 'resolveTaskWithComment');
+    try {
+        const result = await callable(data);
+        return result.data;
+    } catch (error) {
+        console.error('Error al llamar a la función resolveTaskWithComment:', error);
+        throw new Error(error.message);
+    }
+}
+
+export async function createTask(taskData) {
+    const user = currentUser.get();
+    if (!user) throw new Error('Usuario no autenticado.');
+    const payload = {
+        ...taskData,
+        status: 'pendiente',
+        createdBy: user.uid,
+        createdAt: serverTimestamp(),
+        completedAt: null,
+        validatedAt: null
+    };
+    try {
+        const docRef = await addDoc(collection(db, 'tareas'), payload);
+        return { id: docRef.id };
+    } catch (error) {
+        console.error("Error al crear la tarea:", error);
+        throw new Error("No se pudo crear la tarea en la base de datos.");
+    }
+}
+
+export async function updateTaskStatus(taskId, newStatus) {
+    if (!taskId || !newStatus) throw new Error('Faltan datos para actualizar la tarea.');
+    const taskRef = doc(db, 'tareas', taskId);
+    const updateData = { status: newStatus };
+    if (newStatus === 'finalizada') {
+        updateData.completedAt = serverTimestamp();
+    } else if (newStatus === 'validada') {
+        updateData.validatedAt = serverTimestamp();
+    }
+    try {
+        await updateDoc(taskRef, updateData);
+    } catch (error) {
+        console.error("Error al actualizar el estado de la tarea:", error);
+        throw new Error("No se pudo actualizar la tarea.");
+    }
+}
+
+export async function getPendingTasksForAgent(agentId) {
+    if (!agentId) return [];
+    const q = query(collection(db, 'tareas'), where('assignedAgentId', '==', agentId), where('status', '==', 'pendiente'), orderBy('createdAt', 'desc'));
+    try {
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Error al obtener las tareas del agente:", error);
+        throw new Error("No se pudieron cargar las tareas pendientes.");
+    }
+}
+
+export async function getAllTasks(options = {}) {
+    const { limit: queryLimit = 15, startAfterDoc, status, agentId } = options;
+    const tasksCol = collection(db, 'tareas');
+    let queryConstraints = [];
+    if (status && status !== 'all') {
+        queryConstraints.push(where('status', '==', status));
+    }
+    if (agentId && agentId !== 'all') {
+        queryConstraints.push(where('assignedAgentId', '==', agentId));
+    }
+    queryConstraints.push(orderBy('createdAt', 'desc'));
+    if (startAfterDoc) {
+        queryConstraints.push(startAfter(startAfterDoc));
+    }
+    queryConstraints.push(limit(queryLimit));
+    const q = query(tasksCol, ...queryConstraints);
+    try {
+        const querySnapshot = await getDocs(q);
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        return { tasks, lastVisible };
+    } catch (error) {
+        console.error('Error al obtener todas las tareas:', error);
+        throw new Error('No se pudieron cargar las tareas. Revisa si falta un índice en Firestore.');
+    }
+}
+
+export async function getTasksByOrderId(orderId) {
+    if (!orderId) return [];
+    const tasksRef = collection(db, 'tareas');
+    const q = query(tasksRef, where('orderId', '==', orderId), orderBy('createdAt', 'asc'));
+    try {
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                ...data,
+                createdAt: data.createdAt ? data.createdAt.toDate() : null,
+            };
+        });
+    } catch (error) {
+        console.error(`Error al obtener las tareas para la orden ${orderId}:`, error);
+        throw new Error('No se pudieron cargar las tareas. Revisa si falta un índice en Firestore.');
+    }
+}
+
+export async function getTasksForAgent(agentId, status = 'all') {
+    if (!agentId) return [];
+    const tasksRef = collection(db, 'tareas');
+    let queryConstraints = [where('assignedAgentId', '==', agentId), orderBy('createdAt', 'desc')];
+    if (status !== 'all') {
+        queryConstraints.unshift(where('status', '==', status));
+    }
+    const q = query(tasksRef, ...queryConstraints);
+    try {
+        const snapshot = await getDocs(q);
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error) {
+        console.error("Error al obtener las tareas del agente:", error);
+        throw new Error("No se pudieron cargar las tareas.");
+    }
+}
+
+export async function generateRegistroPdf(data) {
+    const callable = httpsCallable(functions, 'generateRegistroPdf');
+    try {
+        const result = await callable(data);
+        return result.data;
+    } catch (error) {
+        console.error("Error al llamar a la Cloud Function 'generateRegistroPdf':", error);
+        throw error;
+    }
+}
+
+export function getAgentName(agentId) {
+    const agents = availableAgents.get();
+    const agent = agents.find(a => a.id === agentId);
+    return agent ? agent.name : 'Agente Desconocido';
 }

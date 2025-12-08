@@ -17,6 +17,7 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+<<<<<<< HEAD
 /* --- Títulos: Jerarquía Visual --- */
 h1, h2, h3, h4, h5, h6 {
   margin: 0 0 var(--space-4) 0;
@@ -36,6 +37,39 @@ h1 {
   font-weight: var(--font-bold);
   letter-spacing: -0.02em; /* Ajuste óptico */
 }
+=======
+h1 {
+  margin: 0 0 var(--space-2) 0;
+  line-height: var(--leading-tight);
+  color: #07096b;
+  font-weight: 600; /* SemiBold por defecto */
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 var(--space-2) 0;
+  line-height: var(--leading-tight);
+  color: #07096b;
+  font-weight: 600; /* SemiBold por defecto */
+}
+
+h1 {
+  font-size: var(--text-xl);
+} /* 24px */
+h2 {
+  font-size: var(--text-lg);
+} /* 18px */
+h3 {
+  font-size: var(--text-base);
+  font-weight: 500;
+} /* 16px Medium */
+h4 {
+  font-size: var(--text-sm);
+} /* 14px */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 
 h2 { 
   font-size: var(--text-2xl); /* 24px - Section titles */
@@ -118,6 +152,7 @@ a:hover {
   text-decoration: none;
 }
 
+<<<<<<< HEAD
 /* 🌟 NUEVO: Enlaces con underline animado */
 a.underline-effect::after {
   content: '';
@@ -399,3 +434,11 @@ body.classic-mode a {
     font-size: var(--text-2xl);
   }
 }
+=======
+label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  margin-bottom: 4px;
+  display: block;
+}
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786

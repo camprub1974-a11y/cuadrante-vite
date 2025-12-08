@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 # --- Dependencias ---
 node_modules/
 # NOTA: En React/Vite SIEMPRE se debe versionar package-lock.json o yarn.lock
 # para asegurar consistencia en producción. No los ignores.
+=======
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 
 # --- Build y Dist (Vite/React) ---
 dist/
@@ -56,8 +59,26 @@ Thumbs.db
 ehthumbs.db
 .history/
 
+<<<<<<< HEAD
 # --- Archivos temporales del sistema operativo ---
 .bash_history
 .bash_profile
 .bashrc
 .profile
+=======
+# Ignorar claves de servicio de Firebase
+serviceAccountKey.json
+
+# Dependencias
+node_modules/
+functions/node_modules/
+
+# Archivos de configuración y secretos
+js/firebase-config.js
+
+# Archivos de caché y logs de Firebase
+.firebase/
+
+# Historial personal
+.bash_history
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786

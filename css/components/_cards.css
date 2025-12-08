@@ -84,6 +84,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+<<<<<<< HEAD
   gap: var(--space-4);
   flex-wrap: wrap;
 }
@@ -113,6 +114,37 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   text-shadow: 0 0 10px rgba(var(--rgb-green-neon), 0.2);
+=======
+  gap: 8px; /* Espacio entre el icono y el texto */
+}
+
+.card-header svg {
+  /* Ajusta el tamaño si es necesario */
+  width: 20px;
+  height: 20px;
+}
+
+/* ✅ CORRECCIÓN: Se añade 'h4' a la regla para que afecte a la barra lateral */
+.card-header h2 {
+  margin: 0;
+  font-size: var(--text-base); /* Tamaño de 16px para consistencia */
+  color: #253303ff;
+  font-weight: 600;
+  }
+
+.card-header h3 {
+ display: flex;
+ align-items: center;
+ color: rgb(243, 243, 243);
+ gap: 8px;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: var(--text-base); /* Tamaño de 16px para consistencia */
+  color: #ff0015;
+  font-weight: 600;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .card-header h4 {
@@ -188,6 +220,7 @@
   padding: 0;
 }
 
+<<<<<<< HEAD
 .card.compact-padding .card-body {
   padding: var(--space-4);
 }
@@ -442,3 +475,17 @@ body.classic-mode .card-header h4 {
 body.classic-mode .card-header i {
   color: var(--color-primary);
 }
+=======
+/* 1. Convierte el .card-body de la tarjeta de parte en un contenedor flex vertical */
+.report-card .card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Asegura que el cuerpo ocupe toda la altura de la tarjeta */
+}
+
+/* 2. Empuja el contenedor de acciones (.card-actions) hacia la parte inferior */
+.report-card .card-actions {
+  margin-top: auto; /* La magia de flexbox: empuja el elemento al final */
+  padding-top: 1rem; /* Añade un poco de espacio por encima del botón para que no se pegue al texto */
+}
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786

@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="es">
+<<<<<<< HEAD
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,5 +20,1980 @@
 
     <script type="module" src="/src/main.jsx"></script>
     
+=======
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cuadrante de Servicio v2.0</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="./css/main.css?v=1.7" />
+    <link rel="stylesheet" href="./css/components/_modals.css?v=1.5" />
+    <link rel="stylesheet" href="./css/_planning-view.css" />
+    <link rel="stylesheet" href="./css/registro-view-styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="auth-container">
+      <div class="login-container">
+        <div class="brand-section">
+          <div class="brand-content">
+            <img src="assets/escudo.png" alt="" class="logo" />
+            <div class="version-info">
+              <p>Versión 2.5.0</p>
+              <p>© 2025 @A.Campos</p>
+            </div>
+          </div>
+        </div>
+        <div class="form-section">
+          <div class="form-container">
+            <h1>Accede a Cuadrantes</h1>
+            <p class="subtitle">Introduce tus credenciales para acceder al sistema</p>
+            <form id="loginForm">
+              <div class="form-group">
+                <label for="identification">Nº Identificación</label>
+                <div class="input-with-icon">
+                  <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" >
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                  <input type="text" id="identification" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="password">Contraseña</label>
+                <div class="input-with-icon">
+                  <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" >
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <input type="password" id="password" required />
+                </div>
+              </div>
+              <a href="#" class="forgot-password">He olvidado mi contraseña</a>
+              <button type="submit" class="btn-primary">Acceder</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <header class="main-header">
+      <div class="container-fluid">
+      <div class="header-brand">
+        <img src="/icons/logo-ayto.png" alt="Escudo Policial" class="header-logo" />
+        <div class="header-title">
+          <span class="main-title">Policía Local</span>
+          <span class="sub-title">Chauchina</span>
+        </div>
+      </div>
+      <div class="header-actions">
+  <span id="logged-in-user-display" class="user-id"></span>
+
+  <button id="tasks-bell-button" class="icon-button" title="Mis Tareas Pendientes">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+    </svg>
+    <span id="tasks-notification-badge" class="notification-badge hidden">0</span>
+  </button>
+
+  <button id="requests-bell-button" class="icon-button" title="Gestionar Solicitudes">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m-7.5-2.962A3.75 3.75 0 0112 15v-2.25A3.75 3.75 0 0115.75 9V8.25m-7.5 4.5V7.5A3.75 3.75 0 0112 3.75M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </svg>
+    <span id="requests-notification-badge" class="notification-badge hidden">0</span>
+  </button>
+
+  <button id="logout-button-header" class="icon-button" title="Cerrar Sesión">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+    </svg>
+  </button>
+</div>
+    </header>
+
+    <nav class="module-nav">
+  <div class="container-fluid">
+    <a href="#" class="module-tab active" data-view="cuadrante"><i data-feather="calendar"></i><span>Cuadrante</span></a>
+    <a href="#" class="module-tab" data-view="partes_servicio"><i data-feather="file-text"></i><span>Partes de Servicio</span></a>
+    <a href="#" class="module-tab" data-view="tareas"><i data-feather="target"></i><span>Tareas</span></a>
+    <a href="#" class="module-tab" data-view="registro_electronico"><i data-feather="archive"></i><span>Registro</span></a>
+    <a href="#" class="module-tab" data-view="croquis"><i data-feather="edit-3"></i><span>Croquizador</span></a>
+    <a href="#" class="module-tab" data-view="identificaciones"><i data-feather="users"></i><span>Identificaciones</span></a>
+
+    <div class="module-tab-dropdown-container admin-only" style="display: none;">
+  </div>
+
+<button id="open-sidebar-btn" class="icon-button admin-only" title="Menú de Gestión" style="display: none;">
+  <i data-feather="menu"></i>
+</button>
+      <div class="dropdown-menu" id="gestion-dropdown-menu">
+        <a href="#" class="module-tab" data-view="planificacion"><i data-feather="clipboard"></i><span>Planificación</span></a>
+        <a href="#" class="module-tab" data-view="servicios_extra"><i data-feather="clock"></i><span>Servicios Extra</span></a>
+        <a href="#" class="module-tab" data-view="registros_estadisticas"><i data-feather="bar-chart-2"></i><span>Estadísticas</span></a>
+        <a href="#" class="module-tab" data-view="gestion_plantillas"><i data-feather="clipboard"></i><span>Plantillas</span></a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+    <div id="app-content" class="hidden">
+        <div class="container">
+            <div class="main-layout">
+                <main class="main-content-column" id="app-view-container"></main>
+                <aside class="sidebar-column">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Novedades</h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#1b9cfc" width="20" height="20" class="header-icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                            </svg>
+                        </div>
+                        <div class="card-body">
+                            <div id="activity-feed-container"><p>Cargando novedades...</p></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Turnos Cuadrante</h4>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#1b9cfc" width="20" height="20" class="header-icon">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A2.25 2.25 0 011.5 18.75v-6.75c0-.621.504-1.125 1.125-1.125H3.75m12.75 0h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                            </svg>
+                        </div>
+                        <div class="card-body">
+                              <div id="stats-container" class="stats-container">
+                                <p class="info-message">Selecciona un agente para ver sus estadísticas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <div id="app-messages-container"></div>
+    <div id="loading-overlay" class="hidden">
+      <div class="spinner"></div>
+      <p>Cargando...</p>
+    </div>
+
+<div id="sidebar-overlay" class="sidebar-overlay"></div>
+<nav id="management-sidebar" class="management-sidebar admin-only" style="display: none;">
+  <div class="sidebar-header">
+    <h3>Menú de Gestión</h3>
+    <button id="close-sidebar-btn" class="icon-button">
+      <i data-feather="x"></i>
+    </button>
+  </div>
+  <div class="sidebar-content">
+    <a href="#" class="module-tab" data-view="planificacion"><i data-feather="clipboard"></i><span>Planificación</span></a>
+    <a href="#" class="module-tab" data-view="servicios_extra"><i data-feather="clock"></i><span>Servicios Extra</span></a>
+    <a href="#" class="module-tab" data-view="registros_estadisticas"><i data-feather="bar-chart-2"></i><span>Estadísticas</span></a>
+    <a href="#" class="module-tab" data-view="gestion_plantillas"><i data-feather="layout"></i><span>Plantillas</span></a>
+  </div>
+</nav>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script type="module" src="/js/main.js"></script>
+
+    <div id="view-order-modal" class="modal-overlay hidden">
+  <div class="modal-content card large">
+    <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="file-text"></i>
+        <span id="view-order-modal-title">Orden de Servicio Ordinaria</span>
+      </div>
+      <button type="button" class="icon-button close-button"><i data-feather="x"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="order-summary-grid">
+        <div class="summary-item">
+          <strong>Nº Registro:</strong>
+          <span id="view-order-number"></span>
+        </div>
+        <div class="summary-item">
+          <strong>Fecha:</strong>
+          <span id="view-order-date"></span>
+        </div>
+        <div class="summary-item">
+          <strong>Turno:</strong>
+          <span id="view-order-shift"></span>
+        </div>
+        <div class="summary-item">
+          <strong>Estado:</strong>
+          <span id="view-order-status" class="status-pill"></span>
+        </div>
+      </div>
+
+      <hr class="subtle-divider">
+
+      <h4 class="form-section-title">Descripción / Instrucciones</h4>
+      <p id="view-order-description" class="description-text"></p>
+
+      <hr class="subtle-divider">
+
+      <h4 class="form-section-title">Agentes Asignados</h4>
+      <div id="view-assigned-agents-list" class="resource-list-display">
+        <p class="empty-state-text">No hay agentes asignados.</p>
+      </div>
+
+      <hr class="subtle-divider">
+
+      <h4 class="form-section-title">Tareas Generales (Checklist)</h4>
+      <div id="view-general-tasks-list" class="task-list-display">
+        <p class="empty-state-text">No hay tareas generales.</p>
+      </div>
+
+      <hr class="subtle-divider">
+
+      <h4 class="form-section-title">Tareas Específicas</h4>
+      <div id="view-specific-tasks-list" class="task-list-display">
+        <p class="empty-state-text">No hay tareas específicas.</p>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="button button-tertiary close-button">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+    <div id="agent-manager-modal" class="modal-overlay hidden">
+      <div class="modal-content card large">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="users"></i>
+            <span>Gestionar Agentes</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div id="agentListContainer"></div>
+
+          <hr style="margin: var(--space-3) 0" />
+
+          <form id="agent-form" class="hidden">
+            <h3 id="form-title" style="font-size: var(--text-lg); margin-bottom: var(--space-3)">
+              Añadir Nuevo Agente
+            </h3>
+            <div style="display: flex; gap: var(--space-2); align-items: flex-end">
+              <div class="form-group" style="flex: 1">
+                <label class="form-label" for="agent-id-input">ID Agente (TIP)</label>
+                <input type="text" id="agent-id-input" class="selector" />
+              </div>
+              <div class="form-group" style="flex: 2">
+                <label class="form-label" for="agent-name-input">Nombre del Agente</label>
+                <input type="text" id="agent-name-input" class="selector" required />
+              </div>
+              <div
+                class="form-group-checkbox"
+                style="padding-bottom: 10px; display: flex; align-items: center; gap: 8px"
+              >
+                <input
+                  type="checkbox"
+                  id="agent-active-checkbox"
+                  checked
+                  style="width: 20px; height: 20px"
+                />
+                <label for="agent-active-checkbox" style="margin-bottom: 0">Activo</label>
+              </div>
+            </div>
+            <div
+              style="
+                display: flex;
+                justify-content: flex-end;
+                gap: var(--space-2);
+                margin-top: var(--space-2);
+              "
+            >
+              <button type="button" class="button button-secondary" id="cancel-agent-edit-button">
+                Cancelar
+              </button>
+              <button type="submit" id="saveAgentButton" class="button button-primary">
+                Guardar
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button id="add-agent-button" class="button button-primary">
+            <i data-feather="user-plus"></i>
+            <span>Añadir Nuevo Agente</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="request-permission-modal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="file-plus"></i>
+            <span>Solicitar Permiso o Licencia</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="permission-request-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="request-agent-select">Agente Solicitante:</label>
+              <select id="request-agent-select" name="agentId" class="selector" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="request-type-select">Tipo de Solicitud:</label>
+              <select id="request-type-select" name="typeId" class="selector" required></select>
+            </div>
+
+            <div style="display: flex; gap: var(--space-2)">
+              <div class="form-group" style="flex: 1">
+                <label class="form-label" for="request-start-date">Fecha de Inicio:</label>
+                <input type="date" id="request-start-date" name="startDate" required />
+              </div>
+              <div class="form-group" style="flex: 1">
+                <label class="form-label" for="request-end-date">Fecha de Fin:</label>
+                <input type="date" id="request-end-date" name="endDate" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="request-comments">Comentarios:</label>
+              <textarea id="request-comments" name="commentsAgent" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="request-attachment"
+                >Adjuntar Documento (opcional):</label
+              >
+              <input type="file" id="request-attachment" name="attachment" accept="image/*,.pdf" />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="button button-secondary close-button">Cancelar</button>
+            <button type="submit" class="button button-primary">
+              <i data-feather="send"></i>
+              <span>Enviar Solicitud</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="manage-requests-modal" class="modal-overlay hidden">
+      <div class="modal-content card extra-large">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="check-square"></i>
+            <span>Gestionar Solicitudes</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body" style="padding: 0">
+          <div class="modal-tabs">
+            <button class="tab-button active" data-tab="permissions">Permisos y Licencias</button>
+            <button class="tab-button" data-tab="shift-changes">Cambios de Turno</button>
+          </div>
+
+          <div id="permissions-tab-content" class="tab-content active">
+            <div class="filter-group">
+              <div class="form-group">
+                <label for="permissions-filter-status">Estado</label>
+                <select id="permissions-filter-status" class="selector">
+                  <option value="all">Todos</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Aprobado">Aprobado</option>
+                  <option value="Rechazado">Rechazado</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="permissions-filter-agent">Agente</label>
+                <select id="permissions-filter-agent" class="selector"></select>
+              </div>
+              <button id="permissions-apply-filter-btn" class="button button-primary">
+                Filtrar
+              </button>
+            </div>
+            <div
+              id="permissions-list-container"
+              class="table-container"
+              style="margin-top: var(--space-3)"
+            ></div>
+          </div>
+
+          <div id="shift-changes-tab-content" class="tab-content hidden">
+            <div class="filter-group">
+              <select id="shift-changes-filter-status" class="selector">
+                <option value="all">Todos</option>
+                <option value="Pendiente_Target">Pendiente Compañero</option>
+                <option value="Aprobado_Ambos">Aprobado</option>
+              </select>
+              <select id="shift-changes-filter-agent" class="selector"></select>
+              <button id="shift-changes-apply-filter-btn" class="button button-primary">
+                Filtrar
+              </button>
+            </div>
+            <div
+              id="shift-changes-list-container"
+              class="table-container"
+              style="margin-top: var(--space-3)"
+            ></div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="button button-secondary close-button">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="propose-change-modal" class="modal-overlay hidden">
+      <div class="modal-content card">
+        <div class="card-header">
+          <div class="modal-title">
+            <i data-feather="refresh-cw"></i>
+            <span>Proponer Cambio de Turno</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="propose-change-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <p class="form-label">Estás ofreciendo tu turno:</p>
+              <div class="info-box">
+                <strong id="propose-requester-shift-info">---</strong>
+              </div>
+            </div>
+
+            <hr class="subtle-divider" />
+
+            <div class="form-group">
+              <label class="form-label" for="propose-target-agent-select"
+                >Cambiar con el compañero/a:</label
+              >
+              <select id="propose-target-agent-select" class="selector" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="propose-target-date-input">En la fecha:</label>
+              <input type="date" id="propose-target-date-input" required />
+            </div>
+
+            <div class="form-group">
+              <p class="form-label">Por su turno:</p>
+              <div class="info-box">
+                <strong id="propose-target-shift-info">---</strong>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="propose-comments">Comentarios (opcional):</label>
+              <textarea id="propose-comments" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="button button-secondary close-button">Cancelar</button>
+            <button type="submit" id="propose-submit-btn" class="button button-primary" disabled>
+              <i data-feather="send"></i>
+              <span>Enviar Propuesta</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <style>
+      .info-box {
+        background-color: var(--color-background-inactive);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-sm);
+        padding: var(--space-2);
+        font-weight: 600;
+      }
+      .subtle-divider {
+        border: none;
+        height: 1px;
+        background-color: var(--color-border);
+        margin: var(--space-3) 0;
+      }
+    </style>
+
+    <div id="respond-to-proposal-modal" class="modal hidden">
+      <div class="modal-content">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="refresh-cw"></i>
+            <span>Propuesta de Cambio Recibida</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div id="respond-proposal-details">
+            <p class="form-label">
+              El Agente <strong id="respond-requester-name">---</strong> te propone cambiar su
+              turno:
+            </p>
+            <div class="info-box">
+              <strong id="respond-requester-shift-info">---</strong>
+            </div>
+
+            <p class="form-label" style="margin-top: var(--space-2)">por tu turno:</p>
+            <div class="info-box">
+              <strong id="respond-target-shift-info">---</strong>
+            </div>
+
+            <div id="respond-comments-container" class="hidden" style="margin-top: var(--space-2)">
+              <p class="form-label"><strong>Comentarios Adicionales:</strong></p>
+              <p id="respond-comments-text" style="white-space: pre-wrap"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            id="respond-reject-btn"
+            type="button"
+            class="button"
+            style="background-color: var(--color-warning); color: white"
+          >
+            <i data-feather="x-circle"></i>
+            <span>Rechazar</span>
+          </button>
+          <button
+            id="respond-accept-btn"
+            type="button"
+            class="button"
+            style="background-color: var(--color-success); color: white"
+          >
+            <i data-feather="check-circle"></i>
+            <span>Aceptar Cambio</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="edit-shift-modal" class="modal-overlay hidden">
+  <div class="modal-content card small"> <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="edit-2"></i>
+        <span id="shift-form-title">Editar Turno</span>
+      </div>
+      <button class="close-button" title="Cerrar">
+        <i data-feather="x"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="shift-info-display">
+        <div class="info-item">
+          <i data-feather="user"></i>
+          <strong id="shift-edit-agent-name">Nombre del Agente</strong>
+        </div>
+        <div class="info-item">
+          <i data-feather="calendar"></i>
+          <span id="shift-edit-date">Fecha Completa del Turno</span>
+        </div>
+      </div>
+
+      <hr class="subtle-divider" />
+
+      <p class="form-label">Turnos Principales</p>
+      <div id="primary-shifts-grid" class="button-grid icon-grid">
+        </div>
+
+      <p class="form-label" style="margin-top: 16px;">Permisos Comunes</p>
+      <div id="secondary-shifts-grid" class="button-grid secondary-grid">
+        </div>
+      
+      <div class="form-group" style="margin-top: 16px;">
+        <label class="form-label" for="other-leave-select">Otras Licencias y Permisos</label>
+        <select id="other-leave-select" class="selector">
+          <option value="">-- Seleccionar un permiso... --</option>
+          </select>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button id="remove-shift-btn" class="button button-danger">
+        <i data-feather="trash-2"></i>
+        <span>Quitar Turno</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+  <div id="persona-modal" class="modal-overlay hidden">
+  <div class="modal-content card">
+    <form id="persona-form">
+      <div class="card-header">
+        <div class="modal-title">
+          <i data-feather="user-plus"></i>
+          <span id="persona-modal-title">Nueva Persona</span>
+        </div>
+        <button type="button" class="icon-button close-button"><i data-feather="x"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="persona-id">
+        <div class="form-group">
+          <label class="form-label" for="persona-dni">DNI / NIE</label>
+          <input type="text" id="persona-dni" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="persona-nombre">Nombre</label>
+          <input type="text" id="persona-nombre" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="persona-apellidos">Apellidos</label>
+          <input type="text" id="persona-apellidos" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="persona-mote">Mote</label>
+          <input type="text" id="persona-mote">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="persona-telefono">Teléfono</label>
+          <input type="tel" id="persona-telefono">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="persona-fechaNacimiento">Fecha de Nacimiento</label>
+          <input type="date" id="persona-fechaNacimiento">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="persona-domicilio">Domicilio Completo</label>
+          <textarea id="persona-domicilio" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="button button-secondary close-button">Cancelar</button>
+        <button type="submit" class="button button-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="vehiculo-modal" class="modal-overlay hidden">
+  <div class="modal-content card">
+    <form id="vehiculo-form">
+      <div class="card-header">
+        <div class="modal-title">
+          <i data-feather="truck"></i>
+          <span id="vehiculo-modal-title">Nuevo Vehículo</span>
+        </div>
+        <button type="button" class="icon-button close-button"><i data-feather="x"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="vehiculo-id">
+        <div class="form-group">
+          <label class="form-label" for="vehiculo-matricula">Matrícula</label>
+          <input type="text" id="vehiculo-matricula" style="text-transform: uppercase;" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="vehiculo-marca">Marca</label>
+            <input type="text" id="vehiculo-marca" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="vehiculo-modelo">Modelo</label>
+            <input type="text" id="vehiculo-modelo" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="vehiculo-color">Color</label>
+          <input type="text" id="vehiculo-color">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label" for="vehiculo-titular-dni">DNI del Titular</label>
+                <input type="text" id="vehiculo-titular-dni" placeholder="12345678A" style="text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="vehiculo-titular-nombre">Nombre del Titular</label>
+                <input type="text" id="vehiculo-titular-nombre" placeholder="Nombre y apellidos">
+            </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="vehiculo-telefono">Teléfono de Contacto</label>
+          <input type="tel" id="vehiculo-telefono">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="vehiculo-observaciones">Observaciones</label>
+          <textarea id="vehiculo-observaciones" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="button button-secondary close-button">Cancelar</button>
+        <button type="submit" class="button button-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="establecimiento-modal" class="modal-overlay hidden">
+  <div class="modal-content card">
+    <form id="establecimiento-form">
+      <div class="card-header">
+        <div class="modal-title">
+          <i data-feather="briefcase"></i>
+          <span id="establecimiento-modal-title">Nuevo Establecimiento</span>
+        </div>
+        <button type="button" class="icon-button close-button"><i data-feather="x"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="establecimiento-id">
+        <div class="form-group">
+          <label class="form-label" for="establecimiento-cif">CIF</label>
+          <input type="text" id="establecimiento-cif" style="text-transform: uppercase;" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="establecimiento-nombreComercial">Nombre Comercial</label>
+          <input type="text" id="establecimiento-nombreComercial" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="establecimiento-licenciaActividad">Licencia de Actividad</label>
+          <input type="text" id="establecimiento-licenciaActividad">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="establecimiento-titular-dni">Titular (DNI)</label>
+          <input type="text" id="establecimiento-titular-dni" style="text-transform: uppercase;">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="establecimiento-telefono">Teléfono de Contacto</label>
+          <input type="tel" id="establecimiento-telefono">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="establecimiento-direccion">Dirección Completa</label>
+          <textarea id="establecimiento-direccion" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="button button-secondary close-button">Cancelar</button>
+        <button type="submit" class="button button-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+    <div id="view-selector-modal" class="modal-overlay hidden">
+      <div class="modal-content card small">
+        <div class="card-header">
+          <div class="modal-title">
+            <i data-feather="eye"></i>
+            <span>Seleccionar Vista</span>
+          </div>
+          <button class="close-button" title="Cerrar">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-subtitle">Elige cómo quieres visualizar el cuadrante.</p>
+          <div class="modal-options">
+            <button id="select-view-tarjetas" class="button button-secondary option-button">
+              <i data-feather="layout"></i>
+              <span>Vista Cuadrante</span>
+            </button>
+            <button id="select-view-calendario" class="button button-secondary option-button">
+              <i data-feather="calendar"></i>
+              <span>Vista Calendario</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .modal-options {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        margin-top: var(--space-3);
+      }
+      .option-button {
+        height: 50px;
+        justify-content: flex-start;
+        padding-left: var(--space-3);
+        font-size: var(--text-base);
+      }
+    </style>
+
+    <div id="management-selector-modal" class="modal-overlay hidden">
+      <div class="modal-content card small">
+        <div class="card-header">
+          <div class="modal-title">
+            <i data-feather="settings"></i>
+            <span>Opciones de Gestión</span>
+          </div>
+          <button class="close-button" title="Cerrar">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-subtitle">Selecciona la herramienta de gestión a utilizar.</p>
+          <div class="modal-options">
+            <button id="select-manage-agents" class="button button-secondary option-button">
+              <i data-feather="users"></i>
+              <span>Gestionar Agentes</span>
+            </button>
+            <button id="select-manage-requests" class="button button-secondary option-button">
+              <i data-feather="check-square"></i> <span>Gestionar Solicitudes</span>
+            </button>
+            <button id="select-add-marked-date" class="button button-secondary option-button">
+              <i data-feather="plus-square"></i> <span>Añadir Fecha Señalada</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="add-marked-date-modal" class="modal-overlay hidden">
+      <div class="modal-content card small">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="plus-square"></i>
+            <span>Añadir Fecha Señalada</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="add-marked-date-form">
+          <div class="modal-body">
+            <p class="modal-subtitle">
+              Marca una fecha importante en el cuadrante (ej. fiesta local).
+            </p>
+
+            <div class="form-group">
+              <label class="form-label" for="marked-date-input">Fecha</label>
+              <input type="date" id="marked-date-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="marked-date-type-select">Tipo</label>
+              <select id="marked-date-type-select" class="selector" required>
+                <option value="">-- Selecciona tipo --</option>
+                <option value="fiesta_local">Fiesta Local</option>
+                <option value="fiesta_nacional">Fiesta Nacional</option>
+                <option value="evento_especial">Evento Especial</option>
+                <option value="otros">Otros</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="marked-date-title-input">Título (corto)</label>
+              <input type="text" id="marked-date-title-input" required maxlength="50" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="marked-date-description-textarea"
+                >Descripción (opcional)</label
+              >
+              <textarea id="marked-date-description-textarea" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="button button-secondary close-button">Cancelar</button>
+            <button type="submit" class="button button-primary">
+              <i data-feather="save"></i>
+              <span>Guardar Fecha</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="extra-service-modal" class="modal-overlay hidden">
+      <div class="modal-content card small">
+        <div class="card-header">
+          <div class="modal-title">
+            <i data-feather="clock"></i>
+            <span id="extra-service-modal-title">Añadir Servicio Extraordinario</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="extra-service-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="extra-service-date">Fecha</label>
+              <input type="date" id="extra-service-date" required readonly />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="extra-service-type">Tipo de Servicio</label>
+              <select id="extra-service-type" class="selector" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="extra-service-hours">Horas Realizadas</label>
+              <input type="number" id="extra-service-hours" min="1" step="0.5" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="extra-service-price">Precio asociado (€)</label>
+              <input type="text" id="extra-service-price" readonly />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="extra-service-notes">Observaciones</label>
+              <textarea id="extra-service-notes" rows="3"></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="justify-content: space-between">
+            <button type="button" class="button button-danger hidden" id="delete-extra-service-btn">
+              <i data-feather="trash-2"></i>
+              <span>Eliminar</span>
+            </button>
+            <div>
+              <button type="button" class="button button-secondary close-button">Cancelar</button>
+              <button type="submit" id="save-extra-service-btn" class="button button-primary">
+                Guardar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="user-requests-selector-modal" class="modal-overlay hidden">
+      <div class="modal-content card small">
+        <div class="card-header">
+          <div class="modal-title">
+            <i data-feather="inbox"></i>
+            <span>Mis Solicitudes</span>
+          </div>
+          <button class="close-button" title="Cerrar">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-subtitle">Selecciona la gestión que deseas realizar.</p>
+          <div class="modal-options">
+            <button id="select-request-permission" class="button button-secondary option-button">
+              <i data-feather="file-plus"></i>
+              <span>Solicitar Permiso o Licencia</span>
+            </button>
+            <button id="select-propose-change" class="button button-secondary option-button">
+              <i data-feather="refresh-cw"></i>
+              <span>Proponer Cambio de Turno</span>
+            </button>
+            <button id="select-view-my-requests" class="button button-secondary option-button">
+              <i data-feather="list"></i>
+              <span>Ver Estado de Mis Solicitudes</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="pdf-options-modal" class="modal-overlay hidden">
+      <div class="modal-content card">
+        <div class="card-header">
+          <div class="modal-title">
+            <i data-feather="file-text"></i>
+            <span>Generar Informe de Servicios</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="pdf-options-form" novalidate>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label">Seleccionar Periodo</label>
+              <div class="radio-group" style="display: flex; gap: var(--space-3)">
+                <div>
+                  <input type="radio" id="period-month" name="period" value="month" checked />
+                  <label for="period-month">Por Mes</label>
+                </div>
+                <div>
+                  <input type="radio" id="period-range" name="period" value="range" />
+                  <label for="period-range">Rango de Fechas</label>
+                </div>
+              </div>
+            </div>
+
+            <div id="month-period-selector">
+              <div style="display: flex; gap: var(--space-2)">
+                <div class="form-group" style="flex: 2">
+                  <label class="form-label" for="pdf-month-select">Mes</label>
+                  <select id="pdf-month-select" class="selector"></select>
+                </div>
+                <div class="form-group" style="flex: 1">
+                  <label class="form-label" for="pdf-year-select">Año</label>
+                  <select id="pdf-year-select" class="selector"></select>
+                </div>
+              </div>
+            </div>
+
+            <div id="range-period-selector" class="hidden">
+              <div style="display: flex; gap: var(--space-2)">
+                <div class="form-group" style="flex: 1">
+                  <label class="form-label" for="pdf-start-date">Fecha Inicio</label>
+                  <input type="date" id="pdf-start-date" />
+                </div>
+                <div class="form-group" style="flex: 1">
+                  <label class="form-label" for="pdf-end-date">Fecha Fin</label>
+                  <input type="date" id="pdf-end-date" />
+                </div>
+              </div>
+            </div>
+
+            <div id="pdf-agent-selector-container" class="form-group hidden">
+              <label class="form-label" for="pdf-agent-select">Agente</label>
+              <select id="pdf-agent-select" class="selector"></select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="pdf-filename-input"
+                >Nombre del Archivo (sin .pdf)</label
+              >
+              <input type="text" id="pdf-filename-input" required />
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="button button-secondary close-button">Cancelar</button>
+            <button type="submit" class="button button-primary">Generar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="pdf-confirm-modal" class="modal hidden">
+      <div class="modal-content small">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="check-circle"></i>
+            <span>Confirmar Generación</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div id="pdf-summary-content"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button id="pdf-cancel-btn" type="button" class="button button-secondary close-button">
+            Cancelar
+          </button>
+          <button id="pdf-confirm-download-btn" type="button" class="button button-primary">
+            <i data-feather="download"></i>
+            <span>Confirmar y Descargar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+   <div id="service-order-modal" class="modal-overlay hidden">
+  <div class="modal-content card extra-large"> <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="file-plus"></i>
+        <span id="service-order-modal-title">Detalles de la Orden de Servicio</span>
+      </div>
+      <button type="button" class="icon-button close-button"><i data-feather="x"></i></button>
+    </div>
+
+    <form id="service-order-form">
+      <div class="modal-body three-column-layout">
+
+        <div class="column">
+          <h4 class="column-title">Datos de la Orden</h4>
+          <div class="form-group">
+            <label class="form-label">Nº Orden / Estado</label>
+            <div class="order-meta-display">
+              <span id="order-number-display" class="order-number">N/A</span>
+              <span id="order-status-display" class="status-pill status-draft">Borrador</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="order-title">Título</label>
+            <input type="text" id="order-title" class="selector" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="order-date">Fecha</label>
+            <input type="date" id="order-date" class="selector" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="order-shift">Turno</label>
+            <select id="order-shift" class="selector" required>
+              <option value="Mañana">Mañana</option>
+              <option value="Tarde">Tarde</option>
+              <option value="Noche">Noche</option>
+              <option value="Especial">Especial</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="order-description">Descripción General</label>
+            <textarea id="order-description" class="selector" rows="8"></textarea>
+          </div>
+        </div>
+
+       <div class="column">
+  <h4 class="column-title">Recursos Asignados</h4>
+  
+  <div id="pending-tasks-alert" class="alert alert-warning hidden" 
+       style="white-space: pre-wrap; margin-bottom: var(--space-3);">
+    </div>
+  
+  <div class="form-group">
+    <label class="form-label" for="order-assigned-agents-input">Agentes</label>
+    <select 
+      multiple 
+      id="order-assigned-agents-input" 
+      name="assigned_agents" 
+      class="selector" 
+      size="8" 
+      required
+      title="Usa CTRL/CMD para seleccionar múltiples agentes."
+    ></select>
+    <p class="form-hint">Selecciona los agentes. La IA comprobará tareas pendientes al instante.</p>
+  </div>
+  
+  </div>
+
+        <div class="column">
+          <h4 class="column-title">Tareas y Checklist</h4>
+          <div class="form-group">
+            <label class="form-label">Tareas Generales (Checklist)</label>
+            <div id="task-list-container" class="task-list"></div>
+            <div class="task-input-group">
+              <input type="text" id="new-task-input" class="selector" placeholder="Añadir tarea general..." />
+              <button type="button" id="add-task-btn" class="button button-secondary">Añadir</button>
+            </div>
+          </div>
+          <hr class="subtle-divider">
+          <div class="form-group">
+            <label class="form-label">Tareas Específicas</label>
+            <div id="specific-tasks-preview-container" class="task-list"></div>
+            <div class="add-task-form">
+              <textarea id="new-specific-task-description" rows="2" placeholder="Descripción de la tarea..."></textarea>
+              <select id="new-specific-task-agent" class="selector" placeholder="Asignar a..."></select>
+              <button type="button" id="add-specific-task-btn" class="button button-secondary">
+                <i data-feather="plus"></i> Asignar Tarea
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="button button-tertiary close-button">Cancelar</button>
+        <button type="submit" id="save-order-btn" class="button button-primary">Guardar Orden</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+    <div id="agent-tasks-modal" class="modal-overlay hidden">
+  <div class="modal-content card">
+    <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="check-circle"></i>
+        <span>Mis Tareas Pendientes</span>
+      </div>
+      <button class="icon-button close-button">
+        <i data-feather="x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="agent-tasks-list-container">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary close-button">Cerrar</button>
+    </div>
+  </div>
+</div>
+    
+    <div id="generate-template-modal" class="modal-overlay hidden">
+      <div class="modal-content card small">
+        <div class="card-header">
+          <div class="modal-title">
+            <i data-feather="file-plus"></i>
+            <span>Generar Plantilla de Órdenes</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="generate-template-form">
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="template-date-input">Fecha para la plantilla</label>
+              <input type="date" id="template-date-input" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="template-shift-select">Turno de la plantilla</label>
+              <select id="template-shift-select" class="selector" required>
+                <option value="">-- Selecciona un turno --</option>
+                <option value="Mañana">Mañana</option>
+                <option value="Tarde">Tarde</option>
+                <option value="Noche">Noche</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="button button-secondary close-button">Cancelar</button>
+            <button type="submit" class="button button-primary">Generar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="assignment-modal" class="modal-overlay hidden">
+  <div class="modal-content card extra-large"> <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="users"></i>
+        <span id="assignment-modal-title">Asignar Recursos</span>
+      </div>
+      <button type="button" class="icon-button close-button"><i data-feather="x"></i></button>
+    </div>
+
+    <form id="assignment-form">
+      <div class="modal-body assignment-layout">
+
+        <div class="assignment-column">
+          <h4 class="column-title">Agentes Disponibles</h4>
+          <div class="form-group">
+            <input type="text" id="agent-search-input" class="selector" placeholder="Buscar agente por nombre o ID...">
+          </div>
+          <div id="available-agents-list" class="agent-list scrollable">
+            </div>
+        </div>
+
+        <div class="assignment-column assigned-team">
+          <h4 class="column-title">Equipo Asignado al Servicio</h4>
+          <div id="assigned-agents-list-dropzone" class="agent-list scrollable">
+            <p class="empty-state-text">Arrastra agentes aquí para asignarlos</p>
+            </div>
+          <div class="form-group">
+             <label class="form-label">Selecciona un responsable del equipo:</label>
+             <select id="shift-manager-select" class="selector" required>
+                <option value="">-- Ningún agente asignado --</option>
+             </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="button button-tertiary close-button">Cancelar</button>
+        <button type="submit" class="button button-primary">Guardar Asignación</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+    <div id="report-summary-modal" class="modal-overlay hidden">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="list"></i>
+            <span>Resumen de Actuaciones</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="report-summary-form">
+          <div class="modal-body">
+            <p class="modal-subtitle">
+              Ajusta las cantidades para las actuaciones realizadas durante el servicio.
+            </p>
+
+            <div class="form-grid resumen-compacto">
+
+  <h3 class="apartado-titulo">Actuaciones tráfico:</h3>
+  <div class="form-group compact">
+    <label>Actuaciones estacionamiento indebido</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="estacionamiento_indebido" data-key="estacionamiento_indebido">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Denuncias tráfico</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="denuncias_trafico" data-key="denuncias_trafico">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Informes tráfico</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="informes_trafico" data-key="informes_trafico">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Delitos seguridad del tráfico</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="delitos_trafico" data-key="delitos_trafico">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Controles de tráfico</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="controles_trafico" data-key="controles_trafico">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Regulación de tráfico</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="regulacion_trafico" data-key="regulacion_trafico">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Retirada/deposito vehículos</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="deposito_vehiculos" data-key="deposito_vehiculos">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Diligencias a prevención/atestados</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="diligencias_prevencion" data-key="diligencias_prevencion">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Otros</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="otros_trafico" data-key="otros_trafico">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+
+  <h3 class="apartado-titulo">Actuaciones S. Ciudadana:</h3>
+  <div class="form-group compact">
+    <label>Contra el patrimonio</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="contrap_patrimonio" data-key="contrap_patrimonio">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Contra la salud pública</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="salud_publica" data-key="salud_publica">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Denuncias seguridad ciudadana</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="denuncias_seguridad" data-key="denuncias_seguridad">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Identificaciones</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="identificaciones" data-key="identificaciones">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Reyertas</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="reyertas" data-key="reyertas">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Violencia género</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="violencia_genero" data-key="violencia_genero">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Minutas/diligencias</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="minutas" data-key="minutas">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Detenidos</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="detenidos_ciudadana" data-key="detenidos_ciudadana">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Solicitud datos GC</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="solicitud_datos_gc" data-key="solicitud_datos_gc">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+
+  <h3 class="apartado-titulo">P. Administrativa:</h3>
+  <div class="form-group compact">
+    <label>Anomalías vía pública</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="anomalias_via" data-key="anomalias_via">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Vehículos abandonados</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="vehiculos_abandonados" data-key="vehiculos_abandonados">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Denuncias O.O.M.M.</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="denuncias_oomm" data-key="denuncias_oomm">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Inspecciones locales</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="inspecciones_locales" data-key="inspecciones_locales">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Inspecciones obras</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="inspecciones_obras" data-key="inspecciones_obras">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Notificaciones</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="notificaciones" data-key="notificaciones">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Informes</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="informes_admin" data-key="informes_admin">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Certificados Convivencia</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="certificados_convivencia" data-key="certificados_convivencia">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+
+  <h3 class="apartado-titulo">Policía judicial:</h3>
+  <div class="form-group compact">
+    <label>Auxilio a personas</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="auxilio_personas" data-key="auxilio_personas">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Fallecimientos</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="fallecimientos" data-key="fallecimientos">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Colaboración bomberos</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="colab_bomberos" data-key="colab_bomberos">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Colaboración GC</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="colaboracion_gc" data-key="colaboracion_gc">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Colaboración sanitarios</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="colab_sanitarios" data-key="colab_sanitarios">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Intervención menores</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="intervencion_menores" data-key="intervencion_menores">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Requerimientos ciudadanos</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="req_ciudadanos" data-key="req_ciudadanos">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Recepción de llamadas (telefonemas)</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="recepcion_llamadas" data-key="recepcion_llamadas">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Recepción denuncias</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="recepcion_denuncias" data-key="recepcion_denuncias">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Citaciones</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="citaciones" data-key="citaciones">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+  <div class="form-group compact">
+    <label>Diligencias exposición hechos</label>
+    <div class="input-stepper">
+      <button type="button" class="stepper-btn stepper-minus" tabindex="-1">-</button>
+      <input type="number" min="0" value="0" name="diligencias_exposicion" data-key="diligencias_exposicion">
+      <button type="button" class="stepper-btn stepper-plus" tabindex="-1">+</button>
+    </div>
+  </div>
+</div>
+
+
+      <div class="modal-footer">
+        <button type="button" class="button button-secondary close-button">Cancelar</button>
+        
+        <button type="submit" id="save-summary-btn" class="button button-primary">Guardar Resumen</button>
+      </div>
+        </form>
+      </div>
+    </div>
+
+    <style>
+     /* 1. LAYOUT MÁS DENSO (3 COLUMNAS) Y MENOS ESPACIADO */
+.form-grid.resumen-compacto {
+  /* Pasamos a 3 columnas para mayor densidad */
+  grid-template-columns: repeat(3, 1fr);
+  /* Reducimos el espacio entre filas y columnas */
+  gap: 1rem 1.25rem;
+}
+
+/* 2. GRUPOS DE FORMULARIO MÁS COMPACTOS */
+.form-group.compact {
+  margin-bottom: 0; /* Eliminamos el margen extra si lo hubiera */
+}
+.form-group.compact label {
+  font-size: 0.8rem;  /* Hacemos la etiqueta un poco más pequeña */
+  margin-bottom: 0.3rem;
+  font-weight: 500;
+  color: #475569; /* Un gris más suave */
+}
+
+/* 3. ESTILOS PARA EL NUEVO COMPONENTE "INPUT STEPPER" */
+.input-stepper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #cbd5e1; /* Borde estándar */
+  border-radius: 6px;
+  overflow: hidden; /* Para que los bordes redondeados se apliquen a los botones */
+}
+
+.input-stepper input {
+  width: 100%;
+  height: 38px;
+  border: none;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+  /* Oculta las flechas por defecto del input numérico */
+  -moz-appearance: textfield;
+}
+.input-stepper input::-webkit-outer-spin-button,
+.input-stepper input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.input-stepper .stepper-btn {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border: none;
+  background-color: #f8fafc;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: #64748b;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.input-stepper .stepper-btn:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+.input-stepper .stepper-minus {
+  border-right: 1px solid #cbd5e1;
+}
+.input-stepper .stepper-plus {
+  border-left: 1px solid #cbd5e1;
+}
+
+/* 4. PIE DE PÁGINA FIJO (STICKY FOOTER) */
+#report-summary-modal .modal-footer {
+  position: sticky;
+  bottom: 0;
+  background-color: white;
+  padding: 1rem;
+  /* Sombra para separarlo visualmente del contenido al hacer scroll */
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+  /* Asegura que no haya un padding extra del modal-body */
+  margin: 0 -1.5rem -1.5rem; /* Ajusta estos valores si tu padding es diferente */
+  border-top: 1px solid #e2e8f0;
+}
+
+    </style>
+
+      <style>
+      .radio-group {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3);
+        height: 40px; /* Misma altura que los inputs */
+      }
+      .radio-group label {
+        margin-bottom: 0;
+        font-weight: 400;
+      }
+      .radio-group input[type='radio'] {
+        width: auto;
+        height: auto;
+      }
+    </style>
+
+   <div id="edit-requerimiento-modal" class="modal-overlay hidden">
+  <div class="modal-content card large">
+    <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="edit-2"></i>
+        <span>Editar Requerimiento</span>
+      </div>
+      <button type="button" class="icon-button close-button">
+        <i data-feather="x"></i>
+      </button>
+    </div>
+
+    <form id="edit-requerimiento-form">
+      <div class="modal-body">
+        <input type="hidden" id="edit-requerimiento-id">
+        
+        <div style="display: flex; gap: var(--space-2)">
+          <div class="form-group" style="flex: 1">
+            <label class="form-label" for="edit-requerimiento-hora">Hora</label>
+            <input type="time" id="edit-requerimiento-hora" required />
+          </div>
+          <div class="form-group" style="flex: 2">
+            <label class="form-label">Tipo de Contacto</label>
+            <div class="radio-group">
+              <input type="radio" id="edit-contacto-personal" name="edit-tipo-contacto" value="personal" checked/>
+              <label for="edit-contacto-personal">Personal</label>
+              <input type="radio" id="edit-contacto-telefonico" name="edit-tipo-contacto" value="telefonico"/>
+              <label for="edit-contacto-telefonico">Telefónico</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-requerimiento-requirente">Requirente</label>
+          <input type="text" id="edit-requerimiento-requirente" placeholder="Nombre de la persona o entidad" required/>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label" for="edit-requerimiento-motivo">Motivo del Requerimiento</label>
+          <textarea id="edit-requerimiento-motivo" rows="3" required placeholder="Describe brevemente el motivo..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit-requerimiento-comentario">Comentario de Resolución</label>
+          <textarea id="edit-requerimiento-comentario" rows="3" placeholder="Añade aquí las acciones realizadas o la resolución..."></textarea>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="button button-secondary close-button">Cancelar</button>
+        <button type="submit" class="button button-primary">
+          <i data-feather="save"></i>
+          <span>Guardar Cambios</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+    <div id="task-resolution-modal" class="modal-overlay hidden">
+  <div class="modal-content card small">
+    <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="check-square"></i>
+        <span>Finalizar Tarea</span>
+      </div>
+      <button class="icon-button close-button"><i data-feather="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <p class="modal-subtitle">¿Cómo quieres finalizar esta tarea?</p>
+      <div class="modal-options">
+        <button id="resolve-with-comment-btn" class="button button-secondary option-button">
+          <i data-feather="message-square"></i>
+          <span>Finalizar con Comentario</span>
+        </button>
+        <button id="resolve-with-document-btn" class="button button-secondary option-button">
+          <i data-feather="file-plus"></i>
+          <span>Finalizar con Documento (E/S)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="task-comment-modal" class="modal-overlay hidden">
+  <div class="modal-content card">
+    <div class="card-header">
+      <div class="modal-title"><i data-feather="message-square"></i>
+
+    <div id="template-editor-modal" class="modal-overlay hidden">
+      <div class="modal-content card large">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="edit"></i>
+            <span id="template-modal-title">Nueva Plantilla de Documento</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="template-form">
+          <div class="modal-body">
+            <input type="hidden" id="template-id" />
+            <div style="display: flex; gap: var(--space-2)">
+              <div class="form-group" style="flex: 2">
+                <label class="form-label" for="template-name">Nombre de la Plantilla</label>
+                <input type="text" id="template-name" required />
+              </div>
+              <div class="form-group" style="flex: 1">
+                <label class="form-label" for="template-type">Tipo de Documento</label>
+                <select id="template-type" class="selector" required>
+                  <option value="informe">Informe</option>
+                  <option value="acta">Acta</option>
+                  <option value="atestado">Atestado</option>
+                  <option value="oficio">Oficio</option>
+                  <option value="estadillo">Estadillo</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label"
+                >Contenido de la Plantilla (Placeholders: {{asunto}}, {{destinatario}}, etc.)</label
+              >
+              <textarea id="template-html-source" class="template-source-code" placeholder="Pega aquí el código HTML de la plantilla..."></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="button button-secondary close-button">Cancelar</button>
+            <button type="submit" class="button button-primary">Guardar Plantilla</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <template id="template-registro-modal">
+  <div id="registro-modal" class="modal-overlay hidden">
+    <div class="modal-content card large">
+      <form id="registro-form">
+        <div class="card-header">
+          <div class="modal-title">
+            <i data-feather="file-plus"></i>
+            <span id="registro-modal-title">Nuevo Documento de Salida</span>
+          </div>
+          <div class="actions-group">
+            <button type="button" class="button button-secondary close-button">Cancelar</button>
+            <button type="submit" class="button button-primary">
+              <i data-feather="save"></i>
+              <span>Guardar Registro</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-body">
+          <div id="registro-modal-content-wrapper" class="modal-content-grid">
+            <div id="registro-dynamic-form-container">
+              <div id="type-select-step">
+                <div class="form-group">
+                  <label class="form-label" for="registro-type-select">Tipo de Documento</label>
+                  <select id="registro-type-select" class="selector" required>
+                    <option value="">-- Selecciona un tipo --</option>
+                    <option value="informe">Informe</option>
+                    <option value="acta">Acta</option>
+                    <option value="atestado">Atestado</option>
+                    <option value="oficio">Oficio</option>
+                    <option value="estadillo">Estadillo</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div id="template-select-step" class="hidden">
+                </div>
+            </div>
+
+            <div id="registro-preview-container" class="preview-container">
+              <iframe id="preview-iframe" class="preview-iframe"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="delete-registro-btn" class="button button-danger hidden" style="margin-right: auto">
+            <i data-feather="trash-2"></i>
+            <span>Eliminar Registro</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<div id="template-preview-modal" class="modal-overlay hidden">
+  <div class="modal-content card large">
+    <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="eye"></i>
+        <span id="preview-modal-title">Previsualización de Plantilla</span>
+      </div>
+      <button class="icon-button close-button">
+        <i data-feather="x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <iframe id="preview-iframe" style="width: 100%; height: 70vh; border: 1px solid #ccc;"></iframe>
+    </div>
+  </div>
+</div>
+<script type="module" src="/js/main.js"></script>
+
+<script src="https://unpkg.com/feather-icons"></script>
+<script>
+  feather.replace();
+</script>
+
+<div id="agent-tasks-modal" class="modal-overlay hidden">
+  <div class="modal-content card">
+    <div class="card-header">
+      <div class="modal-title">
+        <i data-feather="check-circle"></i>
+        <span>Mis Tareas Pendientes</span>
+      </div>
+      <button class="icon-button close-button">
+        <i data-feather="x"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="agent-tasks-list-container">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="button button-secondary close-button">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 </body>
 </html>

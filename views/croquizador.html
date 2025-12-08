@@ -1,0 +1,339 @@
+<div id="croquis-view-content">
+  <div class="card">
+    <div class="card-header">
+      <h2>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          width="24"
+          height="24"
+          style="vertical-align: middle; margin-right: 8px"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+          />
+        </svg>
+        <span>Croquis de Accidentes</span>
+      </h2>
+      <div class="actions-group">
+        <button id="create-croquis-btn" class="button button-primary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            width="20"
+            height="20"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>Crear Nuevo Croquis</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="filter-group">
+        <div class="form-group">
+          <label for="croquis-filter-lugar">Lugar</label>
+          <input type="text" id="croquis-filter-lugar" placeholder="Buscar por lugar..." />
+        </div>
+        <div class="form-group">
+          <label for="croquis-filter-fecha">Fecha</label>
+          <input type="date" id="croquis-filter-fecha" />
+        </div>
+        <div class="form-group">
+          <label for="croquis-filter-implicados">Implicados / Matrícula</label>
+          <input type="text" id="croquis-filter-implicados" placeholder="Buscar implicado..." />
+        </div>
+        <div class="filter-actions">
+          <button id="apply-croquis-filters-btn" class="button button-primary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              width="20"
+              height="20"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+              />
+            </svg>
+            <span>Filtrar</span>
+          </button>
+          <button id="clear-croquis-filters-btn" class="button button-secondary">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              width="20"
+              height="20"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>Limpiar</span>
+          </button>
+        </div>
+      </div>
+
+      <hr class="subtle-divider" />
+
+      <div id="croquis-list-container" class="table-container">
+          </div>
+<div class="card-footer pagination-controls" id="croquis-pagination-controls">
+  <button id="croquis-prev-page" class="pagination-button" disabled>
+    <i data-feather="arrow-left"></i>
+    <span>Anterior</span>
+  </button>
+  
+  <span id="croquis-page-info">Página 1</span>
+  
+  <button id="croquis-next-page" class="pagination-button">
+    <span>Siguiente</span>
+    <i data-feather="arrow-right"></i>
+  </button>
+</div>
+    </div>
+    </div>
+  </div>
+</div>
+
+    <div id="croquis-modal" class="modal-overlay hidden">
+      <div class="modal-content extra-large-fluid">
+        <div class="modal-header">
+          <div class="modal-title">
+            <i data-feather="edit-3"></i>
+            <span>Herramienta de Croquis de Accidentes</span>
+          </div>
+          <button class="icon-button close-button">
+            <i data-feather="x"></i>
+          </button>
+        </div>
+
+        <form id="croquis-form">
+          <div class="croquis-main-layout">
+            <div class="croquis-data-panel">
+              <div class="form-group">
+                <label class="form-label" for="croquis-lugar">Lugar</label>
+                <input type="text" id="croquis-lugar" placeholder="Ej: Calle Real, 24" required />
+              </div>
+              <div style="display: flex; gap: var(--space-2)">
+                <div class="form-group" style="flex: 1">
+                  <label class="form-label" for="croquis-fecha">Fecha</label>
+                  <input type="date" id="croquis-fecha" required />
+                </div>
+                <div class="form-group" style="flex: 1">
+                  <label class="form-label" for="croquis-hora">Hora</label>
+                  <input type="time" id="croquis-hora" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="croquis-implicados">Implicados</label>
+                <input
+                  type="text"
+                  id="croquis-implicados"
+                  placeholder="Ej: Seat Ibiza (Rojo), Peatón"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="croquis-documento">Documento Asociado</label>
+                <select id="croquis-documento" class="selector">
+                  <option value="ninguno">Ninguno</option>
+                  <option value="estadillo">Estadillo</option>
+                  <option value="atestado">Atestado</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="croquis-leyenda">Leyenda (Aclaraciones)</label>
+                <textarea
+                  id="croquis-leyenda"
+                  rows="6"
+                  placeholder="Ej: V-1: Vehículo Seat Ibiza..."
+                ></textarea>
+              </div>
+
+              <hr class="subtle-divider" />
+
+              <div class="form-group">
+                <label class="form-label">Imagen del Croquis</label>
+                <div class="upload-actions">
+                  <button type="button" id="prepare-capture-btn" class="button button-secondary">
+                    <i data-feather="crop"></i>
+                    <span>Capturar Pantalla</span>
+                  </button>
+                  <label for="croquis-file-input" class="button button-secondary">
+                    <i data-feather="upload"></i>
+                    <span>Subir Archivo</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="croquis-file-input"
+                    class="hidden"
+                    accept="image/png, image/jpeg"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div class="croquis-iframe-container">
+              <iframe
+                id="croquis-iframe"
+                src="http://test.croquisaccidente.es/"
+                frameborder="0"
+                sandbox="allow-scripts allow-same-origin allow-forms"
+                allow="camera 'none'; microphone 'none'; geolocation 'none'; payment 'none'"
+                referrerpolicy="no-referrer"
+              ></iframe>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="button button-tertiary close-button">Cancelar</button>
+            <button type="submit" class="button button-primary button-save">
+              <i data-feather="save"></i>
+              <span>Guardar Croquis</span>
+            </button>
+          </div>
+        </form>
+
+        <div id="croquis-capture-instructions" class="modal-inner-overlay hidden">
+          <div class="capture-instructions">
+            <i data-feather="crop"></i>
+            <h2>Modo Captura Activado</h2>
+            <p>Usa la herramienta de recorte de tu sistema operativo.</p>
+            <p>(Ej: <strong>Windows + Shift + S</strong> o <strong>Cmd + Shift + 4</strong>)</p>
+            <button id="exit-capture-mode-btn-inner" type="button" class="button button-secondary">
+              Volver al Editor
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      .croquis-main-layout {
+        display: flex;
+        flex-grow: 1;
+        min-height: 0; /* Soluciona problemas de overflow en flexbox */
+      }
+      .croquis-data-panel {
+        width: 320px;
+        flex-shrink: 0;
+        padding: var(--space-3);
+        border-right: 1px solid var(--color-border);
+        overflow-y: auto;
+      }
+      .croquis-iframe-container {
+        flex-grow: 1;
+        display: flex;
+      }
+      #croquis-iframe {
+        width: 100%;
+        height: 100%;
+      }
+      .upload-actions {
+        display: flex;
+        gap: var(--space-2);
+        flex-direction: column;
+      }
+      .modal-inner-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.95);
+        z-index: 10;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .capture-instructions {
+        text-align: center;
+        color: var(--color-text);
+      }
+      .capture-instructions i {
+        width: 48px;
+        height: 48px;
+        margin-bottom: var(--space-2);
+        color: var(--color-primary);
+      }
+    </style>
+
+    <div id="croquis-data-modal" class="modal-overlay hidden">
+      <div class="modal-content small">
+        <span class="close-button material-icons">close</span>
+        <div class="modal-header-icon">
+          <span class="material-icons">info</span>
+          <h2>Datos del Accidente</h2>
+        </div>
+        <form id="croquis-data-form">
+          <div class="croquis-data-inputs">
+            <div class="form-group">
+              <label for="croquis-referencia">Referencia</label
+              ><input type="text" id="croquis-referencia" placeholder="Ej: 2025/1234" required />
+            </div>
+            <div class="form-group">
+              <label for="croquis-lugar">Lugar</label
+              ><input type="text" id="croquis-lugar" placeholder="Ej: Calle Real, 24" required />
+            </div>
+            <div class="form-group">
+              <label for="croquis-fecha">Fecha</label
+              ><input type="date" id="croquis-fecha" required />
+            </div>
+            <div class="form-group">
+              <label for="croquis-hora">Hora</label><input type="time" id="croquis-hora" required />
+            </div>
+            <div class="form-group">
+              <label for="croquis-implicados">Vehículos/Peatones Implicados</label
+              ><input
+                type="text"
+                id="croquis-implicados"
+                placeholder="Ej: Seat Ibiza (Rojo), Peatón"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="croquis-heridos">Heridos</label
+              ><input type="text" id="croquis-heridos" placeholder="Ej: 2 leves, 1 grave" />
+            </div>
+            <div class="form-group">
+              <label for="croquis-documento">Documento Realizado</label
+              ><select id="croquis-documento">
+                <option value="ninguno">Ninguno</option>
+                <option value="estadillo">Estadillo</option>
+                <option value="atestado">Atestado</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="submit" class="button button-success">
+              <span class="material-icons">save</span> Guardar Datos
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+

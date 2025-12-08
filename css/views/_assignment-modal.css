@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* =================================================================== */
 /* css/views/_assignment-modal.css (Refactorizado - Versión Moderna) */
 /* =================================================================== */
@@ -8,10 +9,22 @@
   gap: var(--space-5);
   padding: var(--space-5);
   min-height: 60vh;
+=======
+/* RUTA: css/views/_assignment-modal.css */
+
+/* Layout principal de 2 columnas para el modal */
+.assignment-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas de igual tamaño */
+  gap: 1.5rem;
+  padding: 1rem;
+  min-height: 60vh; /* Altura mínima para tener espacio de trabajo */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .assignment-column .column-title {
   margin-top: 0;
+<<<<<<< HEAD
   margin-bottom: var(--space-4);
   font-size: var(--text-lg);
   font-weight: var(--font-bold);
@@ -62,10 +75,33 @@
 }
 
 /* Tarjeta de agente */
+=======
+}
+
+/* Estilo para las listas de agentes */
+.agent-list {
+  background-color: var(--color-background-inactive);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius-lg);
+  padding: 1rem;
+  min-height: 300px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Estilo para la zona de "soltar" cuando se arrastra un agente */
+.agent-list.drag-over {
+  border-color: var(--color-primary);
+  background-color: #eaf5ff;
+}
+
+/* Tarjeta individual para cada agente en la lista */
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 .agent-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
+<<<<<<< HEAD
   
   background: rgba(var(--rgb-white), 0.08);
   backdrop-filter: var(--backdrop-blur-sm);
@@ -80,10 +116,21 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   
   transition: all var(--transition-fast) var(--ease-smooth);
+=======
+  background-color: var(--color-background);
+  padding: 0.75rem 1rem;
+  border-radius: var(--border-radius-md);
+  margin-bottom: 0.5rem;
+  cursor: grab;
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .agent-card:active {
   cursor: grabbing;
+<<<<<<< HEAD
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
   transform: scale(1.02);
 }
@@ -95,11 +142,15 @@
   box-shadow: 
     0 4px 12px rgba(0, 0, 0, 0.3),
     0 0 12px rgba(var(--rgb-green-neon), 0.2);
+=======
+  box-shadow: var(--shadow-lg);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .agent-card-info {
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   gap: var(--space-3);
 }
 
@@ -200,4 +251,33 @@ body.classic-mode .agent-card:hover {
 
 body.classic-mode .agent-card-info .agent-name {
   color: var(--color-text-primary);
+=======
+  gap: 0.75rem;
+}
+
+.agent-card-info .agent-name {
+  font-weight: 600;
+}
+
+/* Insignia para marcar si un agente está de turno */
+.on-shift-badge {
+  background-color: #dcfce7; /* Verde claro */
+  color: #166534; /* Verde oscuro */
+  padding: 0.2em 0.6em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+/* Estilo para el estado vacío de la lista de asignados */
+#assigned-agents-list-dropzone .empty-state-text {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding-top: 4rem;
+}
+
+/* Icono para indicar que se puede arrastrar */
+.drag-handle {
+  color: var(--color-text-secondary);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }

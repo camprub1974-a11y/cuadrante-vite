@@ -1,0 +1,87 @@
+<div id="service-report-view" class="view-container">
+  <header class="view-header">
+    <div class="header-main-content">
+      <h1 id="report-title" class="view-title">Parte de Servicio</h1>
+      <span id="report-reg-number" class="header-subtitle"></span>
+    </div>
+    <div class="header-actions">
+      <button id="back-to-reports-list-btn" class="button button-secondary icon-button-left">
+        <i data-feather="arrow-left"></i>
+        <span>Volver a la lista</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="report-info-bar">
+    <div class="info-item">
+      <i data-feather="calendar"></i>
+      <span id="report-date">--/--/----</span>
+    </div>
+    <div class="info-item">
+      <i data-feather="clock"></i>
+      <span id="report-shift">--</span>
+    </div>
+    <div class="info-item">
+      <i data-feather="tag"></i>
+      <span id="report-header-status" class="status-pill status-open">Abierto</span>
+    </div>
+  </div>
+
+  <div class="report-content-grid">
+  <div class="report-main-column">
+
+    <div class="content-card">
+      <div class="card-header">
+        <h2><i data-feather="file-plus"></i> Descripción / Instrucciones</h2>
+      </div>
+      <div class="card-body">
+        <div id="report-description-content">
+          </div>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="card-header">
+        <h2><i data-feather="clipboard"></i> Novedades del Servicio</h2>
+        <button id="add-requerimiento-btn" class="button button-secondary button-small">
+          <i data-feather="plus"></i> Añadir Novedad
+        </button>
+      </div>
+      <div id="requerimientos-list-container" class="card-body">
+        </div>
+    </div>
+
+    <div class="content-card">
+      <div class="card-header">
+        <h2><i data-feather="check-square"></i> Checklist de la Orden</h2>
+      </div>
+      <div id="checklist-items-container" class="card-body">
+        </div>
+    </div>
+
+    <div class="content-card">
+      <div class="card-header">
+        <h2><i data-feather="target"></i> Tareas Específicas</h2>
+      </div>
+      <div id="specific-tasks-container" class="card-body">
+        </div>
+    </div>
+
+  </div> <div class="report-sidebar-column">
+    <div class="content-card">
+      <div class="card-header">
+        <h2><i data-feather="book"></i> Resumen de Actuaciones</h2>
+      </div>
+      <div id="summary-view-container" class="card-body stat-grid">
+          <div class="empty-state-card">
+            <i data-feather="bar-chart-2"></i>
+            <p>No hay actuaciones registradas en el resumen.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer id="report-actions-footer" class="view-footer">
+    </footer>
+</div>

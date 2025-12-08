@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* =================================================================== */
 /* css/views/_login.css (Refactorizado MCST/BEM) - V2 Mejorado */
 /* =================================================================== */
@@ -107,10 +108,82 @@
 
 /* 3. PANEL DERECHO (Formulario) */
 .login-view__form {
+=======
+/* css/views/_login.css */
+
+.login-container {
+  display: flex;
+  height: 100%;
+  width: 100%;
+}
+
+.brand-section {
+  flex: 1;
+  background-image: url('/icons/sunset-image.jpg');
+
+  /* ✅ INICIO DE LA CORRECCIÓN */
+
+  /* 1. Cambiamos 'cover' por 'contain' para que la imagen siempre se vea completa. */
+  background-size: contain;
+
+  /* 2. Le decimos que no repita la imagen si hay espacio sobrante. */
+  background-repeat: no-repeat;
+
+  /* 3. La centramos dentro de su espacio. */
+  background-position: center;
+
+  /* 4. Añadimos un color de fondo oscuro que rellenará el espacio sobrante. */
+  background-color: #1f2d3d; /* Azul oscuro del header */
+
+  /* ✅ FIN DE LA CORRECCIÓN */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.brand-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.brand-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 80%;
+  padding: 32px;
+}
+
+.logo {
+  width: 180px;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+.version-info {
+  color: var(--color-text-light);
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.form-section {
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+<<<<<<< HEAD
   padding: var(--space-8);
   position: relative;
   animation: formSlideIn 0.6s ease-out;
@@ -157,10 +230,15 @@
     opacity: 1;
     box-shadow: 0 0 20px rgba(var(--rgb-green-neon), 0.8);
   }
+=======
+  padding: 32px;
+  background-color: var(--color-bg-card);
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .form-container {
   width: 100%;
+<<<<<<< HEAD
   max-width: 450px;
   position: relative;
   z-index: 2;
@@ -228,10 +306,31 @@
     opacity: 1;
     transform: translateY(0);
   }
+=======
+  max-width: 400px;
+}
+
+.form-container h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-text);
+}
+
+.form-container .subtitle {
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  margin-bottom: 32px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .form-group label {
   display: block;
+<<<<<<< HEAD
   color: var(--color-text-on-dark-muted);
   font-weight: 500;
   font-size: var(--text-xs);
@@ -250,10 +349,21 @@
   position: relative;
   display: flex;
   align-items: center;
+=======
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--color-text);
+}
+
+.input-with-icon {
+  position: relative;
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
 }
 
 .input-with-icon .icon {
   position: absolute;
+<<<<<<< HEAD
   left: var(--space-3);
   top: 50%;
   transform: translateY(-50%);
@@ -600,3 +710,73 @@ body.classic-mode .button-primary:hover {
 }
 
 /* =================================================================== */
+=======
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* Para que no interfiera con el clic en el input */
+}
+
+.input-with-icon input {
+  width: 100%;
+  height: 40px;
+  padding: 0 12px 0 40px; /* Padding izquierdo para el icono */
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 6px);
+  font-size: 16px;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.input-with-icon input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(27, 156, 252, 0.2);
+}
+
+.forgot-password {
+  display: inline-block;
+  font-size: 14px;
+  color: var(--color-primary);
+  text-decoration: none;
+  margin-bottom: 24px;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+.btn-primary {
+  display: block;
+  width: 100%;
+  height: 40px;
+  background-color: var(--color-primary);
+  color: var(--color-white, #ffffff);
+  border: none;
+  border-radius: var(--radius-md, 8px);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #1689e0; /* Un poco más oscuro */
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+  }
+  .brand-section {
+    flex: none;
+    height: 30vh;
+    min-height: 200px;
+    width: 1;
+  }
+  .form-section {
+    flex: 1;
+  }
+}
+>>>>>>> 755f45b7c267bfffa0ee6a809a10400904711786
